@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Terapia Visual - v3.02 (Pautas Terapéuticas)</title>
+    <title>Terapia Visual - v3.03 (Ajuste Estético y Auto-Focus)</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700;900&display=swap" rel="stylesheet">
 
     <style>
         :root {
@@ -69,7 +69,7 @@
 
         .patient-select-group { display: flex; align-items: center; gap: 0.5rem; flex-grow: 1; }
 
-        /* PAUTA TERAPÉUTICA (NUEVO V3.02) */
+        /* PAUTA TERAPÉUTICA */
         .routine-card {
             background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 0.8rem 1rem;
         }
@@ -84,11 +84,37 @@
         .task-item.completed { background: #dcfce7; text-decoration: line-through; color: #166534; }
         body.high-contrast .task-item.completed { background: #e2e8f0; color: #000; }
 
-        /* BARRA DE ESTADO */
+        /* 1. BARRA SUPERIOR DE ESTADO Y OBJETIVO REFORZADO (NUEVO V3.03) */
         .controls-row {
             display: flex; justify-content: space-between; align-items: center;
-            font-size: 1.15rem; font-weight: 700; flex-wrap: wrap; gap: 0.8rem;
+            font-size: 1.1rem; font-weight: 700; flex-wrap: wrap; gap: 0.8rem;
         }
+
+        .target-badge {
+            font-size: clamp(2rem, 4.5vh, 3.2rem);
+            font-weight: 900;
+            color: var(--primary);
+            background: #eff6ff;
+            padding: 0.1rem 0.8rem;
+            border-radius: 10px;
+            border: 3px solid var(--primary);
+            display: inline-block;
+            vertical-align: middle;
+            margin-left: 0.3rem;
+            line-height: 1.1;
+        }
+        body.high-contrast .target-badge {
+            background: #000000 !important;
+            color: #ffffff !important;
+            border-color: #000000 !important;
+        }
+
+        .progress-badge {
+            font-size: clamp(1.8rem, 4vh, 2.8rem);
+            font-weight: 900;
+            color: #16a34a;
+        }
+        body.high-contrast .progress-badge { color: #000000; }
 
         /* CUADRÍCULA */
         .grid-wrapper { display: flex; justify-content: center; width: 100%; }
@@ -263,7 +289,7 @@
             body.print-grid-only .panel:not(.controls-row), 
             body.print-grid-only #stats-content, 
             body.print-grid-only #inst-content,
-            body.print-grid-only #routine-content { display: none !important; }
+            body.print-grid-only #routine-panel { display: none !important; }
             body.print-grid-only .controls-row { border: none; box-shadow: none; font-size: 1.5rem; text-align: center; }
         }
 
@@ -277,7 +303,7 @@
     </div>
 
     <div class="container">
-        <h1>Terapia Visual: Estabilización Táctil (v3.02)</h1>
+        <h1>Terapia Visual: Estabilización Táctil (v3.03)</h1>
 
         <!-- 0. SELECCIÓN DE PACIENTE ACTIVO -->
         <div class="patient-row">
@@ -309,7 +335,7 @@
             </div>
         </div>
 
-        <!-- PAUTA TERAPÉUTICA DIARIA (NUEVO V3.02) -->
+        <!-- PAUTA TERAPÉUTICA DIARIA -->
         <div class="panel routine-card" id="routine-panel">
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
                 <div>
@@ -327,7 +353,7 @@
             <!-- TAREAS DE LA PAUTA -->
             <div id="routine-tasks-list" style="margin-top: 0.6rem;"></div>
 
-            <!-- DISEÑADOR DE PAUTAS (OCULTO POR DEFECTO) -->
+            <!-- DISEÑADOR DE PAUTAS -->
             <div id="routine-designer-content" class="collapsible-content routine-designer-box" style="margin-top: 0.8rem; background: white; padding: 0.8rem; border-radius: 8px; border: 1px solid #cbd5e1;">
                 <strong style="font-size: 0.9rem; color: var(--primary);">➕ Añadir Ejercicio a la Prescripción</strong>
                 <div style="display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: center; margin-top: 0.5rem;">
@@ -352,10 +378,14 @@
             </div>
         </div>
 
-        <!-- 1. ESTADO DE LA SESIÓN -->
-        <div class="panel controls-row">
-            <div id="instruction-text">Objetivo: <strong id="target-display" style="color: var(--primary); font-size: 1.3rem;">-</strong></div>
-            <div id="progress-container">Progreso: <strong id="score">0</strong> <span id="total-container">/ <span id="total-targets">0</span></span></div>
+        <!-- 1. BARRA DE ESTADO Y OBJETIVO REFORZADO (REDISEÑO V3.03) -->
+        <div class="panel controls-row" id="game-controls-anchor">
+            <div id="instruction-text">
+                Objetivo: <span id="target-display" class="target-badge">-</span>
+            </div>
+            <div id="progress-container">
+                Progreso: <span id="score-display" class="progress-badge"><span id="score">0</span> / <span id="total-targets">0</span></span>
+            </div>
             <div style="font-size: 1.1rem; color: #dc2626;">Fallos: <strong id="error-count">0</strong></div>
             <div style="font-family: monospace; font-size: 1.4rem; font-weight: bold; color: #475569;" id="timer">00:00.0</div>
         </div>
@@ -589,6 +619,16 @@
         const flashcardMain = document.getElementById('flashcard-main');
         let overlayCallback = null;
 
+        // --- FUNCIÓN DESPLAZAMIENTO INTELIGENTE A LA ZONA DE JUEGO (v3.03) ---
+        function scrollToGameFocus() {
+            setTimeout(() => {
+                const anchor = document.getElementById('game-controls-anchor');
+                if (anchor) {
+                    anchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }, 100);
+        }
+
         // --- GESTIÓN MULTIUSUARIO Y MULTI-PACIENTE ---
         function getPatients() {
             let patients = JSON.parse(localStorage.getItem('nystagmus_patients') || '[]');
@@ -663,7 +703,7 @@
             alert(`¡Paciente "${name}" registrado con éxito!`);
         });
 
-        // --- SISTEMA DE PAUTAS TERAPÉUTICAS Y PRESCRIPCIÓN (v3.02) ---
+        // --- SISTEMA DE PAUTAS TERAPÉUTICAS Y PRESCRIPCIÓN ---
         function getRoutines() {
             return JSON.parse(localStorage.getItem('nystagmus_routines') || '{}');
         }
@@ -744,7 +784,6 @@
             }
         });
 
-        // INICIAR AUTOMÁTICAMENTE LA SIGUIENTE TAREA PRESCRITA
         launchRoutineBtn.addEventListener('click', () => {
             const tasks = getActivePatientRoutine();
             const nextTask = tasks.find(t => t.completed < t.required);
@@ -754,7 +793,6 @@
                 return;
             }
 
-            // Aplicar configuración prescrita automáticamente
             modeSelect.value = nextTask.mode;
             eyeSelect.value = nextTask.eye;
             linesToggle.checked = (nextTask.lines === 'Sí');
@@ -1079,7 +1117,7 @@
             renderHistory();
         });
 
-        // IMPRESIÓN Y EXPORTACIÓN COMPLETA (v3.02)
+        // IMPRESIÓN Y EXPORTACIÓN COMPLETA
         document.getElementById('print-report-btn').addEventListener('click', () => {
             document.body.classList.remove('print-grid-only');
             document.getElementById('stats-content').classList.add('active');
@@ -1098,7 +1136,7 @@
             const routines = getRoutines();
             
             const bundle = {
-                version: "3.02",
+                version: "3.03",
                 patients: patients,
                 routines: routines,
                 history: history,
@@ -1109,7 +1147,7 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `respaldo_terapia_v3.02_${new Date().toISOString().slice(0, 10)}.json`;
+            a.download = `respaldo_terapia_v3.03_${new Date().toISOString().slice(0, 10)}.json`;
             a.click();
             URL.revokeObjectURL(url);
         });
@@ -1276,10 +1314,10 @@
                     showFlashcard(
                         `Busca la letra <span style="color:#e11d48">${targetLetter}</span>`, 
                         `Busca todas las letras ${targetLetter}`, 
-                        () => { targetDisplay.textContent = `Letra ${targetLetter}`; }
+                        () => { targetDisplay.textContent = targetLetter; }
                     );
                 } else {
-                    targetDisplay.textContent = `Letra ${targetLetter}`;
+                    targetDisplay.textContent = targetLetter;
                 }
             } else if (currentMode === 'coord' && isPlaying) {
                 pickNewCoordinate();
@@ -1287,7 +1325,7 @@
                 showFlashcard(
                     `Sigue la celda <span style="color:#3b82f6">AZUL</span>`, 
                     "Sigue la celda azul y pulsa la letra correspondiente", 
-                    () => { targetDisplay.textContent = "Siga la celda AZUL"; startPursuitTarget(); }
+                    () => { targetDisplay.textContent = "AZUL"; startPursuitTarget(); }
                 );
             } else {
                 targetDisplay.textContent = "-";
@@ -1415,7 +1453,7 @@
             const spokenText = `Fila ${targetRow}, Columna ${targetCol}`;
             
             showFlashcard(visualText, spokenText, () => {
-                targetDisplay.innerHTML = `Fila ${targetRow}, Columna ${targetCol}`;
+                targetDisplay.innerHTML = `F${targetRow}, C${targetCol}`;
                 const correctChar = document.querySelector(`.cell[data-row="${targetRow}"][data-col="${targetCol}"]`).textContent;
                 updateVirtualKeypad(correctChar);
             });
@@ -1484,6 +1522,9 @@
             startBtn.textContent = "Detener Sesión";
             startBtn.style.backgroundColor = "#ef4444";
             
+            // Auto-focus a la cuadrícula y controles
+            scrollToGameFocus();
+
             clearInterval(timerInterval);
             clearInterval(pursuitInterval);
             timerInterval = setInterval(updateTimerDisplay, 100);
