@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Terapia Visual - v2.04</title>
+    <title>Terapia Visual - v3.01 (Multiusuario Local)</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -23,7 +23,6 @@
             --panel-bg: #ffffff;
         }
 
-        /* MODO ALTO CONTRASTE / E-INK */
         body.high-contrast {
             --bg-color: #ffffff;
             --text-color: #000000;
@@ -60,13 +59,23 @@
         }
         body.high-contrast .panel { border: 2px solid #000000; }
 
-        /* 1. BARRA SUPERIOR DE ESTADO */
+        /* SECCIÓN DE PACIENTE ACTIVO */
+        .patient-row {
+            display: flex; justify-content: space-between; align-items: center;
+            background: #eff6ff; border-left: 4px solid var(--primary); padding: 0.6rem 1rem;
+            border-radius: 8px; flex-wrap: wrap; gap: 0.6rem;
+        }
+        body.high-contrast .patient-row { background: #f1f5f9; border-left: 4px solid #000; }
+
+        .patient-select-group { display: flex; align-items: center; gap: 0.5rem; flex-grow: 1; }
+
+        /* BARRA DE ESTADO */
         .controls-row {
             display: flex; justify-content: space-between; align-items: center;
             font-size: 1.15rem; font-weight: 700; flex-wrap: wrap; gap: 0.8rem;
         }
 
-        /* 2. CUADRÍCULA Y CONTENEDOR ESTABLE */
+        /* CUADRÍCULA */
         .grid-wrapper { display: flex; justify-content: center; width: 100%; }
 
         #grid-container {
@@ -94,19 +103,14 @@
         .mode-search .cell { cursor: pointer; }
         .mode-search .cell:active { background-color: #f1f5f9; }
         
-        /* CELDAS ASERTADAS Y ERRORES EN AMBOS MODOS */
         .cell.found { background-color: var(--target-bg); color: var(--target-text); }
         .cell.wrong { background-color: var(--wrong-bg); animation: shake 0.4s; }
         
         body.high-contrast .cell.found {
-            background-color: #000000 !important;
-            color: #ffffff !important;
-            font-weight: 900;
+            background-color: #000000 !important; color: #ffffff !important; font-weight: 900;
         }
         body.high-contrast .cell.wrong {
-            background-color: #666666 !important;
-            color: #ffffff !important;
-            text-decoration: line-through;
+            background-color: #666666 !important; color: #ffffff !important; text-decoration: line-through;
         }
 
         .cell.pursuit-active { 
@@ -125,7 +129,7 @@
             50% { transform: translateX(5px); }
         }
 
-        /* 3. TECLADO VIRTUAL */
+        /* TECLADO VIRTUAL */
         #virtual-keypad {
             display: none; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 0.2rem; width: 100%;
         }
@@ -145,11 +149,11 @@
             border-color: #000000; background-color: #000000; color: #ffffff;
         }
 
-        /* 4. CONFIGURACIÓN */
+        /* CONFIGURACIÓN Y FORMULARIO */
         .config-row { display: flex; gap: 0.8rem; flex-wrap: wrap; align-items: center; justify-content: space-between; }
         .config-item { display: flex; flex-direction: column; gap: 0.2rem; font-weight: 700; font-size: 0.85rem; }
 
-        select, input[type="number"] {
+        select, input[type="number"], input[type="text"], input[type="date"], textarea {
             font-family: var(--font-clinical); padding: 0.5rem; border: 2px solid #cbd5e1;
             border-radius: 8px; font-size: 0.95rem; font-weight: 700; background: #f8fafc; color: #000;
         }
@@ -233,16 +237,14 @@
         #flashcard-main { font-size: clamp(3rem, 10vw, 7rem); font-weight: 700; color: #0f172a; margin-bottom: 2rem; line-height: 1.2; }
         #flashcard-sub { font-size: 1.5rem; color: #3b82f6; font-weight: 700; background: #eff6ff; padding: 1rem 2rem; border-radius: 50px;}
 
-        /* ESTILOS DE IMPRESIÓN Y REPORTES */
+        /* ESTILOS DE IMPRESIÓN */
         @media print {
             body { background: white !important; color: black !important; padding: 0; }
             .container { max-width: 100%; gap: 1rem; }
-            .panel.config-row, #virtual-keypad, .btn, .collapsible-toggle, .filter-bar, .tab-buttons, #flashcard-overlay, #detection-badge { display: none !important; }
+            .patient-row, .panel.config-row, #virtual-keypad, .btn, .collapsible-toggle, .filter-bar, .tab-buttons, #flashcard-overlay, #detection-badge { display: none !important; }
             .collapsible-content { display: block !important; }
             #grid-container { width: 100% !important; height: auto !important; aspect-ratio: 1/1; page-break-inside: avoid; }
             .history-table th, .history-table td { border: 1px solid #000; }
-            
-            /* SI SE IMPRIME SOLO LA CUADRÍCULA EN PAPEL */
             body.print-grid-only .panel:not(.controls-row), 
             body.print-grid-only #stats-content, 
             body.print-grid-only #inst-content { display: none !important; }
@@ -259,7 +261,37 @@
     </div>
 
     <div class="container">
-        <h1>Terapia Visual: Estabilización Táctil (v2.04)</h1>
+        <h1>Terapia Visual: Estabilización Táctil (v3.01)</h1>
+
+        <!-- 0. SELECCIÓN Y GESTIÓN DE PACIENTE (NUEVO V3.01) -->
+        <div class="patient-row">
+            <div class="patient-select-group">
+                <label for="active-patient-select" style="font-weight: 700; font-size: 0.95rem;">👤 Paciente Activo:</label>
+                <select id="active-patient-select" style="flex-grow: 1; max-width: 300px; font-weight: 700;"></select>
+            </div>
+            <button class="btn btn-secondary" onclick="document.getElementById('patient-modal-content').classList.toggle('active')">
+                ⚙️ Gestor de Perfiles
+            </button>
+        </div>
+
+        <!-- PANEL DESPLEGABLE GESTOR DE PACIENTES -->
+        <div class="panel" style="padding: 0;">
+            <div id="patient-modal-content" class="collapsible-content" style="padding: 1rem; background: #f8fafc; border-radius: 12px;">
+                <h3 style="margin-top: 0; color: var(--primary);">👤 Crear / Administrar Pacientes</h3>
+                
+                <div style="display: flex; gap: 0.8rem; flex-wrap: wrap; margin-bottom: 1rem;">
+                    <input type="text" id="new-patient-name" placeholder="Nombre completo o ID clínico" style="flex-grow: 1; min-width: 200px;">
+                    <input type="date" id="new-patient-dob" title="Fecha de nacimiento">
+                    <button class="btn" id="create-patient-btn" style="font-size: 0.9rem; padding: 0.5rem 1rem;">➕ Registrar Paciente</button>
+                </div>
+                
+                <textarea id="new-patient-notes" placeholder="Notas clínicas o diagnostico (ej. Nistagmo motor / Ambliopía OD)..." style="width: 100%; height: 60px; box-sizing: border-box; margin-bottom: 1rem;"></textarea>
+
+                <div id="patient-details-card" style="background: white; padding: 0.8rem; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 0.9rem;">
+                    <strong>Ficha del Paciente Activo:</strong> <span id="patient-info-display">-</span>
+                </div>
+            </div>
+        </div>
 
         <!-- 1. ESTADO DE LA SESIÓN -->
         <div class="panel controls-row">
@@ -336,10 +368,10 @@
             </div>
         </div>
 
-        <!-- 6. ANALÍTICA, EVOLUCIÓN Y ESTADÍSTICAS POR JUEGO -->
+        <!-- 6. ANALÍTICA, EVOLUCIÓN Y ESTADÍSTICAS DEL PACIENTE -->
         <div class="panel" style="padding: 0;">
             <button class="collapsible-toggle" onclick="document.getElementById('stats-content').classList.toggle('active')">
-                <span>📊 Estadísticas, Contexto Físico y Reportes</span>
+                <span>📊 Estadísticas del Paciente y Reportes</span>
                 <span>▼</span>
             </button>
             <div id="stats-content" class="collapsible-content" style="padding: 1rem;">
@@ -418,7 +450,7 @@
                             </tr>
                         </thead>
                         <tbody id="history-tbody">
-                            <tr><td colspan="7" style="color: #94a3b8;">Sin datos acumulados en este modo.</td></tr>
+                            <tr><td colspan="7" style="color: #94a3b8;">Sin datos acumulados para este paciente.</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -430,7 +462,7 @@
                         <button class="btn btn-secondary" id="print-report-btn" style="background-color: #0d9488;">🖨️ Reporte PDF</button>
                         <input type="file" id="import-file-input" accept=".json" style="display: none;">
                     </div>
-                    <button class="btn btn-secondary" id="clear-stats-btn" style="background-color: #ef4444;">Borrar Historial</button>
+                    <button class="btn btn-secondary" id="clear-stats-btn" style="background-color: #ef4444;">Borrar Historial Paciente</button>
                 </div>
             </div>
         </div>
@@ -452,6 +484,7 @@
         let currentMode = 'search'; 
         let activeStatsTab = 'search'; 
         let chartXAxisType = 'index'; 
+        let activePatientId = null;
         
         let targetLetter = '';
         let targetRow = 0, targetCol = 0;
@@ -480,11 +513,96 @@
         const detectionBadge = document.getElementById('detection-badge');
         const distanceInfo = document.getElementById('distance-info');
         
+        const activePatientSelect = document.getElementById('active-patient-select');
+        const newPatientName = document.getElementById('new-patient-name');
+        const newPatientDob = document.getElementById('new-patient-dob');
+        const newPatientNotes = document.getElementById('new-patient-notes');
+        const createPatientBtn = document.getElementById('create-patient-btn');
+        const patientInfoDisplay = document.getElementById('patient-info-display');
+
         const flashcardOverlay = document.getElementById('flashcard-overlay');
         const flashcardMain = document.getElementById('flashcard-main');
         let overlayCallback = null;
 
-        // --- MANEJO DE ALTO CONTRASTE (v2.04) ---
+        // --- SISTEMA DE PACIENTES MULTIUSUARIO (v3.01) ---
+        function getPatients() {
+            let patients = JSON.parse(localStorage.getItem('nystagmus_patients') || '[]');
+            if (patients.length === 0) {
+                const defaultPatient = {
+                    id: 'p_default',
+                    name: 'Paciente General',
+                    dob: '',
+                    notes: 'Perfil creado automáticamente.'
+                };
+                patients.push(defaultPatient);
+                localStorage.setItem('nystagmus_patients', JSON.stringify(patients));
+            }
+            return patients;
+        }
+
+        function initPatientSystem() {
+            const patients = getPatients();
+            activePatientSelect.innerHTML = '';
+            patients.forEach(p => {
+                const opt = document.createElement('option');
+                opt.value = p.id;
+                opt.textContent = p.name;
+                activePatientSelect.appendChild(opt);
+            });
+
+            const savedActiveId = localStorage.getItem('nystagmus_active_patient_id');
+            if (savedActiveId && patients.some(p => p.id === savedActiveId)) {
+                activePatientId = savedActiveId;
+            } else {
+                activePatientId = patients[0].id;
+            }
+            activePatientSelect.value = activePatientId;
+            updatePatientCardDisplay();
+        }
+
+        function updatePatientCardDisplay() {
+            const patients = getPatients();
+            const activeP = patients.find(p => p.id === activePatientId) || patients[0];
+            const dobText = activeP.dob ? ` | Nacimiento: ${activeP.dob}` : '';
+            patientInfoDisplay.innerHTML = `<strong>${activeP.name}</strong>${dobText}<br><em>${activeP.notes || 'Sin notas adicionales.'}</em>`;
+        }
+
+        activePatientSelect.addEventListener('change', () => {
+            activePatientId = activePatientSelect.value;
+            localStorage.setItem('nystagmus_active_patient_id', activePatientId);
+            updatePatientCardDisplay();
+            renderHistory();
+        });
+
+        createPatientBtn.addEventListener('click', () => {
+            const name = newPatientName.value.trim();
+            if (!name) {
+                alert('Por favor, introduzca un nombre o código para el paciente.');
+                return;
+            }
+
+            const patients = getPatients();
+            const newP = {
+                id: 'p_' + Date.now(),
+                name: name,
+                dob: newPatientDob.value || '',
+                notes: newPatientNotes.value.trim()
+            };
+
+            patients.push(newP);
+            localStorage.setItem('nystagmus_patients', JSON.stringify(patients));
+            
+            newPatientName.value = '';
+            newPatientDob.value = '';
+            newPatientNotes.value = '';
+
+            initPatientSystem();
+            activePatientSelect.value = newP.id;
+            activePatientSelect.dispatchEvent(new Event('change'));
+            alert(`¡Paciente "${name}" creado e instalado como activo!`);
+        });
+
+        // --- MANEJO DE ALTO CONTRASTE ---
         function updateHighContrast() {
             if (contrastToggle.checked) {
                 document.body.classList.add('high-contrast');
@@ -494,7 +612,7 @@
         }
         contrastToggle.addEventListener('change', updateHighContrast);
 
-        // --- TAMAÑO FÍSICO Y REFLOW DE CUADRÍCULA ---
+        // --- REFLOW Y TAMAÑO CUADRÍCULA ---
         function updateLayoutAndGridSize() {
             const wrapper = document.querySelector('.grid-wrapper');
             if (!wrapper || !gridContainer) return;
@@ -526,12 +644,11 @@
             }, 20);
         }
 
-        // --- AUTODETECCIÓN Y MEMORIA DE PANTALLA / KINDLE AUTO-CONTRASTE ---
+        // --- AUTODETECCIÓN DE HARDWARE ---
         function autoDetectScreenInches() {
             const saved = localStorage.getItem('nystagmus_monitor_size');
             const ua = navigator.userAgent || '';
             
-            // Auto-activación de Alto Contraste en Kindle / e-Reader
             if (/Kindle|Silk|Book/.test(ua)) {
                 contrastToggle.checked = true;
                 updateHighContrast();
@@ -588,7 +705,7 @@
             return "Web / Tablet";
         }
 
-        // --- SISTEMA DE ALMACENAMIENTO E ANALÍTICA ---
+        // --- HISTORIAL Y PERSISTENCIA FILTRADA POR PACIENTE ---
         function saveSessionData() {
             const modeNames = { 'search': 'Búsqueda', 'coord': 'Coordenadas', 'pursuit': 'Seguimiento' };
             const totalInputs = foundTargets + sessionErrors;
@@ -597,6 +714,7 @@
 
             const session = {
                 id: Date.now(),
+                patientId: activePatientId,
                 timestamp: Date.now(),
                 date: new Date().toLocaleString('es-ES', { dateStyle: 'short', timeStyle: 'short' }),
                 mode: currentMode,
@@ -642,11 +760,13 @@
             const filterEyeVal = document.getElementById('filter-eye').value;
             const filterLinesVal = document.getElementById('filter-lines').value;
 
+            // Filtrado cuádruple (Paciente Activo + Modo + Ojo + Líneas)
             const filteredHistory = history.filter(s => {
+                const matchPatient = (s.patientId === activePatientId) || (!s.patientId && activePatientId === 'p_default');
                 const matchMode = s.mode === activeStatsTab;
                 const matchEye = (filterEyeVal === 'ALL') || (s.eye === filterEyeVal);
                 const matchLines = (filterLinesVal === 'ALL') || (s.lines === filterLinesVal);
-                return matchMode && matchEye && matchLines;
+                return matchPatient && matchMode && matchEye && matchLines;
             });
             
             const tbody = document.getElementById('history-tbody');
@@ -661,7 +781,7 @@
             totalTimeEl.textContent = formatDuration(totalMs);
 
             if (filteredHistory.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" style="color: #94a3b8;">Sin datos coincidentes con los filtros actuales.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="7" style="color: #94a3b8;">Sin datos acumulados para este paciente.</td></tr>';
                 bestTimeEl.textContent = '--:--';
                 avgAccuracyEl.textContent = '--%';
                 renderChart([]);
@@ -779,7 +899,7 @@
             renderHistory();
         });
 
-        // IMPRESIÓN DE REPORTE Y DE CUADRÍCULA EN PAPEL (v2.04)
+        // IMPRESIÓN Y EXPORTACIÓN MULTIUSUARIO
         document.getElementById('print-report-btn').addEventListener('click', () => {
             document.body.classList.remove('print-grid-only');
             document.getElementById('stats-content').classList.add('active');
@@ -792,14 +912,21 @@
             document.body.classList.remove('print-grid-only');
         });
 
-        // COPIAS DE SEGURIDAD
         document.getElementById('export-stats-btn').addEventListener('click', () => {
-            const history = localStorage.getItem('nystagmus_history') || '[]';
-            const blob = new Blob([history], { type: 'application/json' });
+            const patients = getPatients();
+            const history = JSON.parse(localStorage.getItem('nystagmus_history') || '[]');
+            
+            const bundle = {
+                patients: patients,
+                history: history,
+                exportDate: new Date().toISOString()
+            };
+
+            const blob = new Blob([JSON.stringify(bundle, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `historial_terapia_v2.04_${new Date().toISOString().slice(0, 10)}.json`;
+            a.download = `respaldo_terapia_v3.01_${new Date().toISOString().slice(0, 10)}.json`;
             a.click();
             URL.revokeObjectURL(url);
         });
@@ -814,10 +941,17 @@
             reader.onload = (event) => {
                 try {
                     const importedData = JSON.parse(event.target.result);
-                    if (Array.isArray(importedData)) {
+                    if (importedData.patients && importedData.history) {
+                        localStorage.setItem('nystagmus_patients', JSON.stringify(importedData.patients));
+                        localStorage.setItem('nystagmus_history', JSON.stringify(importedData.history));
+                        initPatientSystem();
+                        renderHistory();
+                        alert('¡Base de datos de pacientes e historial restaurada con éxito!');
+                    } else if (Array.isArray(importedData)) {
+                        // Compatibilidad con archivos JSON de v2.x
                         localStorage.setItem('nystagmus_history', JSON.stringify(importedData));
                         renderHistory();
-                        alert('¡Historial importado con éxito!');
+                        alert('¡Historial v2.x importado para el paciente activo!');
                     } else alert('Formato no válido.');
                 } catch (err) { alert('Error al leer el archivo.'); }
             };
@@ -825,8 +959,10 @@
         });
 
         document.getElementById('clear-stats-btn').addEventListener('click', () => {
-            if (confirm('¿Desea borrar todo el historial de la aplicación?')) {
-                localStorage.removeItem('nystagmus_history');
+            if (confirm('¿Desea borrar el historial completo del PACIENTE ACTIVO?')) {
+                let history = JSON.parse(localStorage.getItem('nystagmus_history') || '[]');
+                history = history.filter(s => s.patientId !== activePatientId);
+                localStorage.setItem('nystagmus_history', JSON.stringify(history));
                 renderHistory();
             }
         });
@@ -1206,6 +1342,7 @@
         });
         
         // INICIALIZACIÓN
+        initPatientSystem();
         initMonitorSize();
         generateGrid();
         renderHistory();
