@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Terapia Visual - v3.01 (Multiusuario Local)</title>
+    <title>Terapia Visual - v3.02 (Pautas Terapéuticas)</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -68,6 +68,21 @@
         body.high-contrast .patient-row { background: #f1f5f9; border-left: 4px solid #000; }
 
         .patient-select-group { display: flex; align-items: center; gap: 0.5rem; flex-grow: 1; }
+
+        /* PAUTA TERAPÉUTICA (NUEVO V3.02) */
+        .routine-card {
+            background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 0.8rem 1rem;
+        }
+        body.high-contrast .routine-card { background: #ffffff; border: 2px solid #000000; }
+
+        .task-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0.4rem 0.6rem; background: white; border: 1px solid #e2e8f0;
+            border-radius: 6px; margin-top: 0.4rem; font-size: 0.88rem;
+        }
+        body.high-contrast .task-item { border: 1px solid #000; }
+        .task-item.completed { background: #dcfce7; text-decoration: line-through; color: #166534; }
+        body.high-contrast .task-item.completed { background: #e2e8f0; color: #000; }
 
         /* BARRA DE ESTADO */
         .controls-row {
@@ -241,13 +256,14 @@
         @media print {
             body { background: white !important; color: black !important; padding: 0; }
             .container { max-width: 100%; gap: 1rem; }
-            .patient-row, .panel.config-row, #virtual-keypad, .btn, .collapsible-toggle, .filter-bar, .tab-buttons, #flashcard-overlay, #detection-badge { display: none !important; }
+            .patient-row, .panel.config-row, #virtual-keypad, .btn, .collapsible-toggle, .filter-bar, .tab-buttons, #flashcard-overlay, #detection-badge, .routine-designer-box { display: none !important; }
             .collapsible-content { display: block !important; }
             #grid-container { width: 100% !important; height: auto !important; aspect-ratio: 1/1; page-break-inside: avoid; }
             .history-table th, .history-table td { border: 1px solid #000; }
             body.print-grid-only .panel:not(.controls-row), 
             body.print-grid-only #stats-content, 
-            body.print-grid-only #inst-content { display: none !important; }
+            body.print-grid-only #inst-content,
+            body.print-grid-only #routine-content { display: none !important; }
             body.print-grid-only .controls-row { border: none; box-shadow: none; font-size: 1.5rem; text-align: center; }
         }
 
@@ -261,9 +277,9 @@
     </div>
 
     <div class="container">
-        <h1>Terapia Visual: Estabilización Táctil (v3.01)</h1>
+        <h1>Terapia Visual: Estabilización Táctil (v3.02)</h1>
 
-        <!-- 0. SELECCIÓN Y GESTIÓN DE PACIENTE (NUEVO V3.01) -->
+        <!-- 0. SELECCIÓN DE PACIENTE ACTIVO -->
         <div class="patient-row">
             <div class="patient-select-group">
                 <label for="active-patient-select" style="font-weight: 700; font-size: 0.95rem;">👤 Paciente Activo:</label>
@@ -274,7 +290,7 @@
             </button>
         </div>
 
-        <!-- PANEL DESPLEGABLE GESTOR DE PACIENTES -->
+        <!-- PANEL GESTOR DE PERFILES -->
         <div class="panel" style="padding: 0;">
             <div id="patient-modal-content" class="collapsible-content" style="padding: 1rem; background: #f8fafc; border-radius: 12px;">
                 <h3 style="margin-top: 0; color: var(--primary);">👤 Crear / Administrar Pacientes</h3>
@@ -289,6 +305,49 @@
 
                 <div id="patient-details-card" style="background: white; padding: 0.8rem; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 0.9rem;">
                     <strong>Ficha del Paciente Activo:</strong> <span id="patient-info-display">-</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAUTA TERAPÉUTICA DIARIA (NUEVO V3.02) -->
+        <div class="panel routine-card" id="routine-panel">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+                <div>
+                    <strong style="font-size: 1.05rem; color: #15803d;">📋 Pauta Terapéutica Prescrita</strong>
+                    <div id="routine-summary-text" style="font-size: 0.85rem; color: #475569; font-weight: 700;">
+                        Sin pauta activa.
+                    </div>
+                </div>
+                <div style="display: flex; gap: 0.4rem; flex-wrap: wrap;">
+                    <button class="btn" id="launch-routine-btn" style="background-color: #16a34a; font-size: 0.9rem; padding: 0.5rem 1rem;">▶️ Iniciar Siguiente Tarea</button>
+                    <button class="btn btn-secondary" onclick="document.getElementById('routine-designer-content').classList.toggle('active')">🛠️ Diseñar Pauta</button>
+                </div>
+            </div>
+
+            <!-- TAREAS DE LA PAUTA -->
+            <div id="routine-tasks-list" style="margin-top: 0.6rem;"></div>
+
+            <!-- DISEÑADOR DE PAUTAS (OCULTO POR DEFECTO) -->
+            <div id="routine-designer-content" class="collapsible-content routine-designer-box" style="margin-top: 0.8rem; background: white; padding: 0.8rem; border-radius: 8px; border: 1px solid #cbd5e1;">
+                <strong style="font-size: 0.9rem; color: var(--primary);">➕ Añadir Ejercicio a la Prescripción</strong>
+                <div style="display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: center; margin-top: 0.5rem;">
+                    <select id="routine-add-mode" style="font-size: 0.85rem;">
+                        <option value="search">1. Búsqueda</option>
+                        <option value="coord">2. Coordenadas</option>
+                        <option value="pursuit">3. Seguimiento</option>
+                    </select>
+                    <select id="routine-add-eye" style="font-size: 0.85rem;">
+                        <option value="BIN">Binocular</option>
+                        <option value="OD">Ojo Derecho (OD)</option>
+                        <option value="OI">Ojo Izquierdo (OI)</option>
+                    </select>
+                    <select id="routine-add-lines" style="font-size: 0.85rem;">
+                        <option value="Sí">Con Líneas</option>
+                        <option value="No">Sin Líneas</option>
+                    </select>
+                    <input type="number" id="routine-add-count" value="2" min="1" max="10" style="width: 50px; font-size: 0.85rem;" title="Series/Repeticiones">
+                    <button class="btn" id="add-task-to-routine-btn" style="font-size: 0.85rem; padding: 0.4rem 0.8rem;">➕ Añadir Tarea</button>
+                    <button class="btn btn-secondary" id="clear-routine-btn" style="background-color: #ef4444; font-size: 0.85rem; padding: 0.4rem 0.8rem;">Vaciar Pauta</button>
                 </div>
             </div>
         </div>
@@ -368,7 +427,7 @@
             </div>
         </div>
 
-        <!-- 6. ANALÍTICA, EVOLUCIÓN Y ESTADÍSTICAS DEL PACIENTE -->
+        <!-- 6. ANALÍTICA Y REPORTES -->
         <div class="panel" style="padding: 0;">
             <button class="collapsible-toggle" onclick="document.getElementById('stats-content').classList.toggle('active')">
                 <span>📊 Estadísticas del Paciente y Reportes</span>
@@ -520,11 +579,17 @@
         const createPatientBtn = document.getElementById('create-patient-btn');
         const patientInfoDisplay = document.getElementById('patient-info-display');
 
+        const routineTasksList = document.getElementById('routine-tasks-list');
+        const routineSummaryText = document.getElementById('routine-summary-text');
+        const launchRoutineBtn = document.getElementById('launch-routine-btn');
+        const addRoutineTaskBtn = document.getElementById('add-task-to-routine-btn');
+        const clearRoutineBtn = document.getElementById('clear-routine-btn');
+
         const flashcardOverlay = document.getElementById('flashcard-overlay');
         const flashcardMain = document.getElementById('flashcard-main');
         let overlayCallback = null;
 
-        // --- SISTEMA DE PACIENTES MULTIUSUARIO (v3.01) ---
+        // --- GESTIÓN MULTIUSUARIO Y MULTI-PACIENTE ---
         function getPatients() {
             let patients = JSON.parse(localStorage.getItem('nystagmus_patients') || '[]');
             if (patients.length === 0) {
@@ -558,6 +623,7 @@
             }
             activePatientSelect.value = activePatientId;
             updatePatientCardDisplay();
+            renderRoutineUI();
         }
 
         function updatePatientCardDisplay() {
@@ -571,15 +637,13 @@
             activePatientId = activePatientSelect.value;
             localStorage.setItem('nystagmus_active_patient_id', activePatientId);
             updatePatientCardDisplay();
+            renderRoutineUI();
             renderHistory();
         });
 
         createPatientBtn.addEventListener('click', () => {
             const name = newPatientName.value.trim();
-            if (!name) {
-                alert('Por favor, introduzca un nombre o código para el paciente.');
-                return;
-            }
+            if (!name) { alert('Introduzca un nombre para el paciente.'); return; }
 
             const patients = getPatients();
             const newP = {
@@ -592,15 +656,130 @@
             patients.push(newP);
             localStorage.setItem('nystagmus_patients', JSON.stringify(patients));
             
-            newPatientName.value = '';
-            newPatientDob.value = '';
-            newPatientNotes.value = '';
-
+            newPatientName.value = ''; newPatientDob.value = ''; newPatientNotes.value = '';
             initPatientSystem();
             activePatientSelect.value = newP.id;
             activePatientSelect.dispatchEvent(new Event('change'));
-            alert(`¡Paciente "${name}" creado e instalado como activo!`);
+            alert(`¡Paciente "${name}" registrado con éxito!`);
         });
+
+        // --- SISTEMA DE PAUTAS TERAPÉUTICAS Y PRESCRIPCIÓN (v3.02) ---
+        function getRoutines() {
+            return JSON.parse(localStorage.getItem('nystagmus_routines') || '{}');
+        }
+
+        function getActivePatientRoutine() {
+            const routines = getRoutines();
+            return routines[activePatientId] || [];
+        }
+
+        function saveActivePatientRoutine(tasks) {
+            const routines = getRoutines();
+            routines[activePatientId] = tasks;
+            localStorage.setItem('nystagmus_routines', JSON.stringify(routines));
+            renderRoutineUI();
+        }
+
+        function renderRoutineUI() {
+            const tasks = getActivePatientRoutine();
+            routineTasksList.innerHTML = '';
+
+            if (tasks.length === 0) {
+                routineSummaryText.textContent = "Sin pauta prescrita para este paciente.";
+                launchRoutineBtn.style.display = 'none';
+                return;
+            }
+
+            launchRoutineBtn.style.display = 'inline-block';
+            let totalReq = 0, totalComp = 0;
+            const modeLabels = { 'search': 'Búsqueda', 'coord': 'Coordenadas', 'pursuit': 'Seguimiento' };
+
+            tasks.forEach((t, idx) => {
+                totalReq += t.required;
+                totalComp += Math.min(t.completed, t.required);
+                
+                const isDone = t.completed >= t.required;
+                const div = document.createElement('div');
+                div.className = 'task-item' + (isDone ? ' completed' : '');
+                
+                const eyeLabel = t.eye === 'OD' ? '🔴 OD' : (t.eye === 'OI' ? '🔵 OI' : '👁️ Bin');
+                const linesLabel = t.lines === 'Sí' ? '📐 Con líneas' : '⬛ Sin líneas';
+
+                div.innerHTML = `
+                    <div>
+                        <strong>#${idx + 1} ${modeLabels[t.mode]}</strong> (${eyeLabel}, ${linesLabel})
+                    </div>
+                    <div>
+                        <strong>${t.completed}/${t.required} series</strong> ${isDone ? '✅' : ''}
+                    </div>
+                `;
+                routineTasksList.appendChild(div);
+            });
+
+            routineSummaryText.textContent = `Progreso del Día: ${totalComp} de ${totalReq} ejercicios completados (${Math.round((totalComp/totalReq)*100)}%)`;
+        }
+
+        addRoutineTaskBtn.addEventListener('click', () => {
+            const mode = document.getElementById('routine-add-mode').value;
+            const eye = document.getElementById('routine-add-eye').value;
+            const lines = document.getElementById('routine-add-lines').value;
+            const req = parseInt(document.getElementById('routine-add-count').value) || 1;
+
+            const tasks = getActivePatientRoutine();
+            tasks.push({
+                id: 'task_' + Date.now(),
+                mode: mode,
+                eye: eye,
+                lines: lines,
+                required: req,
+                completed: 0
+            });
+
+            saveActivePatientRoutine(tasks);
+        });
+
+        clearRoutineBtn.addEventListener('click', () => {
+            if (confirm('¿Desea eliminar la pauta del paciente activo?')) {
+                saveActivePatientRoutine([]);
+            }
+        });
+
+        // INICIAR AUTOMÁTICAMENTE LA SIGUIENTE TAREA PRESCRITA
+        launchRoutineBtn.addEventListener('click', () => {
+            const tasks = getActivePatientRoutine();
+            const nextTask = tasks.find(t => t.completed < t.required);
+
+            if (!nextTask) {
+                alert('¡Felicidades! Este paciente ya ha completado toda su pauta diaria.');
+                return;
+            }
+
+            // Aplicar configuración prescrita automáticamente
+            modeSelect.value = nextTask.mode;
+            eyeSelect.value = nextTask.eye;
+            linesToggle.checked = (nextTask.lines === 'Sí');
+
+            updateGridLines();
+            generateGrid();
+            startGame();
+        });
+
+        function checkAndUpdateRoutineProgress(session) {
+            const tasks = getActivePatientRoutine();
+            let updated = false;
+
+            for (let t of tasks) {
+                if (t.completed < t.required && t.mode === session.mode && t.eye === session.eye && t.lines === session.lines) {
+                    t.completed++;
+                    updated = true;
+                    break;
+                }
+            }
+
+            if (updated) {
+                saveActivePatientRoutine(tasks);
+            }
+        }
 
         // --- MANEJO DE ALTO CONTRASTE ---
         function updateHighContrast() {
@@ -705,7 +884,7 @@
             return "Web / Tablet";
         }
 
-        // --- HISTORIAL Y PERSISTENCIA FILTRADA POR PACIENTE ---
+        // --- PERSISTENCIA E HISTORIAL ---
         function saveSessionData() {
             const modeNames = { 'search': 'Búsqueda', 'coord': 'Coordenadas', 'pursuit': 'Seguimiento' };
             const totalInputs = foundTargets + sessionErrors;
@@ -734,6 +913,8 @@
             let history = JSON.parse(localStorage.getItem('nystagmus_history') || '[]');
             history.push(session);
             localStorage.setItem('nystagmus_history', JSON.stringify(history));
+
+            checkAndUpdateRoutineProgress(session);
             renderHistory();
         }
 
@@ -760,7 +941,6 @@
             const filterEyeVal = document.getElementById('filter-eye').value;
             const filterLinesVal = document.getElementById('filter-lines').value;
 
-            // Filtrado cuádruple (Paciente Activo + Modo + Ojo + Líneas)
             const filteredHistory = history.filter(s => {
                 const matchPatient = (s.patientId === activePatientId) || (!s.patientId && activePatientId === 'p_default');
                 const matchMode = s.mode === activeStatsTab;
@@ -899,7 +1079,7 @@
             renderHistory();
         });
 
-        // IMPRESIÓN Y EXPORTACIÓN MULTIUSUARIO
+        // IMPRESIÓN Y EXPORTACIÓN COMPLETA (v3.02)
         document.getElementById('print-report-btn').addEventListener('click', () => {
             document.body.classList.remove('print-grid-only');
             document.getElementById('stats-content').classList.add('active');
@@ -915,9 +1095,12 @@
         document.getElementById('export-stats-btn').addEventListener('click', () => {
             const patients = getPatients();
             const history = JSON.parse(localStorage.getItem('nystagmus_history') || '[]');
+            const routines = getRoutines();
             
             const bundle = {
+                version: "3.02",
                 patients: patients,
+                routines: routines,
                 history: history,
                 exportDate: new Date().toISOString()
             };
@@ -926,7 +1109,7 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `respaldo_terapia_v3.01_${new Date().toISOString().slice(0, 10)}.json`;
+            a.download = `respaldo_terapia_v3.02_${new Date().toISOString().slice(0, 10)}.json`;
             a.click();
             URL.revokeObjectURL(url);
         });
@@ -944,14 +1127,16 @@
                     if (importedData.patients && importedData.history) {
                         localStorage.setItem('nystagmus_patients', JSON.stringify(importedData.patients));
                         localStorage.setItem('nystagmus_history', JSON.stringify(importedData.history));
+                        if (importedData.routines) {
+                            localStorage.setItem('nystagmus_routines', JSON.stringify(importedData.routines));
+                        }
                         initPatientSystem();
                         renderHistory();
-                        alert('¡Base de datos de pacientes e historial restaurada con éxito!');
+                        alert('¡Base de datos completa (Pacientes + Pautas + Historial) importada con éxito!');
                     } else if (Array.isArray(importedData)) {
-                        // Compatibilidad con archivos JSON de v2.x
                         localStorage.setItem('nystagmus_history', JSON.stringify(importedData));
                         renderHistory();
-                        alert('¡Historial v2.x importado para el paciente activo!');
+                        alert('¡Historial importado!');
                     } else alert('Formato no válido.');
                 } catch (err) { alert('Error al leer el archivo.'); }
             };
