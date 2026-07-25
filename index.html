@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Terapia Visual - v2.03</title>
+    <title>Terapia Visual - v2.04</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,8 +19,21 @@
             --wrong-bg: #fecdd3;
             --primary: #3b82f6;
             --primary-hover: #2563eb;
-            --pursuit-bg: #bfdbfe;
             --font-clinical: 'Atkinson Hyperlegible', 'Verdana', 'Tahoma', sans-serif;
+            --panel-bg: #ffffff;
+        }
+
+        /* MODO ALTO CONTRASTE / E-INK */
+        body.high-contrast {
+            --bg-color: #ffffff;
+            --text-color: #000000;
+            --grid-border: #000000;
+            --target-bg: #000000;
+            --target-text: #ffffff;
+            --wrong-bg: #888888;
+            --primary: #000000;
+            --primary-hover: #333333;
+            --panel-bg: #ffffff;
         }
 
         body {
@@ -36,14 +49,16 @@
             touch-action: manipulation;
         }
 
-        h1 { margin: 0 0 0.4rem 0; color: #0f172a; font-size: 1.4rem; text-align: center; font-weight: 700; }
+        h1 { margin: 0 0 0.4rem 0; color: var(--text-color); font-size: 1.4rem; text-align: center; font-weight: 700; }
 
         .container { width: 100%; max-width: 920px; display: flex; flex-direction: column; gap: 0.6rem; }
 
         .panel {
-            background: white; padding: 0.8rem 1rem; border-radius: 12px;
+            background: var(--panel-bg); padding: 0.8rem 1rem; border-radius: 12px;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); width: 100%; box-sizing: border-box;
+            border: 1px solid #cbd5e1;
         }
+        body.high-contrast .panel { border: 2px solid #000000; }
 
         /* 1. BARRA SUPERIOR DE ESTADO */
         .controls-row {
@@ -70,21 +85,39 @@
             transition: background-color 0.1s ease;
             box-sizing: border-box;
             overflow: hidden;
+            color: #000;
         }
 
         .label-cell { background-color: #e2e8f0; color: #475569; font-weight: 700; }
+        body.high-contrast .label-cell { background-color: #cccccc; color: #000000; border: 1px solid #000; }
+
         .mode-search .cell { cursor: pointer; }
         .mode-search .cell:active { background-color: #f1f5f9; }
+        
+        /* CELDAS ASERTADAS Y ERRORES EN AMBOS MODOS */
         .cell.found { background-color: var(--target-bg); color: var(--target-text); }
         .cell.wrong { background-color: var(--wrong-bg); animation: shake 0.4s; }
+        
+        body.high-contrast .cell.found {
+            background-color: #000000 !important;
+            color: #ffffff !important;
+            font-weight: 900;
+        }
+        body.high-contrast .cell.wrong {
+            background-color: #666666 !important;
+            color: #ffffff !important;
+            text-decoration: line-through;
+        }
+
         .cell.pursuit-active { 
             background-color: var(--primary); color: white; transform: scale(1.05);
-            border-radius: 4px; box-shadow: 0 0 10px rgba(59, 130, 246, 0.5); z-index: 10;
+            border-radius: 4px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); z-index: 10;
         }
 
         #grid-container.hide-lines { gap: 0; background-color: #ffffff; border: 4px solid #cbd5e1; }
+        body.high-contrast #grid-container.hide-lines { border: 4px solid #000000; }
         #grid-container.hide-lines .cell { border: 1px solid #f8fafc; }
-        #grid-container.hide-lines .label-cell { background-color: #f1f5f9; border: 1px solid #e2e8f0; }
+        body.high-contrast #grid-container.hide-lines .cell { border: 1px solid #e2e8f0; }
 
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
@@ -108,6 +141,9 @@
             border-color: #2563eb; background-color: #eff6ff;
             box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.4), 0 4px 0 #2563eb; transform: translateY(-2px);
         }
+        body.high-contrast .keypad-btn.focused {
+            border-color: #000000; background-color: #000000; color: #ffffff;
+        }
 
         /* 4. CONFIGURACIÓN */
         .config-row { display: flex; gap: 0.8rem; flex-wrap: wrap; align-items: center; justify-content: space-between; }
@@ -115,13 +151,14 @@
 
         select, input[type="number"] {
             font-family: var(--font-clinical); padding: 0.5rem; border: 2px solid #cbd5e1;
-            border-radius: 8px; font-size: 0.95rem; font-weight: 700; background: #f8fafc;
+            border-radius: 8px; font-size: 0.95rem; font-weight: 700; background: #f8fafc; color: #000;
         }
 
         .toggle-option {
             display: flex; align-items: center; gap: 0.4rem; font-weight: 700; font-size: 0.95rem;
             background: #e2e8f0; padding: 0.5rem 0.8rem; border-radius: 8px; cursor: pointer; user-select: none;
         }
+        body.high-contrast .toggle-option { background: #000000; color: #ffffff; }
         .toggle-option input { width: 18px; height: 18px; cursor: pointer; }
 
         .btn {
@@ -143,6 +180,7 @@
             display: flex; justify-content: space-between; align-items: center; font-family: var(--font-clinical);
             font-size: 0.95rem;
         }
+        body.high-contrast .collapsible-toggle { background: #000000; color: #ffffff; }
         .collapsible-toggle:hover { background: #cbd5e1; }
         .collapsible-content { display: none; padding: 1rem 0 0 0; font-size: 0.9rem; line-height: 1.5; }
         .collapsible-content.active { display: block; }
@@ -195,6 +233,22 @@
         #flashcard-main { font-size: clamp(3rem, 10vw, 7rem); font-weight: 700; color: #0f172a; margin-bottom: 2rem; line-height: 1.2; }
         #flashcard-sub { font-size: 1.5rem; color: #3b82f6; font-weight: 700; background: #eff6ff; padding: 1rem 2rem; border-radius: 50px;}
 
+        /* ESTILOS DE IMPRESIÓN Y REPORTES */
+        @media print {
+            body { background: white !important; color: black !important; padding: 0; }
+            .container { max-width: 100%; gap: 1rem; }
+            .panel.config-row, #virtual-keypad, .btn, .collapsible-toggle, .filter-bar, .tab-buttons, #flashcard-overlay, #detection-badge { display: none !important; }
+            .collapsible-content { display: block !important; }
+            #grid-container { width: 100% !important; height: auto !important; aspect-ratio: 1/1; page-break-inside: avoid; }
+            .history-table th, .history-table td { border: 1px solid #000; }
+            
+            /* SI SE IMPRIME SOLO LA CUADRÍCULA EN PAPEL */
+            body.print-grid-only .panel:not(.controls-row), 
+            body.print-grid-only #stats-content, 
+            body.print-grid-only #inst-content { display: none !important; }
+            body.print-grid-only .controls-row { border: none; box-shadow: none; font-size: 1.5rem; text-align: center; }
+        }
+
     </style>
 </head>
 <body>
@@ -205,7 +259,7 @@
     </div>
 
     <div class="container">
-        <h1>Terapia Visual: Estabilización Táctil (v2.03)</h1>
+        <h1>Terapia Visual: Estabilización Táctil (v2.04)</h1>
 
         <!-- 1. ESTADO DE LA SESIÓN -->
         <div class="panel controls-row">
@@ -252,10 +306,16 @@
                 <input type="checkbox" id="lines-toggle" checked> 📐 Líneas
             </label>
             <label class="toggle-option">
+                <input type="checkbox" id="contrast-toggle"> ☯️ Alto Contraste
+            </label>
+            <label class="toggle-option">
                 <input type="checkbox" id="audio-toggle"> 🔊 Audio
             </label>
 
-            <button class="btn" id="start-btn">Iniciar Sesión</button>
+            <div style="display: flex; gap: 0.4rem; flex-wrap: wrap;">
+                <button class="btn" id="start-btn">Iniciar Sesión</button>
+                <button class="btn btn-secondary" id="print-grid-btn" title="Imprimir hoja de trabajo para lápiz/papel">📄 Papel</button>
+            </div>
         </div>
 
         <!-- 5. INSTRUCCIONES Y CALIBRACIÓN -->
@@ -270,7 +330,7 @@
                 </div>
                 <ul>
                     <li><strong>Postura:</strong> Mantenga la espalda recta. <strong>No mueva la cabeza</strong> en ningún momento. Solo deben moverse los ojos.</li>
-                    <li><strong>Oclusión Monocular:</strong> Es highly recomendable entrenar primero tapando un ojo con un parche o mano, luego tapando el otro, y finalmente hacer una sesión binocular.</li>
+                    <li><strong>Oclusión Monocular:</strong> Es altamente recomendable entrenar primero tapando un ojo con un parche o mano, luego tapando el otro, y finalmente hacer una sesión binocular.</li>
                     <li><strong>Navegación Teclado:</strong> Use <code>Flecha Izquierda</code> / <code>Flecha Derecha</code> para elegir letra y <code>Flecha Arriba</code> / <code>Flecha Abajo</code> para confirmar. O teclee la letra directamente.</li>
                 </ul>
             </div>
@@ -279,7 +339,7 @@
         <!-- 6. ANALÍTICA, EVOLUCIÓN Y ESTADÍSTICAS POR JUEGO -->
         <div class="panel" style="padding: 0;">
             <button class="collapsible-toggle" onclick="document.getElementById('stats-content').classList.toggle('active')">
-                <span>📊 Estadísticas, Contexto Físico y Evolución</span>
+                <span>📊 Estadísticas, Contexto Físico y Reportes</span>
                 <span>▼</span>
             </button>
             <div id="stats-content" class="collapsible-content" style="padding: 1rem;">
@@ -364,9 +424,10 @@
                 </div>
 
                 <div style="margin-top: 1rem; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;">
-                    <div style="display: flex; gap: 0.5rem;">
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
                         <button class="btn btn-secondary" id="export-stats-btn">📥 Exportar (JSON)</button>
                         <button class="btn btn-secondary" id="import-stats-btn">📤 Importar</button>
+                        <button class="btn btn-secondary" id="print-report-btn" style="background-color: #0d9488;">🖨️ Reporte PDF</button>
                         <input type="file" id="import-file-input" accept=".json" style="display: none;">
                     </div>
                     <button class="btn btn-secondary" id="clear-stats-btn" style="background-color: #ef4444;">Borrar Historial</button>
@@ -414,6 +475,7 @@
         const virtualKeypad = document.getElementById('virtual-keypad');
         const audioToggle = document.getElementById('audio-toggle');
         const linesToggle = document.getElementById('lines-toggle');
+        const contrastToggle = document.getElementById('contrast-toggle');
         const monitorInput = document.getElementById('monitor-size');
         const detectionBadge = document.getElementById('detection-badge');
         const distanceInfo = document.getElementById('distance-info');
@@ -422,22 +484,28 @@
         const flashcardMain = document.getElementById('flashcard-main');
         let overlayCallback = null;
 
-        // --- MOTOR DE TAMAÑO FÍSICO ESTABLE (v2.03) ---
+        // --- MANEJO DE ALTO CONTRASTE (v2.04) ---
+        function updateHighContrast() {
+            if (contrastToggle.checked) {
+                document.body.classList.add('high-contrast');
+            } else {
+                document.body.classList.remove('high-contrast');
+            }
+        }
+        contrastToggle.addEventListener('change', updateHighContrast);
+
+        // --- TAMAÑO FÍSICO Y REFLOW DE CUADRÍCULA ---
         function updateLayoutAndGridSize() {
             const wrapper = document.querySelector('.grid-wrapper');
             if (!wrapper || !gridContainer) return;
 
-            // 1. Obtener espacio máximo disponible en el viewport
             const maxW = Math.min(window.innerWidth * 0.90, 600);
             const maxH = Math.min(window.innerHeight * 0.58, 600);
-            
-            // 2. Definir lado exacto del cuadrado
             const squareSize = Math.floor(Math.min(maxW, maxH));
             
             gridContainer.style.width = squareSize + 'px';
             gridContainer.style.height = squareSize + 'px';
 
-            // 3. Ajustar tamaño tipográfico proporcional a la celda en px
             setTimeout(() => {
                 const sampleCell = document.querySelector('.cell');
                 if (sampleCell) {
@@ -458,20 +526,25 @@
             }, 20);
         }
 
-        // --- AUTODETECCIÓN Y MEMORIA DE PANTALLA ---
+        // --- AUTODETECCIÓN Y MEMORIA DE PANTALLA / KINDLE AUTO-CONTRASTE ---
         function autoDetectScreenInches() {
             const saved = localStorage.getItem('nystagmus_monitor_size');
+            const ua = navigator.userAgent || '';
+            
+            // Auto-activación de Alto Contraste en Kindle / e-Reader
+            if (/Kindle|Silk|Book/.test(ua)) {
+                contrastToggle.checked = true;
+                updateHighContrast();
+            }
+
             if (saved) {
                 detectionBadge.textContent = '💾 Guardado';
                 return parseFloat(saved);
             }
 
             detectionBadge.textContent = '⚡ Auto';
-            const ua = navigator.userAgent || '';
-            const w = window.screen.width;
-            const h = window.screen.height;
-            const maxDim = Math.max(w, h);
-            const minDim = Math.min(w, h);
+            const w = window.screen.width, h = window.screen.height;
+            const maxDim = Math.max(w, h), minDim = Math.min(w, h);
 
             if (/Kindle|Silk|Book/.test(ua)) return 10.2;
 
@@ -706,6 +779,19 @@
             renderHistory();
         });
 
+        // IMPRESIÓN DE REPORTE Y DE CUADRÍCULA EN PAPEL (v2.04)
+        document.getElementById('print-report-btn').addEventListener('click', () => {
+            document.body.classList.remove('print-grid-only');
+            document.getElementById('stats-content').classList.add('active');
+            window.print();
+        });
+
+        document.getElementById('print-grid-btn').addEventListener('click', () => {
+            document.body.classList.add('print-grid-only');
+            window.print();
+            document.body.classList.remove('print-grid-only');
+        });
+
         // COPIAS DE SEGURIDAD
         document.getElementById('export-stats-btn').addEventListener('click', () => {
             const history = localStorage.getItem('nystagmus_history') || '[]';
@@ -713,7 +799,7 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `historial_terapia_v2.03_${new Date().toISOString().slice(0, 10)}.json`;
+            a.download = `historial_terapia_v2.04_${new Date().toISOString().slice(0, 10)}.json`;
             a.click();
             URL.revokeObjectURL(url);
         });
@@ -860,7 +946,6 @@
                 }
             }
 
-            // Forzar recalculo de dimensiones cuadradas
             updateLayoutAndGridSize();
 
             if (currentMode === 'search') {
@@ -872,6 +957,8 @@
                         `Busca todas las letras ${targetLetter}`, 
                         () => { targetDisplay.textContent = `Letra ${targetLetter}`; }
                     );
+                } else {
+                    targetDisplay.textContent = `Letra ${targetLetter}`;
                 }
             } else if (currentMode === 'coord' && isPlaying) {
                 pickNewCoordinate();
