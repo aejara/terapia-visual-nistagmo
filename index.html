@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Terapia Visual - v3.03 (Ajuste Estético y Auto-Focus)</title>
+    <title>Terapia Visual - v3.04 (Resumen Flotante Accesible)</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -84,7 +84,7 @@
         .task-item.completed { background: #dcfce7; text-decoration: line-through; color: #166534; }
         body.high-contrast .task-item.completed { background: #e2e8f0; color: #000; }
 
-        /* 1. BARRA SUPERIOR DE ESTADO Y OBJETIVO REFORZADO (NUEVO V3.03) */
+        /* BARRA SUPERIOR DE ESTADO Y OBJETIVO */
         .controls-row {
             display: flex; justify-content: space-between; align-items: center;
             font-size: 1.1rem; font-weight: 700; flex-wrap: wrap; gap: 0.8rem;
@@ -104,9 +104,7 @@
             line-height: 1.1;
         }
         body.high-contrast .target-badge {
-            background: #000000 !important;
-            color: #ffffff !important;
-            border-color: #000000 !important;
+            background: #000000 !important; color: #ffffff !important; border-color: #000000 !important;
         }
 
         .progress-badge {
@@ -268,21 +266,46 @@
             display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; flex-wrap: wrap; gap: 0.5rem;
         }
 
-        #flashcard-overlay {
+        /* OVERLAYS: FLASHCARD Y CARTEL DE RESULTADOS (NUEVO V3.04) */
+        #flashcard-overlay, #result-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-color: rgba(255, 255, 255, 0.98); z-index: 9999;
             display: none; flex-direction: column; justify-content: center; align-items: center;
             text-align: center; padding: 2rem; box-sizing: border-box; touch-action: manipulation; cursor: pointer;
         }
-        #flashcard-overlay.active { display: flex; }
+        body.high-contrast #flashcard-overlay, body.high-contrast #result-overlay {
+            background-color: #ffffff; color: #000000;
+        }
+        #flashcard-overlay.active, #result-overlay.active { display: flex; }
         #flashcard-main { font-size: clamp(3rem, 10vw, 7rem); font-weight: 700; color: #0f172a; margin-bottom: 2rem; line-height: 1.2; }
-        #flashcard-sub { font-size: 1.5rem; color: #3b82f6; font-weight: 700; background: #eff6ff; padding: 1rem 2rem; border-radius: 50px;}
+        
+        .result-title { font-size: clamp(2.2rem, 5vw, 3.8rem); font-weight: 900; color: #16a34a; margin-bottom: 1.5rem; }
+        body.high-contrast .result-title { color: #000000; }
+
+        .result-stats-grid {
+            display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-bottom: 2.5rem; width: 100%; max-width: 700px;
+        }
+        .result-stat-card {
+            background: #f8fafc; border: 3px solid #cbd5e1; border-radius: 16px;
+            padding: 1.2rem 1.8rem; flex: 1; min-width: 160px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+        body.high-contrast .result-stat-card { background: #ffffff; border: 3px solid #000000; }
+        .result-stat-val { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 900; color: var(--primary); }
+        body.high-contrast .result-stat-val { color: #000000; }
+        .result-stat-lbl { font-size: 0.9rem; font-weight: 700; color: #64748b; margin-top: 0.2rem; }
+        body.high-contrast .result-stat-lbl { color: #000000; }
+
+        .overlay-sub-banner {
+            font-size: 1.3rem; color: #3b82f6; font-weight: 700; background: #eff6ff;
+            padding: 1rem 2rem; border-radius: 50px; border: 2px solid #bfdbfe;
+        }
+        body.high-contrast .overlay-sub-banner { background: #000000; color: #ffffff; border-color: #000000; }
 
         /* ESTILOS DE IMPRESIÓN */
         @media print {
             body { background: white !important; color: black !important; padding: 0; }
             .container { max-width: 100%; gap: 1rem; }
-            .patient-row, .panel.config-row, #virtual-keypad, .btn, .collapsible-toggle, .filter-bar, .tab-buttons, #flashcard-overlay, #detection-badge, .routine-designer-box { display: none !important; }
+            .patient-row, .panel.config-row, #virtual-keypad, .btn, .collapsible-toggle, .filter-bar, .tab-buttons, #flashcard-overlay, #result-overlay, #detection-badge, .routine-designer-box { display: none !important; }
             .collapsible-content { display: block !important; }
             #grid-container { width: 100% !important; height: auto !important; aspect-ratio: 1/1; page-break-inside: avoid; }
             .history-table th, .history-table td { border: 1px solid #000; }
@@ -297,13 +320,34 @@
 </head>
 <body>
 
+    <!-- OVERLAY 1: FLASHCARD PEDAGÓGICA -->
     <div id="flashcard-overlay">
         <div id="flashcard-main">Texto</div>
-        <div id="flashcard-sub">TOCA LA PANTALLA O PULSA CUALQUIER TECLA</div>
+        <div class="overlay-sub-banner">TOCA LA PANTALLA O PULSA CUALQUIER TECLA</div>
+    </div>
+
+    <!-- OVERLAY 2: RESUMEN FLOTANTE DE RESULTADOS (NUEVO V3.04) -->
+    <div id="result-overlay">
+        <div class="result-title">🎉 ¡Sesión Completada!</div>
+        <div class="result-stats-grid">
+            <div class="result-stat-card">
+                <div class="result-stat-val" id="res-time">00:00.0</div>
+                <div class="result-stat-lbl">TIEMPO TOTAL</div>
+            </div>
+            <div class="result-stat-card">
+                <div class="result-stat-val" id="res-errors" style="color: #dc2626;">0</div>
+                <div class="result-stat-lbl">FALLOS</div>
+            </div>
+            <div class="result-stat-card">
+                <div class="result-stat-val" id="res-accuracy" style="color: #16a34a;">100%</div>
+                <div class="result-stat-lbl">PRECISIÓN</div>
+            </div>
+        </div>
+        <div class="overlay-sub-banner">TOCA EN CUALQUIER PARTE O PULSA UNA TECLA PARA CONTINUAR</div>
     </div>
 
     <div class="container">
-        <h1>Terapia Visual: Estabilización Táctil (v3.03)</h1>
+        <h1>Terapia Visual: Estabilización Táctil (v3.04)</h1>
 
         <!-- 0. SELECCIÓN DE PACIENTE ACTIVO -->
         <div class="patient-row">
@@ -378,7 +422,7 @@
             </div>
         </div>
 
-        <!-- 1. BARRA DE ESTADO Y OBJETIVO REFORZADO (REDISEÑO V3.03) -->
+        <!-- 1. BARRA DE ESTADO Y OBJETIVO REFORZADO -->
         <div class="panel controls-row" id="game-controls-anchor">
             <div id="instruction-text">
                 Objetivo: <span id="target-display" class="target-badge">-</span>
@@ -619,7 +663,29 @@
         const flashcardMain = document.getElementById('flashcard-main');
         let overlayCallback = null;
 
-        // --- FUNCIÓN DESPLAZAMIENTO INTELIGENTE A LA ZONA DE JUEGO (v3.03) ---
+        // RESULT OVERLAY (NUEVO V3.04)
+        const resultOverlay = document.getElementById('result-overlay');
+        const resTime = document.getElementById('res-time');
+        const resErrors = document.getElementById('res-errors');
+        const resAccuracy = document.getElementById('res-accuracy');
+
+        function showResultOverlay(timeStr, errors, accuracyPct) {
+            isPausedByOverlay = true;
+            resTime.textContent = timeStr;
+            resErrors.textContent = errors;
+            resAccuracy.textContent = `${accuracyPct}%`;
+            resultOverlay.classList.add('active');
+        }
+
+        function dismissResultOverlay() {
+            if (!resultOverlay.classList.contains('active')) return;
+            resultOverlay.classList.remove('active');
+            isPausedByOverlay = false;
+        }
+
+        resultOverlay.addEventListener('click', dismissResultOverlay);
+
+        // --- DESPLAZAMIENTO INTELIGENTE A LA ZONA DE JUEGO ---
         function scrollToGameFocus() {
             setTimeout(() => {
                 const anchor = document.getElementById('game-controls-anchor');
@@ -1136,7 +1202,7 @@
             const routines = getRoutines();
             
             const bundle = {
-                version: "3.03",
+                version: "3.04",
                 patients: patients,
                 routines: routines,
                 history: history,
@@ -1147,7 +1213,7 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `respaldo_terapia_v3.03_${new Date().toISOString().slice(0, 10)}.json`;
+            a.download = `respaldo_terapia_v3.04_${new Date().toISOString().slice(0, 10)}.json`;
             a.click();
             URL.revokeObjectURL(url);
         });
@@ -1408,6 +1474,11 @@
                 return;
             }
 
+            if (resultOverlay.classList.contains('active')) {
+                dismissResultOverlay();
+                return;
+            }
+
             if (!isPlaying || currentMode === 'search' || isPausedByOverlay) return;
 
             const buttons = virtualKeypad.querySelectorAll('.keypad-btn');
@@ -1522,7 +1593,6 @@
             startBtn.textContent = "Detener Sesión";
             startBtn.style.backgroundColor = "#ef4444";
             
-            // Auto-focus a la cuadrícula y controles
             scrollToGameFocus();
 
             clearInterval(timerInterval);
@@ -1543,8 +1613,12 @@
 
             startBtn.textContent = "Nueva Sesión";
             startBtn.style.backgroundColor = "var(--primary)";
-            
-            setTimeout(() => alert(`¡Sesión Completada!\nTiempo total: ${timerElement.textContent}\nFallos: ${sessionErrors}`), 100);
+
+            const totalInputs = foundTargets + sessionErrors;
+            const accuracyPct = totalInputs > 0 ? Math.round((foundTargets / totalInputs) * 100) : 100;
+
+            // Mostrar el cartel gigante flotante de resultados
+            showResultOverlay(timerElement.textContent, sessionErrors, accuracyPct);
         }
 
         startBtn.addEventListener('click', () => {
