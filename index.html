@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Terapia Visual - v3.04 (Resumen Flotante Accesible)</title>
+    <title>Terapia Visual - v3.05 (Calibrado por Tarjeta y Distancia Gigante)</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -230,7 +230,7 @@
 
         .info-badge {
             background-color: #f0fdf4; border-left: 4px solid #22c55e;
-            padding: 0.5rem 0.8rem; border-radius: 6px; font-size: 0.85rem; margin-bottom: 0.8rem;
+            padding: 0.8rem 1rem; border-radius: 8px; font-size: 1rem; margin-bottom: 0.8rem;
         }
 
         .tab-buttons {
@@ -266,19 +266,37 @@
             display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; flex-wrap: wrap; gap: 0.5rem;
         }
 
-        /* OVERLAYS: FLASHCARD Y CARTEL DE RESULTADOS (NUEVO V3.04) */
-        #flashcard-overlay, #result-overlay {
+        /* OVERLAYS Y PANTALLAS FLOTANTES */
+        #flashcard-overlay, #result-overlay, #card-calib-modal {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-color: rgba(255, 255, 255, 0.98); z-index: 9999;
             display: none; flex-direction: column; justify-content: center; align-items: center;
             text-align: center; padding: 2rem; box-sizing: border-box; touch-action: manipulation; cursor: pointer;
         }
-        body.high-contrast #flashcard-overlay, body.high-contrast #result-overlay {
+        body.high-contrast #flashcard-overlay, body.high-contrast #result-overlay, body.high-contrast #card-calib-modal {
             background-color: #ffffff; color: #000000;
         }
         #flashcard-overlay.active, #result-overlay.active { display: flex; }
-        #flashcard-main { font-size: clamp(3rem, 10vw, 7rem); font-weight: 700; color: #0f172a; margin-bottom: 2rem; line-height: 1.2; }
         
+        #flashcard-main { font-size: clamp(3rem, 10vw, 7rem); font-weight: 700; color: #0f172a; margin-bottom: 1.5rem; line-height: 1.2; }
+        body.high-contrast #flashcard-main { color: #000000; }
+
+        /* CARTEL DE DISTANCIA GIGANTE EN FLASHCARD (NUEVO V3.05) */
+        .flashcard-distance-badge {
+            font-size: clamp(1.4rem, 3.5vw, 2.2rem);
+            font-weight: 900;
+            background: #fef08a;
+            color: #854d0e;
+            padding: 0.8rem 1.8rem;
+            border-radius: 50px;
+            margin-bottom: 1.8rem;
+            border: 3px solid #eab308;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        body.high-contrast .flashcard-distance-badge {
+            background: #000000; color: #ffffff; border-color: #000000;
+        }
+
         .result-title { font-size: clamp(2.2rem, 5vw, 3.8rem); font-weight: 900; color: #16a34a; margin-bottom: 1.5rem; }
         body.high-contrast .result-title { color: #000000; }
 
@@ -305,7 +323,7 @@
         @media print {
             body { background: white !important; color: black !important; padding: 0; }
             .container { max-width: 100%; gap: 1rem; }
-            .patient-row, .panel.config-row, #virtual-keypad, .btn, .collapsible-toggle, .filter-bar, .tab-buttons, #flashcard-overlay, #result-overlay, #detection-badge, .routine-designer-box { display: none !important; }
+            .patient-row, .panel.config-row, #virtual-keypad, .btn, .collapsible-toggle, .filter-bar, .tab-buttons, #flashcard-overlay, #result-overlay, #card-calib-modal, #detection-badge, .routine-designer-box { display: none !important; }
             .collapsible-content { display: block !important; }
             #grid-container { width: 100% !important; height: auto !important; aspect-ratio: 1/1; page-break-inside: avoid; }
             .history-table th, .history-table td { border: 1px solid #000; }
@@ -320,13 +338,16 @@
 </head>
 <body>
 
-    <!-- OVERLAY 1: FLASHCARD PEDAGÓGICA -->
+    <!-- OVERLAY 1: FLASHCARD CON AVISO GIGANTE DE DISTANCIA (V3.05) -->
     <div id="flashcard-overlay">
+        <div class="flashcard-distance-badge" id="flashcard-distance-badge">
+            📏 DISTANCIA RECOMENDADA: <span id="flashcard-dist-val">--</span> cm
+        </div>
         <div id="flashcard-main">Texto</div>
         <div class="overlay-sub-banner">TOCA LA PANTALLA O PULSA CUALQUIER TECLA</div>
     </div>
 
-    <!-- OVERLAY 2: RESUMEN FLOTANTE DE RESULTADOS (NUEVO V3.04) -->
+    <!-- OVERLAY 2: RESUMEN FLOTANTE DE RESULTADOS -->
     <div id="result-overlay">
         <div class="result-title">🎉 ¡Sesión Completada!</div>
         <div class="result-stats-grid">
@@ -346,8 +367,34 @@
         <div class="overlay-sub-banner">TOCA EN CUALQUIER PARTE O PULSA UNA TECLA PARA CONTINUAR</div>
     </div>
 
+    <!-- MODAL DE CALIBRACIÓN POR TARJETA CRÉDITO / CARNÉ (RECUPERADO V3.05) -->
+    <div id="card-calib-modal">
+        <div style="background: white; color: #0f172a; padding: 1.5rem; border-radius: 16px; max-width: 520px; width: 90%; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.2); border: 3px solid #000; cursor: default;" onclick="event.stopPropagation();">
+            <h2 style="margin-top:0; color: var(--primary);">💳 Calibración Física de Pantalla</h2>
+            <p style="font-size: 0.95rem; line-height: 1.4; color: #475569; font-weight: bold;">
+                Coloque una tarjeta de crédito o carné sobre la pantalla y mueva el deslizador hasta que el recuadro azul coincida exactamente con el tamaño real de la tarjeta.
+            </p>
+            
+            <div style="display: flex; justify-content: center; align-items: center; margin: 1.5rem 0;">
+                <div id="calib-card-box" style="width: 320px; height: 200px; border: 4px dashed #2563eb; border-radius: 12px; background: #eff6ff; display: flex; align-items: center; justify-content: center; font-weight: 900; color: #1e40af; font-size: 1.1rem; box-sizing: border-box;">
+                    💳 PONGA LA TARJETA AQUÍ
+                </div>
+            </div>
+
+            <div style="margin-bottom: 1.5rem;">
+                <label for="calib-slider" style="font-weight: 700; font-size: 0.9rem; display: block; margin-bottom: 0.4rem;">Ajuste de Ancho:</label>
+                <input type="range" id="calib-slider" min="160" max="600" value="320" style="width: 85%; height: 10px; cursor: pointer;">
+            </div>
+
+            <div style="display: flex; gap: 0.6rem; justify-content: center; flex-wrap: wrap;">
+                <button class="btn" id="save-calib-btn" style="background-color: #16a34a;">💾 Guardar Calibración</button>
+                <button class="btn btn-secondary" id="close-calib-btn">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
     <div class="container">
-        <h1>Terapia Visual: Estabilización Táctil (v3.04)</h1>
+        <h1>Terapia Visual: Estabilización Táctil (v3.05)</h1>
 
         <!-- 0. SELECCIÓN DE PACIENTE ACTIVO -->
         <div class="patient-row">
@@ -394,10 +441,8 @@
                 </div>
             </div>
 
-            <!-- TAREAS DE LA PAUTA -->
             <div id="routine-tasks-list" style="margin-top: 0.6rem;"></div>
 
-            <!-- DISEÑADOR DE PAUTAS -->
             <div id="routine-designer-content" class="collapsible-content routine-designer-box" style="margin-top: 0.8rem; background: white; padding: 0.8rem; border-radius: 8px; border: 1px solid #cbd5e1;">
                 <strong style="font-size: 0.9rem; color: var(--primary);">➕ Añadir Ejercicio a la Prescripción</strong>
                 <div style="display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: center; margin-top: 0.5rem;">
@@ -464,7 +509,10 @@
             
             <div class="config-item">
                 <label for="monitor-size">Pulgadas: <span id="detection-badge" style="font-size: 0.7rem; color: #2563eb; font-weight: normal;">(Auto)</span></label>
-                <input type="number" id="monitor-size" value="34" min="5" max="120" style="width: 65px;">
+                <div style="display: flex; gap: 0.3rem; align-items: center;">
+                    <input type="number" id="monitor-size" value="34" min="5" max="120" style="width: 60px;">
+                    <button class="btn btn-secondary" id="open-calib-btn" style="padding: 0.4rem 0.6rem; font-size: 0.8rem;" title="Calibrar pantalla usando una tarjeta física">💳 Calibrar</button>
+                </div>
             </div>
 
             <label class="toggle-option">
@@ -483,7 +531,7 @@
             </div>
         </div>
 
-        <!-- 5. INSTRUCCIONES Y CALIBRACIÓN -->
+        <!-- 5. INSTRUCCIONES Y CALIBRACIÓN DE DISTANCIA -->
         <div class="panel" style="padding: 0;">
             <button class="collapsible-toggle" onclick="document.getElementById('inst-content').classList.toggle('active')">
                 <span>📖 Instrucciones Clínicas y Distancia</span>
@@ -618,6 +666,7 @@
         let activeStatsTab = 'search'; 
         let chartXAxisType = 'index'; 
         let activePatientId = null;
+        let currentSuggestedDistanceCm = 75;
         
         let targetLetter = '';
         let targetRow = 0, targetCol = 0;
@@ -661,14 +710,58 @@
 
         const flashcardOverlay = document.getElementById('flashcard-overlay');
         const flashcardMain = document.getElementById('flashcard-main');
+        const flashcardDistVal = document.getElementById('flashcard-dist-val');
         let overlayCallback = null;
 
-        // RESULT OVERLAY (NUEVO V3.04)
         const resultOverlay = document.getElementById('result-overlay');
         const resTime = document.getElementById('res-time');
         const resErrors = document.getElementById('res-errors');
         const resAccuracy = document.getElementById('res-accuracy');
 
+        // CALIBRACIÓN POR TARJETA (NUEVO V3.05)
+        const cardCalibModal = document.getElementById('card-calib-modal');
+        const calibCardBox = document.getElementById('calib-card-box');
+        const calibSlider = document.getElementById('calib-slider');
+        const saveCalibBtn = document.getElementById('save-calib-btn');
+        const closeCalibBtn = document.getElementById('close-calib-btn');
+        const openCalibBtn = document.getElementById('open-calib-btn');
+
+        openCalibBtn.addEventListener('click', () => {
+            const inches = parseFloat(monitorInput.value) || 24;
+            const ppi = Math.hypot(window.screen.width, window.screen.height) / inches;
+            const cardWidthPx = Math.round(ppi * 3.3700787); // Ancho estándar de tarjeta de crédito (85.6 mm)
+            calibSlider.value = Math.min(Math.max(cardWidthPx, 160), 600);
+            updateCalibBox();
+            cardCalibModal.style.display = 'flex';
+        });
+
+        calibSlider.addEventListener('input', updateCalibBox);
+
+        function updateCalibBox() {
+            const w = parseInt(calibSlider.value);
+            const h = Math.round(w * (53.98 / 85.6)); // Proporción física tarjeta
+            calibCardBox.style.width = w + 'px';
+            calibCardBox.style.height = h + 'px';
+        }
+
+        saveCalibBtn.addEventListener('click', () => {
+            const cardWidthPx = parseInt(calibSlider.value);
+            const ppi = cardWidthPx / 3.3700787;
+            const calculatedInches = Math.hypot(window.screen.width, window.screen.height) / ppi;
+            const roundedInches = Math.round(calculatedInches * 10) / 10;
+            
+            monitorInput.value = roundedInches;
+            localStorage.setItem('nystagmus_monitor_size', roundedInches);
+            detectionBadge.textContent = '💾 Calibrado';
+            updateDistanceCalibration();
+            cardCalibModal.style.display = 'none';
+            alert(`¡Pantalla calibrada con éxito! Diagonal ajustada: ${roundedInches}"`);
+        });
+
+        closeCalibBtn.addEventListener('click', () => cardCalibModal.style.display = 'none');
+        cardCalibModal.addEventListener('click', () => cardCalibModal.style.display = 'none');
+
+        // RESUMEN DE RESULTADOS
         function showResultOverlay(timeStr, errors, accuracyPct) {
             isPausedByOverlay = true;
             resTime.textContent = timeStr;
@@ -685,7 +778,7 @@
 
         resultOverlay.addEventListener('click', dismissResultOverlay);
 
-        // --- DESPLAZAMIENTO INTELIGENTE A LA ZONA DE JUEGO ---
+        // DESPLAZAMIENTO INTELIGENTE A LA ZONA DE JUEGO
         function scrollToGameFocus() {
             setTimeout(() => {
                 const anchor = document.getElementById('game-controls-anchor');
@@ -695,7 +788,7 @@
             }, 100);
         }
 
-        // --- GESTIÓN MULTIUSUARIO Y MULTI-PACIENTE ---
+        // GESTIÓN MULTIUSUARIO
         function getPatients() {
             let patients = JSON.parse(localStorage.getItem('nystagmus_patients') || '[]');
             if (patients.length === 0) {
@@ -769,7 +862,7 @@
             alert(`¡Paciente "${name}" registrado con éxito!`);
         });
 
-        // --- SISTEMA DE PAUTAS TERAPÉUTICAS Y PRESCRIPCIÓN ---
+        // PAUTAS TERAPÉUTICAS
         function getRoutines() {
             return JSON.parse(localStorage.getItem('nystagmus_routines') || '{}');
         }
@@ -885,7 +978,7 @@
             }
         }
 
-        // --- MANEJO DE ALTO CONTRASTE ---
+        // MANEJO DE ALTO CONTRASTE
         function updateHighContrast() {
             if (contrastToggle.checked) {
                 document.body.classList.add('high-contrast');
@@ -895,7 +988,7 @@
         }
         contrastToggle.addEventListener('change', updateHighContrast);
 
-        // --- REFLOW Y TAMAÑO CUADRÍCULA ---
+        // REFLOW Y TAMAÑO CUADRÍCULA
         function updateLayoutAndGridSize() {
             const wrapper = document.querySelector('.grid-wrapper');
             if (!wrapper || !gridContainer) return;
@@ -927,7 +1020,7 @@
             }, 20);
         }
 
-        // --- AUTODETECCIÓN DE HARDWARE ---
+        // AUTODETECCIÓN DE HARDWARE
         function autoDetectScreenInches() {
             const saved = localStorage.getItem('nystagmus_monitor_size');
             const ua = navigator.userAgent || '';
@@ -988,7 +1081,7 @@
             return "Web / Tablet";
         }
 
-        // --- PERSISTENCIA E HISTORIAL ---
+        // PERSISTENCIA E HISTORIAL
         function saveSessionData() {
             const modeNames = { 'search': 'Búsqueda', 'coord': 'Coordenadas', 'pursuit': 'Seguimiento' };
             const totalInputs = foundTargets + sessionErrors;
@@ -1202,7 +1295,7 @@
             const routines = getRoutines();
             
             const bundle = {
-                version: "3.04",
+                version: "3.05",
                 patients: patients,
                 routines: routines,
                 history: history,
@@ -1213,7 +1306,7 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `respaldo_terapia_v3.04_${new Date().toISOString().slice(0, 10)}.json`;
+            a.download = `respaldo_terapia_v3.05_${new Date().toISOString().slice(0, 10)}.json`;
             a.click();
             URL.revokeObjectURL(url);
         });
@@ -1256,15 +1349,16 @@
             }
         });
 
-        // CALIBRACIÓN Y LÍNEAS
+        // CALIBRACIÓN DE DISTANCIA DE TRABAJO (V3.05 REFORZADO)
         function updateDistanceCalibration() {
             const diagonalInches = parseFloat(monitorInput.value) || 34;
             const screenW = window.screen.width, screenH = window.screen.height;
             const ppi = Math.hypot(screenW, screenH) / diagonalInches;
             const fontPx = window.innerHeight * 0.04; 
             const fontMm = (fontPx / ppi) * 25.4;
-            const distanceCm = Math.max(40, Math.round(fontMm * 8));
-            distanceInfo.innerHTML = `Letra: <strong>~${fontMm.toFixed(1)} mm</strong> | Distancia sugerida: <strong>~${distanceCm} cm</strong>`;
+            currentSuggestedDistanceCm = Math.max(40, Math.round(fontMm * 8));
+            
+            distanceInfo.innerHTML = `Tamaño letra: <strong>~${fontMm.toFixed(1)} mm</strong> | Distancia clínica recomendada: <strong style="font-size: 1.25rem; color: #2563eb;">~${currentSuggestedDistanceCm} cm</strong>`;
         }
         
         window.addEventListener('resize', () => {
@@ -1294,9 +1388,14 @@
         function showFlashcard(visualText, spokenText, callback) {
             isPausedByOverlay = true;
             flashcardMain.innerHTML = visualText;
+            
+            // Actualizar aviso gigante de distancia en la flashcard (V3.05)
+            flashcardDistVal.textContent = currentSuggestedDistanceCm;
+
             flashcardOverlay.classList.add('active');
             overlayCallback = callback;
-            speakText(spokenText);
+            
+            speakText(`Distancia recomendada: ${currentSuggestedDistanceCm} centímetros. ` + spokenText);
 
             clearTimeout(flashcardTimeout);
             flashcardTimeout = setTimeout(() => {
@@ -1617,7 +1716,6 @@
             const totalInputs = foundTargets + sessionErrors;
             const accuracyPct = totalInputs > 0 ? Math.round((foundTargets / totalInputs) * 100) : 100;
 
-            // Mostrar el cartel gigante flotante de resultados
             showResultOverlay(timerElement.textContent, sessionErrors, accuracyPct);
         }
 
