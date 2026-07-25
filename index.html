@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Terapia Visual - v1.05</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-color: #f0f4f8;
+            --text-color: #1e293b;
+            --grid-border: #94a3b8;
+            --target-bg: #bbf7d0;
+            --target-text: #166534;
+            --wrong-bg: #fecdd3;
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --pursuit-bg: #bfdbfe;
+            --font-clinical: 'Atkinson Hyperlegible', 'Verdana', 'Tahoma', sans-serif;
+        }
+
+        body {
+            font-family: var(--font-clinical);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 0.8rem;
+            min-height: 100vh;
+            touch-action: manipulation;
+        }
+
+        h1 { margin: 0 0 0.4rem 0; color: #0f172a; font-size: 1.4rem; text-align: center; font-weight: 700; }
+
+        .container { width: 100%; max-width: 920px; display: flex; flex-direction: column; gap: 0.6rem; }
+
+        .panel {
+            background: white; padding: 0.8rem 1rem; border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); width: 100%; box-sizing: border-box;
+        }
+
+        /* 1. BARRA SUPERIOR DE ESTADO */
+        .controls-row {
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 1.15rem; font-weight: 700; flex-wrap: wrap; gap: 0.8rem;
+        }
+
+        /* 2. CUADRÍCULA */
+        .grid-wrapper { display: flex; justify-content: center; width: 100%; }
+
+        #grid-container {
+            display: grid; grid-template-columns: 32px repeat(10, 1fr); gap: 4px;
+            background-color: var(--grid-border); border: 4px solid var(--grid-border);
+            border-radius: 10px; width: 58vh; height: 58vh; max-width: 100%;
+            transition: all 0.2s ease;
+        }
+
+        .cell, .label-cell { background-color: white; display: flex; justify-content: center; align-items: center; user-select: none; }
+        
+        .cell {
+            font-family: var(--font-clinical); font-size: clamp(1.3rem, 3.8vh, 2.6rem);
+            font-weight: 700; letter-spacing: 2px; transition: all 0.1s ease;
+        }
+
+        .label-cell { background-color: #e2e8f0; color: #475569; font-size: 0.85rem; font-weight: 700; }
+        .mode-search .cell { cursor: pointer; }
+        .mode-search .cell:active { background-color: #f1f5f9; }
+        .cell.found { background-color: var(--target-bg); color: var(--target-text); }
+        .cell.wrong { background-color: var(--wrong-bg); animation: shake 0.4s; }
+        .cell.pursuit-active { 
+            background-color: var(--primary); color: white; transform: scale(1.05);
+            border-radius: 4px; box-shadow: 0 0 10px rgba(59, 130, 246, 0.5); z-index: 10;
+        }
+
+        #grid-container.hide-lines { gap: 0; background-color: #ffffff; border: 4px solid #cbd5e1; }
+        #grid-container.hide-lines .cell { border: 1px solid #f8fafc; }
+        #grid-container.hide-lines .label-cell { background-color: #f1f5f9; border: 1px solid #e2e8f0; }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25%, 75% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+        }
+
+        /* 3. TECLADO VIRTUAL */
+        #virtual-keypad {
+            display: none; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 0.2rem; width: 100%;
+        }
+
+        .keypad-btn {
+            font-family: var(--font-clinical); background-color: white; border: 3px solid var(--grid-border);
+            border-radius: 12px; font-size: 2.2rem; font-weight: 700; color: var(--text-color);
+            padding: 0.8rem 0; cursor: pointer; box-shadow: 0 4px 0 var(--grid-border);
+            transition: all 0.1s; touch-action: manipulation;
+        }
+        .keypad-btn:active { transform: translateY(4px); box-shadow: 0 0 0 var(--grid-border); background-color: var(--bg-color); }
+        .keypad-btn.focused {
+            border-color: #2563eb; background-color: #eff6ff;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.4), 0 4px 0 #2563eb; transform: translateY(-2px);
+        }
+
+        /* 4. CONFIGURACIÓN */
+        .config-row { display: flex; gap: 0.8rem; flex-wrap: wrap; align-items: center; justify-content: space-between; }
+        .config-item { display: flex; flex-direction: column; gap: 0.2rem; font-weight: 700; font-size: 0.85rem; }
+
+        select, input[type="number"] {
+            font-family: var(--font-clinical); padding: 0.5rem; border: 2px solid #cbd5e1;
+            border-radius: 8px; font-size: 0.95rem; font-weight: 700; background: #f8fafc;
+        }
+
+        .toggle-option {
+            display: flex; align-items: center; gap: 0.4rem; font-weight: 700; font-size: 0.95rem;
+            background: #e2e8f0; padding: 0.5rem 0.8rem; border-radius: 8px; cursor: pointer; user-select: none;
+        }
+        .toggle-option input { width: 18px; height: 18px; cursor: pointer; }
+
+        .btn {
+            font-family: var(--font-clinical); background-color: var(--primary); color: white;
+            border: none; padding: 0.7rem 1.4rem; border-radius: 8px; font-size: 1.05rem;
+            font-weight: 700; cursor: pointer; transition: background-color 0.2s;
+        }
+        .btn:hover { background-color: var(--primary-hover); }
+
+        .btn-secondary {
+            background-color: #64748b; font-size: 0.85rem; padding: 0.5rem 0.9rem;
+        }
+        .btn-secondary:hover { background-color: #475569; }
+
+        /* DESPLEGABLES */
+        .collapsible-toggle {
+            background: #e2e8f0; color: #334155; border: none; padding: 0.7rem 1rem;
+            border-radius: 8px; cursor: pointer; font-weight: 700; width: 100%; text-align: left;
+            display: flex; justify-content: space-between; align-items: center; font-family: var(--font-clinical);
+            font-size: 0.95rem;
+        }
+        .collapsible-toggle:hover { background: #cbd5e1; }
+        .collapsible-content { display: none; padding: 1rem 0 0 0; font-size: 0.9rem; line-height: 1.5; }
+        .collapsible-content.active { display: block; }
+
+        .info-badge {
+            background-color: #f0fdf4; border-left: 4px solid #22c55e;
+            padding: 0.5rem 0.8rem; border-radius: 6px; font-size: 0.85rem; margin-bottom: 0.8rem;
+        }
+
+        /* PESTAÑAS Y FILTROS */
+        .tab-buttons {
+            display: flex; gap: 0.4rem; border-bottom: 2px solid #cbd5e1; padding-bottom: 0.4rem; margin-bottom: 1rem;
+        }
+        .tab-btn {
+            background: #f1f5f9; border: none; padding: 0.5rem 1rem; border-radius: 6px 6px 0 0;
+            font-family: var(--font-clinical); font-weight: 700; color: #64748b; cursor: pointer;
+        }
+        .tab-btn.active { background: var(--primary); color: white; }
+
+        .filter-bar {
+            display: flex; gap: 1rem; flex-wrap: wrap; background: #f8fafc; padding: 0.6rem 0.8rem;
+            border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 1rem; align-items: center;
+        }
+
+        .history-table { width: 100%; border-collapse: collapse; margin-top: 0.5rem; font-size: 0.85rem; }
+        .history-table th, .history-table td { border: 1px solid #cbd5e1; padding: 0.4rem 0.6rem; text-align: center; }
+        .history-table th { background-color: #f1f5f9; font-weight: 700; color: #475569; }
+
+        .metric-card {
+            background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;
+            padding: 0.6rem 0.8rem; text-align: center; flex: 1; min-width: 130px;
+        }
+        .metric-card .val { font-size: 1.2rem; font-weight: 700; color: var(--primary); }
+        .metric-card .lbl { font-size: 0.72rem; color: #64748b; font-weight: 700; }
+
+        .chart-container {
+            background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px;
+            padding: 1rem; margin-bottom: 1rem;
+        }
+        .chart-controls {
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; flex-wrap: wrap; gap: 0.5rem;
+        }
+
+        #flashcard-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(255, 255, 255, 0.98); z-index: 9999;
+            display: none; flex-direction: column; justify-content: center; align-items: center;
+            text-align: center; padding: 2rem; box-sizing: border-box; touch-action: manipulation; cursor: pointer;
+        }
+        #flashcard-overlay.active { display: flex; }
+        #flashcard-main { font-size: clamp(3rem, 10vw, 7rem); font-weight: 700; color: #0f172a; margin-bottom: 2rem; line-height: 1.2; }
+        #flashcard-sub { font-size: 1.5rem; color: #3b82f6; font-weight: 700; background: #eff6ff; padding: 1rem 2rem; border-radius: 50px;}
+
+    </style>
+</head>
+<body>
+
+    <div id="flashcard-overlay">
+        <div id="flashcard-main">Texto</div>
+        <div id="flashcard-sub">TOCA LA PANTALLA O PULSA CUALQUIER TECLA</div>
+    </div>
+
+    <div class="container">
+        <h1>Terapia Visual: Estabilización Táctil (v1.05)</h1>
+
+        <!-- 1. ESTADO DE LA SESIÓN -->
+        <div class="panel controls-row">
+            <div id="instruction-text">Objetivo: <strong id="target-display" style="color: var(--primary); font-size: 1.3rem;">-</strong></div>
+            <div id="progress-container">Progreso: <strong id="score">0</strong> <span id="total-container">/ <span id="total-targets">0</span></span></div>
+            <div style="font-size: 1.1rem; color: #dc2626;">Fallos: <strong id="error-count">0</strong></div>
+            <div style="font-family: monospace; font-size: 1.4rem; font-weight: bold; color: #475569;" id="timer">00:00.0</div>
+        </div>
+
+        <!-- 2. CUADRÍCULA -->
+        <div class="grid-wrapper">
+            <div id="grid-container" class="mode-search"></div>
+        </div>
+        
+        <!-- 3. TECLADO VIRTUAL -->
+        <div id="virtual-keypad"></div>
+
+        <!-- 4. CONTROLES Y CONFIGURACIÓN -->
+        <div class="panel config-row">
+            <div class="config-item">
+                <label for="mode-select">Modo de Juego:</label>
+                <select id="mode-select">
+                    <option value="search">1. Búsqueda (Tocar en cuadrícula)</option>
+                    <option value="coord">2. Coordenadas (Usar teclado/flechas)</option>
+                    <option value="pursuit">3. Seguimiento Dinámico (Usar teclado/flechas)</option>
+                </select>
+            </div>
+
+            <div class="config-item">
+                <label for="eye-select">Ojo Entrenado:</label>
+                <select id="eye-select" style="background-color: #f0fdf4; border-color: #86efac;">
+                    <option value="BIN">Binocular (Ambos)</option>
+                    <option value="OD">Ojo Derecho (OD)</option>
+                    <option value="OI">Ojo Izquierdo (OI)</option>
+                </select>
+            </div>
+            
+            <div class="config-item">
+                <label for="monitor-size">Pulgadas Monitor:</label>
+                <input type="number" id="monitor-size" value="34" min="10" max="100" style="width: 65px;">
+            </div>
+
+            <label class="toggle-option">
+                <input type="checkbox" id="lines-toggle" checked> 📐 Líneas
+            </label>
+            <label class="toggle-option">
+                <input type="checkbox" id="audio-toggle"> 🔊 Audio
+            </label>
+
+            <button class="btn" id="start-btn">Iniciar Sesión</button>
+        </div>
+
+        <!-- 5. INSTRUCCIONES Y CALIBRACIÓN -->
+        <div class="panel" style="padding: 0;">
+            <button class="collapsible-toggle" onclick="document.getElementById('inst-content').classList.toggle('active')">
+                <span>📖 Instrucciones Clínicas y Distancia</span>
+                <span>▼</span>
+            </button>
+            <div id="inst-content" class="collapsible-content" style="padding: 1rem;">
+                <div class="info-badge" id="distance-info">
+                    Calculando distancia sugerida...
+                </div>
+                <ul>
+                    <li><strong>Postura:</strong> Mantenga la espalda recta. <strong>No mueva la cabeza</strong> en ningún momento. Solo deben moverse los ojos.</li>
+                    <li><strong>Oclusión Monocular:</strong> Es altamente recomendable entrenar primero tapando un ojo con un parche o mano, luego tapando el otro, y finalmente hacer una sesión binocular.</li>
+                    <li><strong>Navegación Teclado:</strong> Use <code>Flecha Izquierda</code> / <code>Flecha Derecha</code> para elegir letra y <code>Flecha Arriba</code> / <code>Flecha Abajo</code> para confirmar. O teclee la letra directamente.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 6. ANALÍTICA, EVOLUCIÓN Y ESTADÍSTICAS POR JUEGO (v1.05) -->
+        <div class="panel" style="padding: 0;">
+            <button class="collapsible-toggle" onclick="document.getElementById('stats-content').classList.toggle('active')">
+                <span>📊 Estadísticas, Contexto Físico y Evolución</span>
+                <span>▼</span>
+            </button>
+            <div id="stats-content" class="collapsible-content" style="padding: 1rem;">
+                
+                <!-- PESTAÑAS DE NAVEGACIÓN -->
+                <div class="tab-buttons">
+                    <button class="tab-btn active" onclick="switchStatsTab('search')">🔍 Búsqueda</button>
+                    <button class="tab-btn" onclick="switchStatsTab('coord')">📍 Coordenadas</button>
+                    <button class="tab-btn" onclick="switchStatsTab('pursuit')">🎯 Seguimiento</button>
+                </div>
+
+                <!-- FILTROS DE ANÁLISIS (v1.05) -->
+                <div class="filter-bar">
+                    <div style="font-weight: 700; font-size: 0.85rem; color: #475569;">⚙️ Filtros:</div>
+                    <div style="display: flex; align-items: center; gap: 0.4rem; font-size: 0.85rem;">
+                        <label for="filter-eye">Ojo:</label>
+                        <select id="filter-eye" style="padding: 0.3rem; font-size: 0.85rem;" onchange="renderHistory()">
+                            <option value="ALL">Todos</option>
+                            <option value="BIN">Binocular</option>
+                            <option value="OD">Ojo Derecho (OD)</option>
+                            <option value="OI">Ojo Izquierdo (OI)</option>
+                        </select>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.4rem; font-size: 0.85rem;">
+                        <label for="filter-lines">Guías:</label>
+                        <select id="filter-lines" style="padding: 0.3rem; font-size: 0.85rem;" onchange="renderHistory()">
+                            <option value="ALL">Todas</option>
+                            <option value="Sí">Con Líneas</option>
+                            <option value="No">Sin Líneas</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- INDICADORES CLAVE Y PRECISIÓN -->
+                <div style="display: flex; gap: 0.6rem; flex-wrap: wrap; margin-bottom: 1rem;">
+                    <div class="metric-card">
+                        <div class="val" id="metric-total-sessions">0</div>
+                        <div class="lbl">SESIONES MOSTRADAS</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="val" id="metric-total-time">00:00:00</div>
+                        <div class="lbl">TIEMPO JUGADO</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="val" id="metric-best-time">--:--</div>
+                        <div class="lbl">MEJOR TIEMPO</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="val" id="metric-avg-accuracy" style="color: #16a34a;">--%</div>
+                        <div class="lbl">PRECISIÓN MEDIA</div>
+                    </div>
+                </div>
+
+                <!-- GRÁFICA DE EVOLUCIÓN -->
+                <div class="chart-container">
+                    <div class="chart-controls">
+                        <strong style="font-size: 0.95rem; color: #334155;">📈 Evolución del Tiempo de Resolución</strong>
+                        <div style="font-size: 0.85rem;">
+                            Eje X: 
+                            <button class="btn btn-secondary" id="chart-axis-btn" style="padding: 0.3rem 0.6rem;">🔢 Por nº de prueba</button>
+                        </div>
+                    </div>
+                    
+                    <div style="width: 100%; height: 200px; position: relative;">
+                        <svg id="evolution-chart" width="100%" height="100%" style="overflow: visible;"></svg>
+                    </div>
+                </div>
+
+                <!-- TABLA DEDICADA CON INFORMACIÓN DE DISPOSITIVO (v1.05) -->
+                <div style="overflow-x: auto;">
+                    <table class="history-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Fecha</th>
+                                <th>Ojo</th>
+                                <th>Tiempo Total</th>
+                                <th>Precisión (Fallos)</th>
+                                <th>Líneas</th>
+                                <th>Entorno / Pantalla</th>
+                            </tr>
+                        </thead>
+                        <tbody id="history-tbody">
+                            <tr><td colspan="7" style="color: #94a3b8;">Sin datos acumulados en este modo.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- CONTROLES DE COPIA DE SEGURIDAD -->
+                <div style="margin-top: 1rem; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;">
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button class="btn btn-secondary" id="export-stats-btn">📥 Exportar (JSON)</button>
+                        <button class="btn btn-secondary" id="import-stats-btn">📤 Importar</button>
+                        <input type="file" id="import-file-input" accept=".json" style="display: none;">
+                    </div>
+                    <button class="btn btn-secondary" id="clear-stats-btn" style="background-color: #ef4444;">Borrar Historial</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        const confusionMatrix = {
+            'A': ['V','X','Y','R'], 'B': ['P','R','E','D'], 'C': ['O','G','Q','D'], 'D': ['O','B','C','Q'],
+            'E': ['F','B','P','L'], 'F': ['E','P','T','R'], 'G': ['C','O','Q','D'], 'H': ['N','M','K','R'],
+            'I': ['L','T','J','F'], 'J': ['I','L','T','U'], 'K': ['X','H','R','Y'], 'L': ['I','T','J','E'],
+            'M': ['N','W','H','A'], 'N': ['M','H','Z','W'], 'O': ['Q','C','G','D'], 'P': ['F','B','R','E'],
+            'Q': ['O','C','G','D'], 'R': ['B','P','K','F'], 'S': ['Z','C','G','J'], 'T': ['I','L','J','F'],
+            'U': ['V','W','J','O'], 'V': ['U','W','Y','A'], 'W': ['M','V','U','N'], 'X': ['K','Y','Z','A'],
+            'Y': ['V','X','T','U'], 'Z': ['S','X','N','E']
+        };
+
+        let currentMode = 'search'; 
+        let activeStatsTab = 'search'; 
+        let chartXAxisType = 'index'; 
+        
+        let targetLetter = '';
+        let targetRow = 0, targetCol = 0;
+        let totalTargets = 0, foundTargets = 0, sessionErrors = 0;
+        
+        let timerInterval, pursuitInterval, flashcardTimeout;
+        let timeElapsedMs = 0; 
+        let isPlaying = false;
+        let isPausedByOverlay = false;
+        let selectedKeypadIndex = 0;
+
+        const gridContainer = document.getElementById('grid-container');
+        const targetDisplay = document.getElementById('target-display');
+        const scoreElement = document.getElementById('score');
+        const totalTargetsElement = document.getElementById('total-targets');
+        const errorCountElement = document.getElementById('error-count');
+        const timerElement = document.getElementById('timer');
+        const startBtn = document.getElementById('start-btn');
+        const modeSelect = document.getElementById('mode-select');
+        const eyeSelect = document.getElementById('eye-select');
+        const virtualKeypad = document.getElementById('virtual-keypad');
+        const audioToggle = document.getElementById('audio-toggle');
+        const linesToggle = document.getElementById('lines-toggle');
+        const monitorInput = document.getElementById('monitor-size');
+        const distanceInfo = document.getElementById('distance-info');
+        
+        const flashcardOverlay = document.getElementById('flashcard-overlay');
+        const flashcardMain = document.getElementById('flashcard-main');
+        let overlayCallback = null;
+
+        // --- DETECCIÓN DE DISPOSITIVO (v1.05) ---
+        function detectDeviceType() {
+            const ua = navigator.userAgent || '';
+            if (/iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) return "iPad / iOS";
+            if (/Kindle|Silk|Book/.test(ua)) return "Kindle";
+            if (/Android/.test(ua)) return "Android";
+            if (/Mac/.test(ua)) return "Mac";
+            if (/Win/.test(ua)) return "Windows";
+            return "Web / Tablet";
+        }
+
+        // --- SISTEMA DE ALMACENAMIENTO E ANALÍTICA (v1.05) ---
+        function saveSessionData() {
+            const modeNames = { 'search': 'Búsqueda', 'coord': 'Coordenadas', 'pursuit': 'Seguimiento' };
+            const totalInputs = foundTargets + sessionErrors;
+            const accuracyPct = totalInputs > 0 ? Math.round((foundTargets / totalInputs) * 100) : 100;
+            const inches = parseFloat(monitorInput.value) || 34;
+
+            const session = {
+                id: Date.now(),
+                timestamp: Date.now(),
+                date: new Date().toLocaleString('es-ES', { dateStyle: 'short', timeStyle: 'short' }),
+                mode: currentMode,
+                modeName: modeNames[currentMode] || currentMode,
+                eye: eyeSelect.value,
+                timeMs: timeElapsedMs,
+                timeFormatted: timerElement.textContent,
+                targets: totalTargets,
+                errors: sessionErrors,
+                accuracy: accuracyPct,
+                lines: linesToggle.checked ? 'Sí' : 'No',
+                screenInches: inches,
+                device: detectDeviceType(),
+                resolution: `${window.screen.width}x${window.screen.height}`
+            };
+
+            let history = JSON.parse(localStorage.getItem('nystagmus_history') || '[]');
+            history.push(session);
+            localStorage.setItem('nystagmus_history', JSON.stringify(history));
+            renderHistory();
+        }
+
+        function formatDuration(ms) {
+            const totalSecs = Math.floor(ms / 1000);
+            const hrs = Math.floor(totalSecs / 3600).toString().padStart(2, '0');
+            const mins = Math.floor((totalSecs % 3600) / 60).toString().padStart(2, '0');
+            const secs = (totalSecs % 60).toString().padStart(2, '0');
+            return `${hrs}:${mins}:${secs}`;
+        }
+
+        function switchStatsTab(mode) {
+            activeStatsTab = mode;
+            document.querySelectorAll('.tab-btn').forEach((btn, idx) => {
+                const modes = ['search', 'coord', 'pursuit'];
+                if (modes[idx] === mode) btn.classList.add('active');
+                else btn.classList.remove('active');
+            });
+            renderHistory();
+        }
+
+        function renderHistory() {
+            const history = JSON.parse(localStorage.getItem('nystagmus_history') || '[]');
+            const filterEyeVal = document.getElementById('filter-eye').value;
+            const filterLinesVal = document.getElementById('filter-lines').value;
+
+            // Filtrado dinámico triple (Modo + Ojo + Líneas)
+            const filteredHistory = history.filter(s => {
+                const matchMode = s.mode === activeStatsTab;
+                const matchEye = (filterEyeVal === 'ALL') || (s.eye === filterEyeVal);
+                const matchLines = (filterLinesVal === 'ALL') || (s.lines === filterLinesVal);
+                return matchMode && matchEye && matchLines;
+            });
+            
+            const tbody = document.getElementById('history-tbody');
+            const totalSessionsEl = document.getElementById('metric-total-sessions');
+            const totalTimeEl = document.getElementById('metric-total-time');
+            const bestTimeEl = document.getElementById('metric-best-time');
+            const avgAccuracyEl = document.getElementById('metric-avg-accuracy');
+
+            totalSessionsEl.textContent = filteredHistory.length;
+
+            const totalMs = filteredHistory.reduce((acc, curr) => acc + (curr.timeMs || 0), 0);
+            totalTimeEl.textContent = formatDuration(totalMs);
+
+            if (filteredHistory.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="color: #94a3b8;">Sin datos coincidentes con los filtros actuales.</td></tr>';
+                bestTimeEl.textContent = '--:--';
+                avgAccuracyEl.textContent = '--%';
+                renderChart([]);
+                return;
+            }
+
+            const sumAccuracy = filteredHistory.reduce((acc, curr) => acc + (curr.accuracy !== undefined ? curr.accuracy : 100), 0);
+            const avgAccuracy = Math.round(sumAccuracy / filteredHistory.length);
+            avgAccuracyEl.textContent = `${avgAccuracy}%`;
+
+            const bestMs = Math.min(...filteredHistory.map(s => s.timeMs));
+            const bestSession = filteredHistory.find(s => s.timeMs === bestMs);
+            bestTimeEl.textContent = bestSession ? bestSession.timeFormatted : '--:--';
+
+            const reversed = [...filteredHistory].reverse();
+            tbody.innerHTML = reversed.map((s, idx) => {
+                const eyeBadge = s.eye === 'OD' ? '🔴 OD' : (s.eye === 'OI' ? '🔵 OI' : '👁️ Bin');
+                const errText = s.errors !== undefined ? `${s.accuracy}% (${s.errors} err)` : '100% (0 err)';
+                const screenText = `${s.screenInches || 34}" (${s.device || 'Web'})`;
+                return `
+                    <tr>
+                        <td><strong>#${filteredHistory.length - idx}</strong></td>
+                        <td>${s.date}</td>
+                        <td><strong>${eyeBadge}</strong></td>
+                        <td><strong>${s.timeFormatted}</strong></td>
+                        <td>${errText}</td>
+                        <td>${s.lines}</td>
+                        <td><small style="color:#64748b;">${screenText}</small></td>
+                    </tr>
+                `;
+            }).join('');
+
+            renderChart(filteredHistory);
+        }
+
+        // DIBUJAR GRÁFICA SVG EN VANILLA JS
+        function renderChart(data) {
+            const svg = document.getElementById('evolution-chart');
+            svg.innerHTML = '';
+            if (!data || data.length === 0) return;
+
+            const width = svg.clientWidth || 700;
+            const height = 200;
+            const padding = 35;
+
+            const maxTime = Math.max(...data.map(d => d.timeMs / 1000));
+            const minTime = Math.min(...data.map(d => d.timeMs / 1000));
+
+            const points = data.map((d, idx) => {
+                let x;
+                if (chartXAxisType === 'index') {
+                    x = data.length === 1 ? width / 2 : padding + (idx / (data.length - 1)) * (width - 2 * padding);
+                } else {
+                    const minTs = data[0].timestamp;
+                    const maxTs = data[data.length - 1].timestamp;
+                    x = (maxTs === minTs) ? width / 2 : padding + ((d.timestamp - minTs) / (maxTs - minTs)) * (width - 2 * padding);
+                }
+                
+                const ySecs = d.timeMs / 1000;
+                const range = (maxTime - minTime) || 1;
+                const y = height - padding - ((ySecs - minTime) / range) * (height - 2 * padding);
+                return { 
+                    x, y, secs: ySecs.toFixed(1), date: d.date, idx: idx + 1, 
+                    eye: d.eye || 'BIN', acc: d.accuracy || 100, 
+                    screen: `${d.screenInches || 34}" (${d.device || 'Web'})` 
+                };
+            });
+
+            for(let i = 0; i <= 3; i++) {
+                const yVal = padding + i * (height - 2 * padding) / 3;
+                const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                line.setAttribute("x1", padding);
+                line.setAttribute("x2", width - padding);
+                line.setAttribute("y1", yVal);
+                line.setAttribute("y2", yVal);
+                line.setAttribute("stroke", "#e2e8f0");
+                line.setAttribute("stroke-dasharray", "4");
+                svg.appendChild(line);
+            }
+
+            if (points.length > 1) {
+                const pathD = points.reduce((acc, p, i) => i === 0 ? `M ${p.x} ${p.y}` : `${acc} L ${p.x} ${p.y}`, '');
+                const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                path.setAttribute("d", pathD);
+                path.setAttribute("fill", "none");
+                path.setAttribute("stroke", "#3b82f6");
+                path.setAttribute("stroke-width", "3");
+                svg.appendChild(path);
+            }
+
+            points.forEach(p => {
+                const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                circle.setAttribute("cx", p.x);
+                circle.setAttribute("cy", p.y);
+                circle.setAttribute("r", "5");
+                circle.setAttribute("fill", p.eye === 'OD' ? '#ef4444' : (p.eye === 'OI' ? '#3b82f6' : '#10b981'));
+                circle.setAttribute("cursor", "pointer");
+
+                const title = document.createElementNS("http://www.w3.org/2000/svg", "title");
+                title.textContent = `Prueba #${p.idx} (${p.eye})\nTiempo: ${p.secs}s\nPrecisión: ${p.acc}%\nPantalla: ${p.screen}\nFecha: ${p.date}`;
+                circle.appendChild(title);
+
+                svg.appendChild(circle);
+            });
+        }
+
+        document.getElementById('chart-axis-btn').addEventListener('click', () => {
+            const btn = document.getElementById('chart-axis-btn');
+            if (chartXAxisType === 'index') {
+                chartXAxisType = 'date';
+                btn.textContent = '📅 Por fecha y hora';
+            } else {
+                chartXAxisType = 'index';
+                btn.textContent = '🔢 Por nº de prueba';
+            }
+            renderHistory();
+        });
+
+        // COPIAS DE SEGURIDAD
+        document.getElementById('export-stats-btn').addEventListener('click', () => {
+            const history = localStorage.getItem('nystagmus_history') || '[]';
+            const blob = new Blob([history], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `historial_terapia_v1.05_${new Date().toISOString().slice(0, 10)}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        });
+
+        const importFileInput = document.getElementById('import-file-input');
+        document.getElementById('import-stats-btn').addEventListener('click', () => importFileInput.click());
+
+        importFileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                try {
+                    const importedData = JSON.parse(event.target.result);
+                    if (Array.isArray(importedData)) {
+                        localStorage.setItem('nystagmus_history', JSON.stringify(importedData));
+                        renderHistory();
+                        alert('¡Historial importado con éxito!');
+                    } else alert('Formato no válido.');
+                } catch (err) { alert('Error al leer el archivo.'); }
+            };
+            reader.readAsText(file);
+        });
+
+        document.getElementById('clear-stats-btn').addEventListener('click', () => {
+            if (confirm('¿Desea borrar todo el historial de la aplicación?')) {
+                localStorage.removeItem('nystagmus_history');
+                renderHistory();
+            }
+        });
+
+        // CALIBRACIÓN Y LÍNEAS
+        function updateDistanceCalibration() {
+            const diagonalInches = parseFloat(monitorInput.value) || 34;
+            const screenW = window.screen.width, screenH = window.screen.height;
+            const ppi = Math.hypot(screenW, screenH) / diagonalInches;
+            const fontPx = window.innerHeight * 0.04; 
+            const fontMm = (fontPx / ppi) * 25.4;
+            const distanceCm = Math.max(40, Math.round(fontMm * 8));
+            distanceInfo.innerHTML = `Letra: <strong>~${fontMm.toFixed(1)} mm</strong> | Distancia sugerida: <strong>~${distanceCm} cm</strong>`;
+        }
+        monitorInput.addEventListener('input', updateDistanceCalibration);
+        window.addEventListener('resize', updateDistanceCalibration);
+
+        function updateGridLines() {
+            if (linesToggle.checked) gridContainer.classList.remove('hide-lines');
+            else gridContainer.classList.add('hide-lines');
+        }
+        linesToggle.addEventListener('change', updateGridLines);
+
+        function speakText(text) {
+            if (!audioToggle.checked) return;
+            try {
+                if (!window.speechSynthesis) return;
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'es-ES';
+                utterance.rate = 0.9; 
+                window.speechSynthesis.speak(utterance);
+            } catch(e) {}
+        }
+
+        function showFlashcard(visualText, spokenText, callback) {
+            isPausedByOverlay = true;
+            flashcardMain.innerHTML = visualText;
+            flashcardOverlay.classList.add('active');
+            overlayCallback = callback;
+            speakText(spokenText);
+
+            clearTimeout(flashcardTimeout);
+            flashcardTimeout = setTimeout(() => {
+                if(flashcardOverlay.classList.contains('active')) dismissFlashcard();
+            }, 3500);
+        }
+
+        function dismissFlashcard() {
+            if (!flashcardOverlay.classList.contains('active')) return;
+            flashcardOverlay.classList.remove('active');
+            try { window.speechSynthesis.cancel(); } catch(e){}
+            isPausedByOverlay = false;
+            if (overlayCallback) {
+                let tempCallback = overlayCallback;
+                overlayCallback = null;
+                tempCallback();
+            }
+        }
+
+        flashcardOverlay.addEventListener('click', dismissFlashcard);
+
+        function generateGrid() {
+            gridContainer.innerHTML = '';
+            currentMode = modeSelect.value;
+            gridContainer.className = `mode-${currentMode}`;
+            updateGridLines();
+            updateDistanceCalibration();
+            
+            virtualKeypad.style.display = (currentMode === 'search') ? 'none' : 'grid';
+            
+            if(currentMode === 'search') {
+                totalTargets = 0; 
+                targetLetter = alphabet[Math.floor(Math.random() * alphabet.length)];
+            } else if (currentMode === 'coord') {
+                totalTargets = 10;
+                totalTargetsElement.textContent = "10";
+            } else if (currentMode === 'pursuit') {
+                totalTargets = 15;
+                totalTargetsElement.textContent = "15";
+            }
+
+            foundTargets = 0;
+            sessionErrors = 0;
+            scoreElement.textContent = foundTargets;
+            errorCountElement.textContent = sessionErrors;
+
+            gridContainer.appendChild(createLabelCell(''));
+            for (let c = 1; c <= 10; c++) gridContainer.appendChild(createLabelCell(c));
+
+            for (let r = 1; r <= 10; r++) {
+                gridContainer.appendChild(createLabelCell(r));
+                for (let c = 1; c <= 10; c++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    cell.dataset.row = r;
+                    cell.dataset.col = c;
+                    
+                    let char;
+                    if (currentMode === 'search' && Math.random() < 0.15) {
+                        char = targetLetter;
+                        totalTargets++;
+                    } else {
+                        do { char = alphabet[Math.floor(Math.random() * alphabet.length)]; } 
+                        while (currentMode === 'search' && char === targetLetter);
+                    }
+                    
+                    cell.textContent = char;
+                    if(currentMode === 'search') {
+                        cell.addEventListener('click', () => handleSearchClick(cell, char));
+                    }
+                    gridContainer.appendChild(cell);
+                }
+            }
+
+            if (currentMode === 'search') {
+                if (totalTargets === 0) return generateGrid(); 
+                totalTargetsElement.textContent = totalTargets;
+                if(isPlaying) {
+                    showFlashcard(
+                        `Busca la letra <span style="color:#e11d48">${targetLetter}</span>`, 
+                        `Busca todas las letras ${targetLetter}`, 
+                        () => { targetDisplay.textContent = `Letra ${targetLetter}`; }
+                    );
+                }
+            } else if (currentMode === 'coord' && isPlaying) {
+                pickNewCoordinate();
+            } else if (currentMode === 'pursuit' && isPlaying) {
+                showFlashcard(
+                    `Sigue la celda <span style="color:#3b82f6">AZUL</span>`, 
+                    "Sigue la celda azul y pulsa la letra correspondiente", 
+                    () => { targetDisplay.textContent = "Siga la celda AZUL"; startPursuitTarget(); }
+                );
+            } else {
+                targetDisplay.textContent = "-";
+                virtualKeypad.innerHTML = '';
+            }
+        }
+
+        function createLabelCell(text) {
+            const div = document.createElement('div');
+            div.className = 'label-cell';
+            div.textContent = text;
+            return div;
+        }
+
+        function updateVirtualKeypad(correctChar) {
+            virtualKeypad.innerHTML = '';
+            let options = confusionMatrix[correctChar] ? [...confusionMatrix[correctChar]] : [];
+            options = options.sort(() => 0.5 - Math.random()).slice(0, 3);
+            options.push(correctChar);
+            
+            while(options.length < 4) {
+               let randomChar = alphabet[Math.floor(Math.random() * alphabet.length)];
+               if(!options.includes(randomChar)) options.push(randomChar);
+            }
+            options.sort(() => 0.5 - Math.random());
+
+            selectedKeypadIndex = 0;
+
+            options.forEach((char, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'keypad-btn' + (idx === selectedKeypadIndex ? ' focused' : '');
+                btn.textContent = char;
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault(); 
+                    selectedKeypadIndex = idx;
+                    updateKeypadFocusVisuals();
+                    handleVirtualKeyPress(char);
+                });
+                virtualKeypad.appendChild(btn);
+            });
+        }
+
+        function updateKeypadFocusVisuals() {
+            const buttons = virtualKeypad.querySelectorAll('.keypad-btn');
+            buttons.forEach((btn, idx) => {
+                if (idx === selectedKeypadIndex) btn.classList.add('focused');
+                else btn.classList.remove('focused');
+            });
+        }
+
+        function handleVirtualKeyPress(pressedChar) {
+            if (!isPlaying || currentMode === 'search' || isPausedByOverlay) return;
+            const targetCell = document.querySelector(`.cell[data-row="${targetRow}"][data-col="${targetCol}"]`);
+            if (!targetCell) return;
+
+            if (pressedChar === targetCell.textContent) {
+                foundTargets++;
+                scoreElement.textContent = foundTargets;
+                targetCell.classList.remove('pursuit-active');
+                targetCell.classList.add('found');
+                setTimeout(() => targetCell.classList.remove('found'), 400);
+
+                if (foundTargets >= totalTargets) endGame();
+                else {
+                    if (currentMode === 'coord') pickNewCoordinate();
+                    else if (currentMode === 'pursuit') {
+                        clearInterval(pursuitInterval);
+                        movePursuitTarget();
+                        pursuitInterval = setInterval(movePursuitTarget, 3500); 
+                    }
+                }
+            } else {
+                triggerWrongAnimation(targetCell);
+            }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (flashcardOverlay.classList.contains('active')) {
+                dismissFlashcard();
+                return;
+            }
+
+            if (!isPlaying || currentMode === 'search' || isPausedByOverlay) return;
+
+            const buttons = virtualKeypad.querySelectorAll('.keypad-btn');
+            if (buttons.length === 4) {
+                if (e.key === 'ArrowLeft') {
+                    e.preventDefault();
+                    selectedKeypadIndex = (selectedKeypadIndex - 1 + 4) % 4;
+                    updateKeypadFocusVisuals();
+                } else if (e.key === 'ArrowRight') {
+                    e.preventDefault();
+                    selectedKeypadIndex = (selectedKeypadIndex + 1) % 4;
+                    updateKeypadFocusVisuals();
+                } else if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    const pressedChar = buttons[selectedKeypadIndex].textContent;
+                    handleVirtualKeyPress(pressedChar);
+                } else {
+                    const typedChar = e.key.toUpperCase();
+                    if (/^[A-ZÑ]$/.test(typedChar)) {
+                        handleVirtualKeyPress(typedChar);
+                    }
+                }
+            }
+        });
+
+        function handleSearchClick(cell, char) {
+            if (!isPlaying || currentMode !== 'search' || isPausedByOverlay) return;
+            if (char === targetLetter) {
+                if (!cell.classList.contains('found')) {
+                    cell.classList.add('found');
+                    foundTargets++;
+                    scoreElement.textContent = foundTargets;
+                    if (foundTargets === totalTargets) endGame();
+                }
+            } else { triggerWrongAnimation(cell); }
+        }
+
+        function pickNewCoordinate() {
+            targetRow = Math.floor(Math.random() * 10) + 1;
+            targetCol = Math.floor(Math.random() * 10) + 1;
+            
+            const visualText = `Fila <span style="color:#e11d48">${targetRow}</span><br>Columna <span style="color:#e11d48">${targetCol}</span>`;
+            const spokenText = `Fila ${targetRow}, Columna ${targetCol}`;
+            
+            showFlashcard(visualText, spokenText, () => {
+                targetDisplay.innerHTML = `Fila ${targetRow}, Columna ${targetCol}`;
+                const correctChar = document.querySelector(`.cell[data-row="${targetRow}"][data-col="${targetCol}"]`).textContent;
+                updateVirtualKeypad(correctChar);
+            });
+        }
+
+        function startPursuitTarget() {
+            targetRow = Math.floor(Math.random() * 10) + 1;
+            targetCol = Math.floor(Math.random() * 10) + 1;
+            updatePursuitVisuals();
+            clearInterval(pursuitInterval);
+            pursuitInterval = setInterval(movePursuitTarget, 3500); 
+        }
+
+        function movePursuitTarget() {
+            if(isPausedByOverlay) return;
+            const oldCell = document.querySelector(`.cell[data-row="${targetRow}"][data-col="${targetCol}"]`);
+            if(oldCell) oldCell.classList.remove('pursuit-active');
+
+            let rowOffset = Math.floor(Math.random() * 3) - 1; 
+            let colOffset = Math.floor(Math.random() * 3) - 1;
+            if (rowOffset === 0 && colOffset === 0) rowOffset = 1;
+
+            targetRow += rowOffset; targetCol += colOffset;
+            if(targetRow < 1) targetRow = 2; if(targetRow > 10) targetRow = 9;
+            if(targetCol < 1) targetCol = 2; if(targetCol > 10) targetCol = 9;
+            updatePursuitVisuals();
+        }
+
+        function updatePursuitVisuals() {
+            const newCell = document.querySelector(`.cell[data-row="${targetRow}"][data-col="${targetCol}"]`);
+            if(newCell) {
+                newCell.classList.add('pursuit-active');
+                updateVirtualKeypad(newCell.textContent);
+            }
+        }
+
+        function triggerWrongAnimation(cell) {
+            cell.classList.remove('wrong');
+            void cell.offsetWidth;
+            cell.classList.add('wrong');
+            
+            sessionErrors++;
+            errorCountElement.textContent = sessionErrors;
+
+            if (navigator.vibrate) {
+                try { navigator.vibrate(200); } catch(e){}
+            }
+        }
+
+        function updateTimerDisplay() {
+            if (!isPlaying || isPausedByOverlay) return;
+            timeElapsedMs += 100;
+            const mins = Math.floor(timeElapsedMs / 60000).toString().padStart(2, '0');
+            const secs = Math.floor((timeElapsedMs % 60000) / 1000).toString().padStart(2, '0');
+            const decis = Math.floor((timeElapsedMs % 1000) / 100);
+            timerElement.textContent = `${mins}:${secs}.${decis}`;
+        }
+
+        function startGame() {
+            isPlaying = true;
+            timeElapsedMs = 0;
+            sessionErrors = 0;
+            timerElement.textContent = "00:00.0";
+            generateGrid(); 
+            
+            startBtn.textContent = "Detener Sesión";
+            startBtn.style.backgroundColor = "#ef4444";
+            
+            clearInterval(timerInterval);
+            clearInterval(pursuitInterval);
+            timerInterval = setInterval(updateTimerDisplay, 100);
+        }
+
+        function endGame() {
+            isPlaying = false;
+            clearInterval(timerInterval);
+            clearInterval(pursuitInterval);
+            speakText("¡Sesión completada!");
+            
+            saveSessionData();
+
+            document.querySelectorAll('.pursuit-active').forEach(el => el.classList.remove('pursuit-active'));
+            virtualKeypad.innerHTML = '';
+
+            startBtn.textContent = "Nueva Sesión";
+            startBtn.style.backgroundColor = "var(--primary)";
+            
+            setTimeout(() => alert(`¡Sesión Completada!\nTiempo total: ${timerElement.textContent}\nFallos: ${sessionErrors}`), 100);
+        }
+
+        startBtn.addEventListener('click', () => {
+            if (isPlaying) {
+                isPlaying = false;
+                clearInterval(timerInterval);
+                clearInterval(pursuitInterval);
+                startBtn.textContent = "Iniciar Sesión";
+                startBtn.style.backgroundColor = "var(--primary)";
+                targetDisplay.textContent = "-";
+                virtualKeypad.innerHTML = '';
+            } else {
+                startGame();
+            }
+        });
+
+        modeSelect.addEventListener('change', () => {
+            if(isPlaying) startBtn.click();
+            generateGrid();
+            switchStatsTab(modeSelect.value);
+        });
+        
+        generateGrid();
+        renderHistory();
+        updateDistanceCalibration();
+    </script>
+</body>
+</html>
