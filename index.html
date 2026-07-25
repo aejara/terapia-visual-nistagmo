@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Terapia Visual - v2.01</title>
+    <title>Terapia Visual - v2.02</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -51,24 +51,30 @@
             font-size: 1.15rem; font-weight: 700; flex-wrap: wrap; gap: 0.8rem;
         }
 
-        /* 2. CUADRÍCULA */
+        /* 2. CUADRÍCULA CON PROPORCIÓN ESTRICTA */
         .grid-wrapper { display: flex; justify-content: center; width: 100%; }
 
         #grid-container {
             display: grid; grid-template-columns: 32px repeat(10, 1fr); gap: 4px;
             background-color: var(--grid-border); border: 4px solid var(--grid-border);
-            border-radius: 10px; width: 58vh; height: 58vh; max-width: 100%;
+            border-radius: 10px; width: min(58vh, 88vw); aspect-ratio: 1 / 1; max-width: 100%;
             transition: all 0.2s ease;
+            container-type: size; /* Container Queries nativas */
         }
 
         .cell, .label-cell { background-color: white; display: flex; justify-content: center; align-items: center; user-select: none; }
         
         .cell {
-            font-family: var(--font-clinical); font-size: clamp(1.3rem, 3.8vh, 2.6rem);
-            font-weight: 700; letter-spacing: 2px; transition: all 0.1s ease;
+            font-family: var(--font-clinical);
+            font-size: 5.5cqw; /* Fallback nativo proporcional al contenedor */
+            font-weight: 700;
+            letter-spacing: 1px;
+            transition: background-color 0.1s ease;
+            box-sizing: border-box;
+            overflow: hidden;
         }
 
-        .label-cell { background-color: #e2e8f0; color: #475569; font-size: 0.85rem; font-weight: 700; }
+        .label-cell { background-color: #e2e8f0; color: #475569; font-size: 3.5cqw; font-weight: 700; }
         .mode-search .cell { cursor: pointer; }
         .mode-search .cell:active { background-color: #f1f5f9; }
         .cell.found { background-color: var(--target-bg); color: var(--target-text); }
@@ -201,7 +207,7 @@
     </div>
 
     <div class="container">
-        <h1>Terapia Visual: Estabilización Táctil (v2.01)</h1>
+        <h1>Terapia Visual: Estabilización Táctil (v2.02)</h1>
 
         <!-- 1. ESTADO DE LA SESIÓN -->
         <div class="panel controls-row">
@@ -272,7 +278,7 @@
             </div>
         </div>
 
-        <!-- 6. ANALÍTICA, EVOLUCIÓN Y ESTADÍSTICAS POR JUEGO (v2.01) -->
+        <!-- 6. ANALÍTICA, EVOLUCIÓN Y ESTADÍSTICAS POR JUEGO -->
         <div class="panel" style="padding: 0;">
             <button class="collapsible-toggle" onclick="document.getElementById('stats-content').classList.toggle('active')">
                 <span>📊 Estadísticas, Contexto Físico y Evolución</span>
@@ -280,14 +286,12 @@
             </button>
             <div id="stats-content" class="collapsible-content" style="padding: 1rem;">
                 
-                <!-- PESTAÑAS DE NAVEGACIÓN -->
                 <div class="tab-buttons">
                     <button class="tab-btn active" onclick="switchStatsTab('search')">🔍 Búsqueda</button>
                     <button class="tab-btn" onclick="switchStatsTab('coord')">📍 Coordenadas</button>
                     <button class="tab-btn" onclick="switchStatsTab('pursuit')">🎯 Seguimiento</button>
                 </div>
 
-                <!-- FILTROS DE ANÁLISIS -->
                 <div class="filter-bar">
                     <div style="font-weight: 700; font-size: 0.85rem; color: #475569;">⚙️ Filtros:</div>
                     <div style="display: flex; align-items: center; gap: 0.4rem; font-size: 0.85rem;">
@@ -309,7 +313,6 @@
                     </div>
                 </div>
 
-                <!-- INDICADORES CLAVE Y PRECISIÓN -->
                 <div style="display: flex; gap: 0.6rem; flex-wrap: wrap; margin-bottom: 1rem;">
                     <div class="metric-card">
                         <div class="val" id="metric-total-sessions">0</div>
@@ -329,7 +332,6 @@
                     </div>
                 </div>
 
-                <!-- GRÁFICA DE EVOLUCIÓN -->
                 <div class="chart-container">
                     <div class="chart-controls">
                         <strong style="font-size: 0.95rem; color: #334155;">📈 Evolución del Tiempo de Resolución</strong>
@@ -344,7 +346,6 @@
                     </div>
                 </div>
 
-                <!-- TABLA DEDICADA CON INFORMACIÓN DE DISPOSITIVO -->
                 <div style="overflow-x: auto;">
                     <table class="history-table">
                         <thead>
@@ -364,7 +365,6 @@
                     </table>
                 </div>
 
-                <!-- CONTROLES DE COPIA DE SEGURIDAD -->
                 <div style="margin-top: 1rem; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;">
                     <div style="display: flex; gap: 0.5rem;">
                         <button class="btn btn-secondary" id="export-stats-btn">📥 Exportar (JSON)</button>
@@ -424,7 +424,29 @@
         const flashcardMain = document.getElementById('flashcard-main');
         let overlayCallback = null;
 
-        // --- AUTODETECCIÓN Y MEMORIA DE PANTALLA (v2.01) ---
+        // --- AJUSTE DINÁMICO DE FUENTE PROPORCIONAL A LA CASILLA (v2.02) ---
+        function adjustCellFontSize() {
+            setTimeout(() => {
+                const sampleCell = document.querySelector('.cell');
+                if (!sampleCell) return;
+                const cellHeight = sampleCell.clientHeight;
+                if (cellHeight > 0) {
+                    const optimalFontPx = Math.round(cellHeight * 0.68);
+                    document.querySelectorAll('.cell').forEach(c => {
+                        c.style.fontSize = optimalFontPx + 'px';
+                    });
+                    const sampleLabel = document.querySelector('.label-cell');
+                    if (sampleLabel) {
+                        const labelFontPx = Math.round(cellHeight * 0.42);
+                        document.querySelectorAll('.label-cell').forEach(l => {
+                            l.style.fontSize = labelFontPx + 'px';
+                        });
+                    }
+                }
+            }, 30);
+        }
+
+        // --- AUTODETECCIÓN Y MEMORIA DE PANTALLA ---
         function autoDetectScreenInches() {
             const saved = localStorage.getItem('nystagmus_monitor_size');
             if (saved) {
@@ -439,26 +461,22 @@
             const maxDim = Math.max(w, h);
             const minDim = Math.min(w, h);
 
-            // 1. Kindle / Silk e-Reader
             if (/Kindle|Silk|Book/.test(ua)) return 10.2;
 
-            // 2. iPad / iOS Tablets
             if (/iPad/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) {
-                if (maxDim >= 1366) return 12.9; // iPad Pro 12.9
-                if (maxDim <= 1133 && minDim <= 744) return 8.3; // iPad Mini
-                return 10.9; // iPad Pro 11 / iPad Air / iPad Estándar
+                if (maxDim >= 1366) return 12.9;
+                if (maxDim <= 1133 && minDim <= 744) return 8.3;
+                return 10.9;
             }
 
-            // 3. Smartphones
             if (/iPhone/.test(ua)) return 6.1;
             if (/Android/.test(ua)) {
-                if (minDim >= 600) return 10.5; // Android Tablet
-                return 6.5; // Android Phone
+                if (minDim >= 600) return 10.5;
+                return 6.5;
             }
 
-            // 4. Escritorio Mac / PC
-            if (maxDim >= 2500) return 34; // Monitor Ultrawide / 4K
-            return 24; // Pantalla PC Estándar
+            if (maxDim >= 2500) return 34;
+            return 24;
         }
 
         function initMonitorSize() {
@@ -475,7 +493,6 @@
             updateDistanceCalibration();
         });
 
-        // --- DETECCIÓN DE DISPOSITIVO PARA LOGS ---
         function detectDeviceType() {
             const ua = navigator.userAgent || '';
             if (/iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) return "iPad / iOS";
@@ -595,7 +612,6 @@
             renderChart(filteredHistory);
         }
 
-        // DIBUJAR GRÁFICA SVG EN VANILLA JS
         function renderChart(data) {
             const svg = document.getElementById('evolution-chart');
             svg.innerHTML = '';
@@ -685,7 +701,7 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `historial_terapia_v2.01_${new Date().toISOString().slice(0, 10)}.json`;
+            a.download = `historial_terapia_v2.02_${new Date().toISOString().slice(0, 10)}.json`;
             a.click();
             URL.revokeObjectURL(url);
         });
@@ -727,11 +743,16 @@
             const distanceCm = Math.max(40, Math.round(fontMm * 8));
             distanceInfo.innerHTML = `Letra: <strong>~${fontMm.toFixed(1)} mm</strong> | Distancia sugerida: <strong>~${distanceCm} cm</strong>`;
         }
-        window.addEventListener('resize', updateDistanceCalibration);
+        
+        window.addEventListener('resize', () => {
+            updateDistanceCalibration();
+            adjustCellFontSize();
+        });
 
         function updateGridLines() {
             if (linesToggle.checked) gridContainer.classList.remove('hide-lines');
             else gridContainer.classList.add('hide-lines');
+            adjustCellFontSize();
         }
         linesToggle.addEventListener('change', updateGridLines);
 
@@ -826,6 +847,9 @@
                     gridContainer.appendChild(cell);
                 }
             }
+
+            // Ajustar fuente al momento
+            adjustCellFontSize();
 
             if (currentMode === 'search') {
                 if (totalTargets === 0) return generateGrid(); 
