@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Terapia Visual - v1.05</title>
+    <title>Terapia Visual - v2.01</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -148,7 +148,6 @@
             padding: 0.5rem 0.8rem; border-radius: 6px; font-size: 0.85rem; margin-bottom: 0.8rem;
         }
 
-        /* PESTAÑAS Y FILTROS */
         .tab-buttons {
             display: flex; gap: 0.4rem; border-bottom: 2px solid #cbd5e1; padding-bottom: 0.4rem; margin-bottom: 1rem;
         }
@@ -202,7 +201,7 @@
     </div>
 
     <div class="container">
-        <h1>Terapia Visual: Estabilización Táctil (v1.05)</h1>
+        <h1>Terapia Visual: Estabilización Táctil (v2.01)</h1>
 
         <!-- 1. ESTADO DE LA SESIÓN -->
         <div class="panel controls-row">
@@ -241,8 +240,8 @@
             </div>
             
             <div class="config-item">
-                <label for="monitor-size">Pulgadas Monitor:</label>
-                <input type="number" id="monitor-size" value="34" min="10" max="100" style="width: 65px;">
+                <label for="monitor-size">Pulgadas: <span id="detection-badge" style="font-size: 0.7rem; color: #2563eb; font-weight: normal;">(Auto)</span></label>
+                <input type="number" id="monitor-size" value="34" min="5" max="120" style="width: 65px;">
             </div>
 
             <label class="toggle-option">
@@ -273,7 +272,7 @@
             </div>
         </div>
 
-        <!-- 6. ANALÍTICA, EVOLUCIÓN Y ESTADÍSTICAS POR JUEGO (v1.05) -->
+        <!-- 6. ANALÍTICA, EVOLUCIÓN Y ESTADÍSTICAS POR JUEGO (v2.01) -->
         <div class="panel" style="padding: 0;">
             <button class="collapsible-toggle" onclick="document.getElementById('stats-content').classList.toggle('active')">
                 <span>📊 Estadísticas, Contexto Físico y Evolución</span>
@@ -288,7 +287,7 @@
                     <button class="tab-btn" onclick="switchStatsTab('pursuit')">🎯 Seguimiento</button>
                 </div>
 
-                <!-- FILTROS DE ANÁLISIS (v1.05) -->
+                <!-- FILTROS DE ANÁLISIS -->
                 <div class="filter-bar">
                     <div style="font-weight: 700; font-size: 0.85rem; color: #475569;">⚙️ Filtros:</div>
                     <div style="display: flex; align-items: center; gap: 0.4rem; font-size: 0.85rem;">
@@ -345,7 +344,7 @@
                     </div>
                 </div>
 
-                <!-- TABLA DEDICADA CON INFORMACIÓN DE DISPOSITIVO (v1.05) -->
+                <!-- TABLA DEDICADA CON INFORMACIÓN DE DISPOSITIVO -->
                 <div style="overflow-x: auto;">
                     <table class="history-table">
                         <thead>
@@ -418,13 +417,65 @@
         const audioToggle = document.getElementById('audio-toggle');
         const linesToggle = document.getElementById('lines-toggle');
         const monitorInput = document.getElementById('monitor-size');
+        const detectionBadge = document.getElementById('detection-badge');
         const distanceInfo = document.getElementById('distance-info');
         
         const flashcardOverlay = document.getElementById('flashcard-overlay');
         const flashcardMain = document.getElementById('flashcard-main');
         let overlayCallback = null;
 
-        // --- DETECCIÓN DE DISPOSITIVO (v1.05) ---
+        // --- AUTODETECCIÓN Y MEMORIA DE PANTALLA (v2.01) ---
+        function autoDetectScreenInches() {
+            const saved = localStorage.getItem('nystagmus_monitor_size');
+            if (saved) {
+                detectionBadge.textContent = '💾 Guardado';
+                return parseFloat(saved);
+            }
+
+            detectionBadge.textContent = '⚡ Auto';
+            const ua = navigator.userAgent || '';
+            const w = window.screen.width;
+            const h = window.screen.height;
+            const maxDim = Math.max(w, h);
+            const minDim = Math.min(w, h);
+
+            // 1. Kindle / Silk e-Reader
+            if (/Kindle|Silk|Book/.test(ua)) return 10.2;
+
+            // 2. iPad / iOS Tablets
+            if (/iPad/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) {
+                if (maxDim >= 1366) return 12.9; // iPad Pro 12.9
+                if (maxDim <= 1133 && minDim <= 744) return 8.3; // iPad Mini
+                return 10.9; // iPad Pro 11 / iPad Air / iPad Estándar
+            }
+
+            // 3. Smartphones
+            if (/iPhone/.test(ua)) return 6.1;
+            if (/Android/.test(ua)) {
+                if (minDim >= 600) return 10.5; // Android Tablet
+                return 6.5; // Android Phone
+            }
+
+            // 4. Escritorio Mac / PC
+            if (maxDim >= 2500) return 34; // Monitor Ultrawide / 4K
+            return 24; // Pantalla PC Estándar
+        }
+
+        function initMonitorSize() {
+            const initialInches = autoDetectScreenInches();
+            monitorInput.value = initialInches;
+        }
+
+        monitorInput.addEventListener('input', () => {
+            const val = parseFloat(monitorInput.value);
+            if (val && val > 0) {
+                localStorage.setItem('nystagmus_monitor_size', val);
+                detectionBadge.textContent = '💾 Guardado';
+            }
+            updateDistanceCalibration();
+        });
+
+        // --- DETECCIÓN DE DISPOSITIVO PARA LOGS ---
         function detectDeviceType() {
             const ua = navigator.userAgent || '';
             if (/iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) return "iPad / iOS";
@@ -435,7 +486,7 @@
             return "Web / Tablet";
         }
 
-        // --- SISTEMA DE ALMACENAMIENTO E ANALÍTICA (v1.05) ---
+        // --- SISTEMA DE ALMACENAMIENTO E ANALÍTICA ---
         function saveSessionData() {
             const modeNames = { 'search': 'Búsqueda', 'coord': 'Coordenadas', 'pursuit': 'Seguimiento' };
             const totalInputs = foundTargets + sessionErrors;
@@ -489,7 +540,6 @@
             const filterEyeVal = document.getElementById('filter-eye').value;
             const filterLinesVal = document.getElementById('filter-lines').value;
 
-            // Filtrado dinámico triple (Modo + Ojo + Líneas)
             const filteredHistory = history.filter(s => {
                 const matchMode = s.mode === activeStatsTab;
                 const matchEye = (filterEyeVal === 'ALL') || (s.eye === filterEyeVal);
@@ -635,7 +685,7 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `historial_terapia_v1.05_${new Date().toISOString().slice(0, 10)}.json`;
+            a.download = `historial_terapia_v2.01_${new Date().toISOString().slice(0, 10)}.json`;
             a.click();
             URL.revokeObjectURL(url);
         });
@@ -677,7 +727,6 @@
             const distanceCm = Math.max(40, Math.round(fontMm * 8));
             distanceInfo.innerHTML = `Letra: <strong>~${fontMm.toFixed(1)} mm</strong> | Distancia sugerida: <strong>~${distanceCm} cm</strong>`;
         }
-        monitorInput.addEventListener('input', updateDistanceCalibration);
         window.addEventListener('resize', updateDistanceCalibration);
 
         function updateGridLines() {
@@ -1033,6 +1082,8 @@
             switchStatsTab(modeSelect.value);
         });
         
+        // INICIALIZACIÓN
+        initMonitorSize();
         generateGrid();
         renderHistory();
         updateDistanceCalibration();
