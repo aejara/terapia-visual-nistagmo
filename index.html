@@ -1,9 +1,8 @@
-<!DOCTYPE html>
-<html lang="es">
+html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Suite Terapia Visual - v4.06 (Bugs Corregidos)</title>
+    <title>Suite Terapia Visual - v4.07</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -55,8 +54,13 @@
         .container { width: 100%; max-width: 920px; display: flex; flex-direction: column; gap: 0.6rem; }
         
         .panel {
-            background-color: var(--panel-bg); padding: 0.8rem 1rem; border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); border: 1px solid #cbd5e1; width: 100%; box-sizing: border-box;
+            background-color: var(--panel-bg);
+            padding: 0.8rem 1rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            border: 1px solid #cbd5e1;
+            width: 100%;
+            box-sizing: border-box;
         }
         body.high-contrast .panel { border: 2px solid #000000; }
 
@@ -85,8 +89,11 @@
         .exercise-card:hover { border-color: var(--primary); transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.2); }
         .exercise-card-icon { font-size: 2.8rem; margin-bottom: 0.5rem; }
         .exercise-card-title { font-size: 1.15rem; font-weight: 900; margin-bottom: 0.3rem; color: #0f172a; }
+        .exercise-card-desc { font-size: 0.85rem; color: #475569; line-height: 1.3; }
 
-        /* CABECERA DE JUEGO (GAME HEADER) */
+        /* =========================================
+           CABECERA DE JUEGO (GAME HEADER)
+           ========================================= */
         .controls-row { display: flex; justify-content: space-between; align-items: center; font-size: 1.1rem; font-weight: 700; flex-wrap: wrap; gap: 0.8rem; }
         .target-badge { font-size: clamp(2rem, 4vh, 3rem); font-weight: 900; color: var(--primary); background-color: #eff6ff; padding: 0.1rem 0.8rem; border-radius: 10px; border: 3px solid var(--primary); display: inline-block; vertical-align: middle; margin-left: 0.3rem; line-height: 1.1; }
         body.high-contrast .target-badge { background-color: #000000 !important; color: #ffffff !important; border-color: #000000 !important; }
@@ -116,7 +123,7 @@
         .game-area.success { background-color: var(--target-bg); }
         .game-area.error { background-color: var(--wrong-bg); animation: shake 0.4s; }
 
-        /* MÓDULO 2: ANTI-CROWDING (BUG 6: Color corregido) */
+        /* MÓDULO 2: ANTI-CROWDING */
         #ac-display { font-weight: 900; white-space: nowrap; user-select: none; color: #0f172a; transition: all 0.3s ease; }
         body.high-contrast #ac-display { color: #000000; }
         .ac-flanker { color: #0f172a; opacity: 1; }
@@ -129,7 +136,7 @@
         #saccadic-target:active { transform: scale(0.8); }
         body.high-contrast #saccadic-target { background-color: #000000; border-color: #ffffff; }
 
-        /* MÓDULO 4: PELOTA DE MARSDEN (BUG 4: Péndulo más largo) */
+        /* MÓDULO 4: PELOTA DE MARSDEN */
         #marsden-pendulum { position: absolute; top: 0; transform-origin: top center; display: flex; flex-direction: column; align-items: center; }
         .marsden-string { width: 4px; height: 280px; background-color: #94a3b8; }
         #marsden-ball { width: 80px; height: 80px; background-color: var(--primary); border-radius: 50%; display: flex; justify-content: center; align-items: center; color: white; font-size: 2.5rem; font-weight: 900; box-shadow: 0 10px 20px rgba(0,0,0,0.2); user-select: none; }
@@ -149,7 +156,7 @@
         @keyframes shake { 0%, 100% { transform: translateX(0); } 25%, 75% { transform: translateX(-5px); } 50% { transform: translateX(5px); } }
 
         /* =========================================
-           TECLADO VIRTUAL COMPARTIDO (BUG 7: UBICACIÓN REVISADA)
+           TECLADO VIRTUAL COMPARTIDO
            ========================================= */
         #virtual-keypad { display: none; grid-template-columns: repeat(4, 1fr); gap: 10px; width: 100%; margin-bottom: 0.6rem; }
         .keypad-btn { font-family: var(--font-clinical); background-color: white; border: 3px solid var(--grid-border); border-radius: 12px; font-size: 2.2rem; font-weight: 700; padding: 0.8rem 0; cursor: pointer; box-shadow: 0 4px 0 var(--grid-border); touch-action: manipulation; }
@@ -289,7 +296,7 @@
             </div>
         </div>
 
-        <h1>Suite de Terapia Visual (v4.06)</h1>
+        <h1>Suite de Terapia Visual (v4.07)</h1>
 
         <!-- HEADER GLOBAL (PACIENTE / CLINICA) -->
         <div class="patient-row">
@@ -327,9 +334,18 @@
         <div class="panel" style="padding: 0;">
             <div id="patient-modal" class="collapsible-content" style="padding: 1rem; background-color: #f8fafc; border-radius: 12px;">
                 <h3 style="margin-top:0; color: var(--primary);">👤 Registrar Nuevo Paciente</h3>
+                
                 <div style="display:flex; gap:0.5rem; margin-bottom:0.5rem; flex-wrap: wrap;">
                     <input type="text" id="new-pat-name" placeholder="Nombre completo" style="flex:1; min-width: 200px;">
+                    <input type="date" id="new-pat-dob" title="Fecha de nacimiento">
                     <button class="btn" id="create-pat-btn">➕ Añadir Paciente</button>
+                </div>
+                <textarea id="new-pat-notes" placeholder="Notas clínicas o diagnóstico..." style="width: 100%; height: 60px; box-sizing: border-box; margin-bottom: 1rem;"></textarea>
+                
+                <div id="patient-details-card" style="background-color: white; padding: 0.8rem; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 0.9rem; margin-top: 0.5rem;">
+                    <strong>Ficha del Paciente Activo:</strong> <span id="patient-info-display">-</span>
+                    <br>
+                    <button class="btn btn-secondary" style="background-color: #ef4444; margin-top: 0.8rem;" id="delete-pat-btn">🗑️ Eliminar Completamente este Paciente</button>
                 </div>
             </div>
         </div>
@@ -364,7 +380,7 @@
                             <option value="anticrowding">Agudeza: Anti-Crowding</option>
                             <option value="saccadic">Fijación: Saltos Sacádicos</option>
                             <option value="marsden">Pursuit: Pelota de Marsden</option>
-                            <option value="tracing">Estabilidad: Laberintos</option>
+                            <option value="tracing">Estabilidad: Visual Tracing</option>
                             <option value="tachisto">Memoria: Taquistoscopio</option>
                         </select>
                         <select id="rout-add-eye">
@@ -437,15 +453,15 @@
                     <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:1rem;">
                         <button class="btn btn-secondary" id="btn-print-pdf" style="background-color: #0d9488;">🖨️ Imprimir Reporte PDF</button>
                         <button class="btn btn-secondary" id="btn-export-json">📥 Exportar JSON</button>
-                        <button class="btn btn-secondary" id="btn-import-json">📤 Importar</button>
+                        <button class="btn btn-secondary" id="btn-import-json">📤 Importar Todo</button>
                         <input type="file" id="import-file-input" accept=".json" style="display: none;">
-                        <button class="btn btn-secondary" id="btn-delete-hist" style="background-color: #ef4444;">Borrar Historial de este Paciente</button>
+                        <button class="btn btn-secondary" id="btn-delete-hist" style="background-color: #ef4444;">Borrar Historial Paciente</button>
                     </div>
 
                     <!-- Métricas -->
                     <div style="display: flex; gap: 0.6rem; flex-wrap: wrap; margin-bottom: 1rem;">
                         <div class="metric-card"><div class="val" id="metric-total-sessions">0</div><div class="lbl">SESIONES</div></div>
-                        <div class="metric-card"><div class="val" id="metric-total-time">00:00.0</div><div class="lbl">TIEMPO ACTIVO</div></div>
+                        <div class="metric-card"><div class="val" id="metric-total-time">00:00:00</div><div class="lbl">TIEMPO ACTIVO</div></div>
                         <div class="metric-card"><div class="val" id="metric-best-time">--:--</div><div class="lbl">MEJOR TIEMPO</div></div>
                         <div class="metric-card"><div class="val" id="metric-avg-accuracy" style="color: #16a34a;">--%</div><div class="lbl">PRECISIÓN MEDIA</div></div>
                     </div>
@@ -453,7 +469,7 @@
                     <!-- Gráfica SVG de Evolución -->
                     <div class="chart-container">
                         <div class="chart-controls">
-                            <strong style="font-size: 0.95rem; color: #334155;">📈 Evolución de Tiempo de Reacción Activo</strong>
+                            <strong style="font-size: 0.95rem; color: #334155;">📈 Evolución del Tiempo de Resolución</strong>
                             <button class="btn btn-secondary" id="chart-axis-btn" style="padding: 0.3rem 0.6rem;">🔢 Eje X: Por Pruebas</button>
                         </div>
                         <div style="width: 100%; height: 200px; position: relative;">
@@ -484,7 +500,7 @@
                 <div style="font-family:monospace; font-size:1.4rem;" id="game-timer">00:00.0</div>
             </div>
 
-            <!-- TECLADO VIRTUAL COMPARTIDO (BUG FIX 7: Movido justo aquí arriba) -->
+            <!-- TECLADO VIRTUAL COMPARTIDO REUBICADO -->
             <div id="virtual-keypad"></div>
 
             <!-- INYECCIÓN DINÁMICA DEL JUEGO SELECCIONADO -->
@@ -534,6 +550,7 @@
                 Calculando distancia recomendada...
             </div>
         </div>
+
     </div>
 
     <!-- ==========================================
@@ -543,16 +560,11 @@
         const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         const confusionMatrix = {
             'A': ['V','X','Y','R'], 'B': ['P','R','E','D'], 'C': ['O','G','Q','D'], 'D': ['O','B','C','Q'],
-            'E': ['F','B','P','L'], 'F': ['E','P','T','R'], 'G': ['C','O','Q','D'], 'H': ['N','M','K','R'],
-            'I': ['L','T','J','F'], 'J': ['I','L','T','U'], 'K': ['X','H','R','Y'], 'L': ['I','T','J','E'],
-            'M': ['N','W','H','A'], 'N': ['M','H','Z','W'], 'O': ['Q','C','G','D'], 'P': ['F','B','R','E'],
-            'Q': ['O','C','G','D'], 'R': ['B','P','K','F'], 'S': ['Z','C','G','J'], 'T': ['I','L','J','F'],
-            'U': ['V','W','J','O'], 'V': ['U','W','Y','A'], 'W': ['M','V','U','N'], 'X': ['K','Y','Z','A'],
-            'Y': ['V','X','T','U'], 'Z': ['S','X','N','E']
+            'E': ['F','B','P','L'], 'F': ['E','P','T','R'], 'G': ['C','O','Q','D'], 'H': ['N','M','K','R']
         };
 
         // ESTADO GLOBAL
-        let patients = JSON.parse(localStorage.getItem('nystagmus_patients') || '[{"id":"p_default","name":"Paciente General"}]');
+        let patients = JSON.parse(localStorage.getItem('nystagmus_patients') || '[{"id":"p_default","name":"Paciente General", "dob": "", "notes": ""}]');
         let routines = JSON.parse(localStorage.getItem('nystagmus_routines') || '{}');
         let historyLog = JSON.parse(localStorage.getItem('nystagmus_history') || '[]');
         let clinicCfg = JSON.parse(localStorage.getItem('nystagmus_clinic_cfg') || '{}');
@@ -567,7 +579,6 @@
         let targetValue = ''; 
         let currentSuggestedDistanceCm = 75;
         
-        // BUG 2: Variables de motor de tiempo
         let isTimerActive = true; 
         let gameTimerInt = null, customInt1 = null, flashcardTimeout = null;
         
@@ -586,13 +597,23 @@
             const sel = document.getElementById('global-patient-select'); 
             sel.innerHTML = '';
             patients.forEach(p => sel.appendChild(new Option(p.name, p.id)));
+            
+            // Comprobar que activePatientId existe aún
+            if(!patients.find(p => p.id === activePatientId)) {
+                activePatientId = patients[0].id;
+                localStorage.setItem('nystagmus_active_patient_id', activePatientId);
+            }
             sel.value = activePatientId;
+            
             sel.addEventListener('change', e => { 
                 activePatientId = e.target.value; 
                 localStorage.setItem('nystagmus_active_patient_id', activePatientId); 
+                updatePatientCardDisplay();
                 renderDashboard(); 
             });
             
+            updatePatientCardDisplay();
+
             // Configuración de la Clínica
             document.getElementById('cfg-clinic').value = clinicCfg.clinicName || '';
             document.getElementById('cfg-specialist').value = clinicCfg.specialistName || '';
@@ -638,18 +659,54 @@
             alert('¡Configuración de clínica guardada con éxito!');
         });
 
-        // NUEVO PACIENTE
+        // GESTIÓN DE PACIENTES
+        function updatePatientCardDisplay() {
+            const activeP = patients.find(p => p.id === activePatientId) || patients[0];
+            const dobText = activeP.dob ? ` | Nacimiento: ${activeP.dob}` : '';
+            document.getElementById('patient-info-display').innerHTML = `<strong>${activeP.name}</strong>${dobText}<br><em>${activeP.notes || 'Sin notas adicionales.'}</em>`;
+        }
+
         document.getElementById('create-pat-btn').addEventListener('click', () => {
             const name = document.getElementById('new-pat-name').value.trim();
-            if (!name) { alert('Introduzca un nombre.'); return; }
-            const newP = { id: 'p_' + Date.now(), name: name };
+            const dob = document.getElementById('new-pat-dob').value;
+            const notes = document.getElementById('new-pat-notes').value.trim();
+            
+            if (!name) { alert('Introduzca un nombre para el paciente.'); return; }
+            
+            const newP = { id: 'p_' + Date.now(), name: name, dob: dob, notes: notes };
             patients.push(newP);
             localStorage.setItem('nystagmus_patients', JSON.stringify(patients));
+            
             document.getElementById('new-pat-name').value = '';
+            document.getElementById('new-pat-dob').value = '';
+            document.getElementById('new-pat-notes').value = '';
+            
             initApp();
             document.getElementById('global-patient-select').value = newP.id;
             document.getElementById('global-patient-select').dispatchEvent(new Event('change'));
             alert(`Paciente añadido.`);
+        });
+
+        // BORRAR PACIENTE COMPLETO
+        document.getElementById('delete-pat-btn').addEventListener('click', () => {
+            if(patients.length <= 1) {
+                alert("Debe haber al menos un paciente registrado en el sistema.");
+                return;
+            }
+            if(confirm('¿Desea ELIMINAR COMPLETAMENTE a este paciente, su historial y sus pautas? Esta acción es irreversible.')) {
+                patients = patients.filter(p => p.id !== activePatientId);
+                historyLog = historyLog.filter(h => h.patientId !== activePatientId);
+                delete routines[activePatientId];
+                
+                localStorage.setItem('nystagmus_patients', JSON.stringify(patients));
+                localStorage.setItem('nystagmus_history', JSON.stringify(historyLog));
+                localStorage.setItem('nystagmus_routines', JSON.stringify(routines));
+                
+                activePatientId = patients[0].id;
+                localStorage.setItem('nystagmus_active_patient_id', activePatientId);
+                initApp();
+                alert("Paciente eliminado del sistema.");
+            }
         });
 
         function initMonitorSize() {
@@ -708,7 +765,7 @@
                 reqTargets = 5;
             }
             if (gameId === 'tachisto') {
-                canvasArea.innerHTML = `<div class="game-area" style="position:relative;"><div id="tach-fixation">+</div><div id="tach-display">123</div><div id="tach-input-area"><input type="text" id="tach-input" style="font-size:2rem; width:150px; text-align:center;" maxlength="5"><button class="btn" onclick="checkTach()">Verificar</button></div></div>`;
+                canvasArea.innerHTML = `<div class="game-area" style="position:relative;"><div id="tach-fixation">+</div><div id="tach-display">123</div><div id="tach-input-area"><input type="text" id="tach-input" style="font-size:2rem; width:150px; text-align:center;" maxlength="5" onkeydown="handleTachInput(event)"></div></div>`;
                 reqTargets = 10;
             }
             
@@ -738,13 +795,12 @@
 
         function startGame() {
             isPlaying = true; 
-            isTimerActive = true; // BUG 2: Por defecto corre
+            isTimerActive = true; 
             resetScoreboard();
             document.getElementById('btn-game-start').textContent = "Detener Ejercicio"; 
             document.getElementById('btn-game-start').style.background = "#ef4444";
             
             gameTimerInt = setInterval(() => {
-                // BUG 2 FIX: Solo sumar tiempo si está activo y no hay pausa
                 if(isPausedByOverlay || !isTimerActive) return; 
                 timeMs += 100;
                 let m = Math.floor(timeMs/60000).toString().padStart(2,'0');
@@ -845,10 +901,9 @@
 
 
         // ==========================================
-        // TECLADO VIRTUAL Y NAVEGACIÓN (BUGS 5, 7 Y 8)
+        // TECLADO VIRTUAL Y NAVEGACIÓN
         // ==========================================
         
-        // Función base para inyectar botones según array
         function renderKeypadCustom(options, correct) {
             virtualKeypad.innerHTML = ''; 
             selectedKeypadIndex = 0; 
@@ -864,7 +919,6 @@
             virtualKeypad.style.display = 'grid';
         }
 
-        // Generador de Opciones Letras (Cuadrícula / AntiCrowding)
         function renderKeypad(correct) {
             let opts = confusionMatrix[correct] ? [...confusionMatrix[correct]] : [];
             opts.push(correct); 
@@ -913,15 +967,13 @@
                 } else { triggerError(document.getElementById('ac-wrapper')); }
             }
             else if (currentGame === 'tracing') {
-                // BUG FIX 3: Teclado para Laberintos
                 if (char === targetValue) {
                     registerHit();
-                    if (isPlaying) nextTracing(); // Genera nuevo laberinto solo si no ha acabado
+                    if (isPlaying) nextTracing(); 
                 } else { triggerError(null); }
             }
         }
 
-        // BUGS 5 y 8 FIX: Listener Global Teclado
         document.addEventListener('keydown', e => {
             if (document.getElementById('flashcard-overlay').classList.contains('active')) { hideFlash(); return; }
             if (document.getElementById('result-overlay').classList.contains('active')) { document.getElementById('result-overlay').classList.remove('active'); return; }
@@ -930,7 +982,6 @@
             if (e.key === ' ' && currentGame === 'marsden') { e.preventDefault(); checkMarsden(); return; }
 
             const buttons = virtualKeypad.querySelectorAll('.keypad-btn');
-            // BUG FIX: Evaluar buttons.length > 0 en lugar de estrictamente 4
             if (buttons.length > 0 && virtualKeypad.style.display !== 'none') {
                 if (e.key === 'ArrowLeft') { 
                     e.preventDefault(); 
@@ -951,7 +1002,6 @@
                 }
             }
 
-            // Teclas de letras directas
             if (/^[a-zA-ZñÑ]$/.test(e.key)) {
                 handleKey(e.key.toUpperCase());
             }
@@ -1089,18 +1139,18 @@
         // MÓDULO 3: SALTOS SACÁDICOS
         // ==========================================
         function startSaccadic() {
-            isTimerActive = false; // Solo suma tiempo al saltar la bola
+            isTimerActive = false; 
             document.getElementById('game-target').textContent = "Atrapar Diana";
             showFlash(`Pulsa la diana roja rápidamente`, () => { nextSaccadic(); });
         }
         function nextSaccadic() {
-            isTimerActive = true; // BUG 2 FIX: Arranca timer activo
+            isTimerActive = true; 
             const t = document.getElementById('saccadic-target');
             if(!t) return;
             t.style.display = 'block';
             t.style.top = Math.floor(Math.random()*80 + 10) + '%'; t.style.left = Math.floor(Math.random()*80 + 10) + '%';
             t.onclick = () => { 
-                isTimerActive = false; // Pausar timer
+                isTimerActive = false; 
                 t.style.display = 'none'; 
                 registerHit(); 
                 if(isPlaying) setTimeout(nextSaccadic, Math.random()*1000 + 200); 
@@ -1111,7 +1161,7 @@
         // MÓDULO 4: PELOTA DE MARSDEN
         // ==========================================
         function startMarsden() {
-            isTimerActive = false; // Empieza inactivo hasta que salga A
+            isTimerActive = false; 
             targetValue = 'A'; document.getElementById('game-target').textContent = `Pulsar la letra A`;
             document.getElementById('marsden-pendulum').style.animation = 'swing 2.5s infinite ease-in-out alternate';
             
@@ -1119,8 +1169,6 @@
                 customInt1 = setInterval(() => {
                     let char = Math.random() < 0.3 ? 'A' : alphabet[Math.floor(Math.random()*26)];
                     document.getElementById('marsden-ball').textContent = char;
-                    
-                    // BUG 2 FIX: Tiempo activo solo con 'A' visible
                     isTimerActive = (char === 'A');
                 }, 1500);
             });
@@ -1129,7 +1177,7 @@
         function checkMarsden() {
             if(isPausedByOverlay || !isPlaying) return;
             if(document.getElementById('marsden-ball').textContent === 'A') {
-                isTimerActive = false; // Pausamos al acierto
+                isTimerActive = false; 
                 document.getElementById('mars-area').style.background = '#dcfce7'; 
                 setTimeout(() => document.getElementById('mars-area').style.background = '#ffffff', 200);
                 document.getElementById('marsden-ball').textContent = '-';
@@ -1138,7 +1186,7 @@
         }
 
         // ==========================================
-        // MÓDULO 5: VISUAL TRACING (BUG 3: AZAR Y TECLADO)
+        // MÓDULO 5: VISUAL TRACING 
         // ==========================================
         function startTracing() {
             isTimerActive = true;
@@ -1155,18 +1203,13 @@
             document.querySelectorAll('.tracing-label').forEach(e => e.remove());
             
             const startX = [w*0.2, w*0.5, w*0.8]; 
-            const endX = [...startX].sort(() => Math.random() - 0.5); // Nudos aleatorios
+            const endX = [...startX].sort(() => Math.random() - 0.5); 
             
             const cols = ['#3b82f6', '#ef4444', '#10b981']; 
             const colNames = ['AZUL', 'ROJA', 'VERDE'];
             
-            // Mezclar etiquetas meta abajo
             const labels = ['A', 'B', 'C'].sort(() => Math.random() - 0.5);
-            
-            // Seleccionar línea objetivo (0, 1 o 2)
             const targetLineIdx = Math.floor(Math.random() * 3);
-            
-            // Meta = la Etiqueta ubicada en el X final de la linea Target
             targetValue = labels[endX.indexOf(endX[targetLineIdx])]; 
 
             for(let i=0; i<3; i++) {
@@ -1183,24 +1226,27 @@
             
             showFlash(`Sigue la línea <span style="color:${cols[targetLineIdx]}">${colNames[targetLineIdx]}</span>`, () => {
                 document.getElementById('game-target').innerHTML = `<span style="color:${cols[targetLineIdx]}">Línea ${colNames[targetLineIdx]}</span>`;
-                // Desplegamos el Teclado Virtual con opciones A, B y C (Habilitando Flechas)
                 renderKeypadCustom(['A', 'B', 'C'].sort(), targetValue);
             });
         }
-        
+
         // ==========================================
-        // MÓDULO 6: TAQUISTOSCOPIO (BUGS 1 Y 2: CONTINUAR TRAS FALLO Y TIEMPO ACTIVO)
+        // MÓDULO 6: TAQUISTOSCOPIO (CORRECCIÓN TECLA ENTER Y ERROR)
         // ==========================================
         let tachVal = "";
+        
         function startTachisto() { 
-            isTimerActive = false; // No hay tiempo en cruz
+            isTimerActive = false; 
             document.getElementById('game-target').textContent = "Memorizar Flash"; 
             showFlash("Fija la vista en la cruz", () => { setTimeout(nextTachisto, 1000); }); 
         }
+        
         function nextTachisto() {
-            isTimerActive = false; // Pausa tiempo
-            document.getElementById('tach-input-area').style.display = 'none'; document.getElementById('tach-input').value = '';
+            isTimerActive = false; 
+            document.getElementById('tach-input-area').style.display = 'none'; 
+            document.getElementById('tach-input').value = '';
             document.getElementById('tach-fixation').style.display = 'block';
+            
             setTimeout(() => {
                 tachVal = Math.floor(100 + Math.random()*900).toString();
                 document.getElementById('tach-fixation').style.display = 'none';
@@ -1210,28 +1256,35 @@
                     document.getElementById('tach-display').style.display = 'none';
                     document.getElementById('tach-input-area').style.display = 'flex';
                     document.getElementById('tach-input').focus();
-                    isTimerActive = true; // Empieza tiempo activo de respuesta
+                    isTimerActive = true; 
                 }, 250); 
             }, 1500);
         }
+
         window.checkTach = function() {
             if(!isPlaying) return;
-            isTimerActive = false; // Pausamos al enviar
+            isTimerActive = false; 
             if(document.getElementById('tach-input').value.trim() === tachVal) { 
                 registerHit(); 
                 if(isPlaying) nextTachisto(); 
             } else { 
                 triggerError(null); 
                 document.getElementById('tach-input').value = ''; 
-                if(isPlaying) nextTachisto(); // BUG 1 FIX: Pasa de ronda al fallar
+                if(isPlaying) nextTachisto(); // Si falla sigue de ronda
             }
         }
         
-        // Tecla ENTER para enviar en caja de texto Taquistoscopio
-        document.getElementById('tach-input').addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') { e.preventDefault(); checkTach(); }
-        });
-
+        // Manejador del Input para Enter o cualquier tecla no numérica
+        window.handleTachInput = function(e) {
+            // Permitir borrar
+            if(e.key === 'Backspace' || e.key === 'Delete') return;
+            // Si es un número, dejar que se escriba
+            if(/^[0-9]$/.test(e.key)) return;
+            
+            // Cualquier otra tecla (letras, enter, espacio) confirma
+            e.preventDefault();
+            checkTach();
+        }
 
         // ==========================================
         // DASHBOARD HISTORY, RUTINAS Y GRÁFICAS
@@ -1263,7 +1316,7 @@
                 });
                 document.getElementById('routine-status').textContent = `Completado: ${tc} de ${tr} ejercicios.`;
             }
-            renderHistory();
+            renderHistory(false);
         }
 
         document.getElementById('btn-add-routine').onclick = () => {
@@ -1333,21 +1386,23 @@
                 btn.classList.remove('active');
             });
             event.target.classList.add('active');
-            renderHistory();
+            renderHistory(false);
         }
 
-        function renderHistory() {
-            const history = JSON.parse(localStorage.getItem('nystagmus_history') || '[]');
+        // Si printAll es true, no filtra por pestañas (muestra toda la tabla global del paciente)
+        function renderHistory(printAll = false) {
+            const h = historyLog.filter(x => x.patientId === activePatientId);
             
-            const filteredHistory = history.filter(s => {
-                const matchPatient = (s.patientId === activePatientId) || (!s.patientId && activePatientId === 'p_default');
-                let m = s.mode;
-                if (activeStatsTab === 'grid') {
-                    return matchPatient && ['grid', 'search', 'coord', 'pursuit'].includes(m);
-                } else {
-                    return matchPatient && m === activeStatsTab;
-                }
-            });
+            let filteredHistory = h;
+            if (!printAll) {
+                filteredHistory = h.filter(x => {
+                    if (activeStatsTab === 'grid') {
+                        return ['grid', 'search', 'coord', 'pursuit'].includes(x.mode);
+                    } else {
+                        return x.mode === activeStatsTab;
+                    }
+                });
+            }
             
             const tbody = document.getElementById('history-tbody');
             
@@ -1450,13 +1505,14 @@
         document.getElementById('chart-axis-btn').addEventListener('click', () => {
             chartXAxisType = chartXAxisType === 'index' ? 'date' : 'index';
             document.getElementById('chart-axis-btn').textContent = chartXAxisType === 'index' ? '🔢 Eje X: Por Pruebas' : '📅 Eje X: Por Fecha';
-            renderHistory();
+            renderHistory(false);
         });
 
         // ==========================================
-        // IMPRESIÓN, EXPORTACIÓN Y CALIBRACIÓN
+        // IMPRESIÓN Y EXPORTACIÓN GLOBALES
         // ==========================================
         document.getElementById('btn-print-pdf').addEventListener('click', () => {
+            // Actualizar membrete
             document.getElementById('print-clinic').textContent = clinicCfg.clinicName || 'Centro Clínico';
             document.getElementById('print-specialist').textContent = clinicCfg.specialistName || 'Especialista';
             document.getElementById('print-col').textContent = clinicCfg.colNum ? "Nº Col: " + clinicCfg.colNum : '';
@@ -1466,12 +1522,16 @@
                 document.getElementById('print-logo').style.display = 'block'; 
             }
             
+            // Para imprimir, volcamos TODO el historial sin filtrar por pestañas
+            renderHistory(true); 
+            
             document.body.classList.remove('print-grid-only');
             document.body.classList.add('print-report-only');
-            renderHistory();
+            
             setTimeout(() => {
                 window.print();
                 document.body.classList.remove('print-report-only');
+                renderHistory(false); // Restaurar vista filtrada
             }, 150);
         });
 
@@ -1483,8 +1543,9 @@
         });
 
         document.getElementById('btn-export-json').addEventListener('click', () => {
+            // Exportar base de datos global de pacientes e historiales
             const bundle = {
-                version: "4.06",
+                version: "4.07",
                 clinic: clinicCfg,
                 patients: patients,
                 routines: routines,
@@ -1495,7 +1556,7 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `respaldo_terapia_v406_${new Date().toISOString().slice(0, 10)}.json`;
+            a.download = `respaldo_terapia_v407_${new Date().toISOString().slice(0, 10)}.json`;
             a.click();
             URL.revokeObjectURL(url);
         });
@@ -1517,7 +1578,7 @@
                         location.reload();
                     } else if (Array.isArray(d)) {
                         localStorage.setItem('nystagmus_history', JSON.stringify(d));
-                        alert('¡Historial importado!');
+                        alert('¡Historial heredado importado!');
                         location.reload();
                     } else alert('Formato no válido.');
                 } catch (err) { alert('Error al leer el archivo.'); }
@@ -1526,10 +1587,11 @@
         });
 
         document.getElementById('btn-delete-hist').addEventListener('click', () => {
-            if (confirm('¿Desea borrar el historial de este paciente?')) {
+            // Borra TODO el historial de este paciente
+            if (confirm('¿Desea borrar TODO el historial de pruebas de este paciente en todos los juegos?')) {
                 historyLog = historyLog.filter(s => s.patientId !== activePatientId);
                 localStorage.setItem('nystagmus_history', JSON.stringify(historyLog));
-                renderHistory();
+                renderHistory(false);
             }
         });
 
@@ -1544,6 +1606,11 @@
                 infoEl.innerHTML = `Tamaño de letra: ~${fontMm.toFixed(1)} mm. <strong style="color:#2563eb; font-size:1.1rem; margin-left: 0.5rem;">Distancia recomendada: ~${currentSuggestedDistanceCm} cm</strong>`;
             }
         }
+        
+        document.getElementById('game-inches').addEventListener('input', e => { 
+            localStorage.setItem('nystagmus_monitor_size', e.target.value); 
+            updateDistanceCalibration(); 
+        });
 
         // CALIBRACIÓN POR TARJETA FÍSICA
         document.getElementById('save-calib-btn').addEventListener('click', () => {
@@ -1567,7 +1634,7 @@
             box.style.height = h + 'px';
         });
 
-        // BOOTSTRAP
+        // BOOTSTRAP DE LA APLICACIÓN
         initApp();
         
     </script>
