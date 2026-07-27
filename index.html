@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Terapia Visual - v3.08 (Personalización de Clínica)</title>
+    <title>Terapia Visual Suite - v4.01</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -24,28 +24,16 @@
         }
 
         body.high-contrast {
-            --bg-color: #ffffff;
-            --text-color: #000000;
-            --grid-border: #000000;
-            --target-bg: #000000;
-            --target-text: #ffffff;
-            --wrong-bg: #888888;
-            --primary: #000000;
-            --primary-hover: #333333;
-            --panel-bg: #ffffff;
+            --bg-color: #ffffff; --text-color: #000000; --grid-border: #000000;
+            --target-bg: #000000; --target-text: #ffffff; --wrong-bg: #888888;
+            --primary: #000000; --primary-hover: #333333; --panel-bg: #ffffff;
         }
 
         body {
-            font-family: var(--font-clinical);
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin: 0;
-            padding: 0.8rem;
-            min-height: 100vh;
-            touch-action: manipulation;
+            font-family: var(--font-clinical); background-color: var(--bg-color);
+            color: var(--text-color); display: flex; flex-direction: column;
+            align-items: center; margin: 0; padding: 0.8rem;
+            min-height: 100vh; touch-action: manipulation;
         }
 
         h1 { margin: 0 0 0.4rem 0; color: var(--text-color); font-size: 1.4rem; text-align: center; font-weight: 700; }
@@ -59,451 +47,212 @@
         }
         body.high-contrast .panel { border: 2px solid #000000; }
 
-        /* SECCIÓN DE PACIENTE ACTIVO Y BARRA SUPERIOR */
+        /* SISTEMA DE VISTAS (SPA) */
+        .app-view { display: none; flex-direction: column; gap: 0.6rem; width: 100%; animation: fadeIn 0.3s ease; }
+        .app-view.active { display: flex; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* SECCIÓN DE PACIENTE ACTIVO */
         .patient-row {
             display: flex; justify-content: space-between; align-items: center;
             background: #eff6ff; border-left: 4px solid var(--primary); padding: 0.6rem 1rem;
             border-radius: 8px; flex-wrap: wrap; gap: 0.6rem;
         }
         body.high-contrast .patient-row { background: #f1f5f9; border-left: 4px solid #000; }
-
         .patient-select-group { display: flex; align-items: center; gap: 0.5rem; flex-grow: 1; }
 
-        /* PAUTA TERAPÉUTICA */
-        .routine-card {
-            background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 0.8rem 1rem;
+        /* DASHBOARD: TARJETAS DE EJERCICIO */
+        .exercises-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin-top: 0.5rem; }
+        .exercise-card {
+            background: white; border: 2px solid #cbd5e1; border-radius: 12px; padding: 1.2rem;
+            cursor: pointer; transition: all 0.2s; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
-        body.high-contrast .routine-card { background: #ffffff; border: 2px solid #000000; }
+        body.high-contrast .exercise-card { border: 3px solid #000; background: #fff; }
+        .exercise-card:hover { border-color: var(--primary); transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.2); }
+        .exercise-card-icon { font-size: 3rem; margin-bottom: 0.5rem; }
+        .exercise-card-title { font-size: 1.15rem; font-weight: 900; margin-bottom: 0.3rem; color: #0f172a; }
+        .exercise-card-desc { font-size: 0.85rem; color: #475569; line-height: 1.3; }
 
+        /* PAUTA TERAPÉUTICA */
+        .routine-card { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 0.8rem 1rem; }
+        body.high-contrast .routine-card { background: #ffffff; border: 2px solid #000000; }
         .task-item {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 0.4rem 0.6rem; background: white; border: 1px solid #e2e8f0;
-            border-radius: 6px; margin-top: 0.4rem; font-size: 0.88rem;
+            display: flex; justify-content: space-between; align-items: center; padding: 0.4rem 0.6rem; 
+            background: white; border: 1px solid #e2e8f0; border-radius: 6px; margin-top: 0.4rem; font-size: 0.88rem;
         }
         body.high-contrast .task-item { border: 1px solid #000; }
         .task-item.completed { background: #dcfce7; text-decoration: line-through; color: #166534; }
         body.high-contrast .task-item.completed { background: #e2e8f0; color: #000; }
 
         /* BARRA SUPERIOR DE ESTADO Y OBJETIVO */
-        .controls-row {
-            display: flex; justify-content: space-between; align-items: center;
-            font-size: 1.1rem; font-weight: 700; flex-wrap: wrap; gap: 0.8rem;
-        }
-
+        .controls-row { display: flex; justify-content: space-between; align-items: center; font-size: 1.1rem; font-weight: 700; flex-wrap: wrap; gap: 0.8rem; }
         .target-badge {
-            font-size: clamp(2rem, 4.5vh, 3.2rem);
-            font-weight: 900;
-            color: var(--primary);
-            background: #eff6ff;
-            padding: 0.1rem 0.8rem;
-            border-radius: 10px;
-            border: 3px solid var(--primary);
-            display: inline-block;
-            vertical-align: middle;
-            margin-left: 0.3rem;
-            line-height: 1.1;
+            font-size: clamp(2rem, 4.5vh, 3.2rem); font-weight: 900; color: var(--primary);
+            background: #eff6ff; padding: 0.1rem 0.8rem; border-radius: 10px; border: 3px solid var(--primary);
+            display: inline-block; vertical-align: middle; margin-left: 0.3rem; line-height: 1.1;
         }
-        body.high-contrast .target-badge {
-            background: #000000 !important; color: #ffffff !important; border-color: #000000 !important;
-        }
-
-        .progress-badge {
-            font-size: clamp(1.8rem, 4vh, 2.8rem);
-            font-weight: 900;
-            color: #16a34a;
-        }
+        body.high-contrast .target-badge { background: #000000 !important; color: #ffffff !important; border-color: #000000 !important; }
+        .progress-badge { font-size: clamp(1.8rem, 4vh, 2.8rem); font-weight: 900; color: #16a34a; }
         body.high-contrast .progress-badge { color: #000000; }
 
         /* CUADRÍCULA */
         .grid-wrapper { display: flex; justify-content: center; width: 100%; }
-
         #grid-container {
-            display: grid; grid-template-columns: 32px repeat(10, 1fr); gap: 4px;
-            background-color: var(--grid-border); border: 4px solid var(--grid-border);
-            border-radius: 10px; box-sizing: border-box;
-            transition: background-color 0.2s ease;
+            display: grid; grid-template-columns: 32px repeat(10, 1fr); gap: 4px; background-color: var(--grid-border); 
+            border: 4px solid var(--grid-border); border-radius: 10px; box-sizing: border-box; transition: background-color 0.2s ease;
         }
-
         .cell, .label-cell { background-color: white; display: flex; justify-content: center; align-items: center; user-select: none; }
-        
-        .cell {
-            font-family: var(--font-clinical);
-            font-weight: 700;
-            letter-spacing: 1px;
-            transition: background-color 0.1s ease;
-            box-sizing: border-box;
-            overflow: hidden;
-            color: #000;
-        }
-
+        .cell { font-family: var(--font-clinical); font-weight: 700; letter-spacing: 1px; transition: background-color 0.1s ease; box-sizing: border-box; overflow: hidden; color: #000; }
         .label-cell { background-color: #e2e8f0; color: #475569; font-weight: 700; }
         body.high-contrast .label-cell { background-color: #cccccc; color: #000000; border: 1px solid #000; }
-
         .mode-search .cell { cursor: pointer; }
         .mode-search .cell:active { background-color: #f1f5f9; }
-        
         .cell.found { background-color: var(--target-bg); color: var(--target-text); }
         .cell.wrong { background-color: var(--wrong-bg); animation: shake 0.4s; }
-        
-        body.high-contrast .cell.found {
-            background-color: #000000 !important; color: #ffffff !important; font-weight: 900;
-        }
-        body.high-contrast .cell.wrong {
-            background-color: #666666 !important; color: #ffffff !important; text-decoration: line-through;
-        }
-
-        .cell.pursuit-active { 
-            background-color: var(--primary); color: white; transform: scale(1.05);
-            border-radius: 4px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); z-index: 10;
-        }
-
+        body.high-contrast .cell.found { background-color: #000000 !important; color: #ffffff !important; font-weight: 900; }
+        body.high-contrast .cell.wrong { background-color: #666666 !important; color: #ffffff !important; text-decoration: line-through; }
+        .cell.pursuit-active { background-color: var(--primary); color: white; transform: scale(1.05); border-radius: 4px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); z-index: 10; }
         #grid-container.hide-lines { gap: 0; background-color: #ffffff; border: 4px solid #cbd5e1; }
         body.high-contrast #grid-container.hide-lines { border: 4px solid #000000; }
         #grid-container.hide-lines .cell { border: 1px solid #f8fafc; }
         body.high-contrast #grid-container.hide-lines .cell { border: 1px solid #e2e8f0; }
 
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25%, 75% { transform: translateX(-5px); }
-            50% { transform: translateX(5px); }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25%, 75% { transform: translateX(-5px); } 50% { transform: translateX(5px); } }
+
+        /* MÓDULO: ANTI-CROWDING */
+        .ac-wrapper {
+            display: flex; justify-content: center; align-items: center; width: 100%;
+            height: min(58vh, 500px); background: #ffffff; border: 4px solid #cbd5e1; border-radius: 12px;
+            box-sizing: border-box; overflow: hidden;
         }
+        body.high-contrast .ac-wrapper { border-color: #000; }
+        #ac-display {
+            font-family: var(--font-clinical); font-weight: 900; color: #0f172a; white-space: nowrap;
+            transition: all 0.3s ease; user-select: none;
+        }
+        body.high-contrast #ac-display { color: #000; }
+        .ac-flanker { color: #64748b; font-weight: 700; opacity: 0.8; }
+        body.high-contrast .ac-flanker { color: #444; }
+        .ac-target { color: var(--primary); font-weight: 900; }
+        body.high-contrast .ac-target { color: #000; }
+        .ac-wrapper.success { background-color: var(--target-bg); }
+        .ac-wrapper.error { background-color: var(--wrong-bg); animation: shake 0.4s; }
 
         /* TECLADO VIRTUAL */
-        #virtual-keypad {
-            display: none; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 0.2rem; width: 100%;
-        }
-
+        #virtual-keypad { display: none; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 0.2rem; width: 100%; }
         .keypad-btn {
-            font-family: var(--font-clinical); background-color: white; border: 3px solid var(--grid-border);
-            border-radius: 12px; font-size: 2.2rem; font-weight: 700; color: var(--text-color);
-            padding: 0.8rem 0; cursor: pointer; box-shadow: 0 4px 0 var(--grid-border);
-            transition: all 0.1s; touch-action: manipulation;
+            font-family: var(--font-clinical); background-color: white; border: 3px solid var(--grid-border); border-radius: 12px;
+            font-size: 2.2rem; font-weight: 700; color: var(--text-color); padding: 0.8rem 0; cursor: pointer; box-shadow: 0 4px 0 var(--grid-border); transition: all 0.1s; touch-action: manipulation;
         }
         .keypad-btn:active { transform: translateY(4px); box-shadow: 0 0 0 var(--grid-border); background-color: var(--bg-color); }
-        .keypad-btn.focused {
-            border-color: #2563eb; background-color: #eff6ff;
-            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.4), 0 4px 0 #2563eb; transform: translateY(-2px);
-        }
-        body.high-contrast .keypad-btn.focused {
-            border-color: #000000; background-color: #000000; color: #ffffff;
-        }
+        .keypad-btn.focused { border-color: #2563eb; background-color: #eff6ff; box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.4), 0 4px 0 #2563eb; transform: translateY(-2px); }
+        body.high-contrast .keypad-btn.focused { border-color: #000000; background-color: #000000; color: #ffffff; }
 
         /* CONFIGURACIÓN Y FORMULARIO */
         .config-row { display: flex; gap: 0.8rem; flex-wrap: wrap; align-items: center; justify-content: space-between; }
         .config-item { display: flex; flex-direction: column; gap: 0.2rem; font-weight: 700; font-size: 0.85rem; }
-
         select, input[type="number"], input[type="text"], input[type="date"], textarea {
-            font-family: var(--font-clinical); padding: 0.5rem; border: 2px solid #cbd5e1;
-            border-radius: 8px; font-size: 0.95rem; font-weight: 700; background: #f8fafc; color: #000;
+            font-family: var(--font-clinical); padding: 0.5rem; border: 2px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem; font-weight: 700; background: #f8fafc; color: #000;
         }
-
         .toggle-option {
             display: flex; align-items: center; gap: 0.4rem; font-weight: 700; font-size: 0.95rem;
             background: #e2e8f0; padding: 0.5rem 0.8rem; border-radius: 8px; cursor: pointer; user-select: none;
         }
         body.high-contrast .toggle-option { background: #000000; color: #ffffff; }
         .toggle-option input { width: 18px; height: 18px; cursor: pointer; }
-
         .btn {
-            font-family: var(--font-clinical); background-color: var(--primary); color: white;
-            border: none; padding: 0.7rem 1.4rem; border-radius: 8px; font-size: 1.05rem;
-            font-weight: 700; cursor: pointer; transition: background-color 0.2s;
+            font-family: var(--font-clinical); background-color: var(--primary); color: white; border: none; padding: 0.7rem 1.4rem; border-radius: 8px; font-size: 1.05rem; font-weight: 700; cursor: pointer; transition: background-color 0.2s;
         }
         .btn:hover { background-color: var(--primary-hover); }
-
-        .btn-secondary {
-            background-color: #64748b; font-size: 0.85rem; padding: 0.5rem 0.9rem;
-        }
+        .btn-secondary { background-color: #64748b; font-size: 0.85rem; padding: 0.5rem 0.9rem; }
         .btn-secondary:hover { background-color: #475569; }
 
         /* DESPLEGABLES */
         .collapsible-toggle {
-            background: #e2e8f0; color: #334155; border: none; padding: 0.7rem 1rem;
-            border-radius: 8px; cursor: pointer; font-weight: 700; width: 100%; text-align: left;
-            display: flex; justify-content: space-between; align-items: center; font-family: var(--font-clinical);
-            font-size: 0.95rem;
+            background: #e2e8f0; color: #334155; border: none; padding: 0.7rem 1rem; border-radius: 8px; cursor: pointer; font-weight: 700; width: 100%; text-align: left; display: flex; justify-content: space-between; align-items: center; font-family: var(--font-clinical); font-size: 0.95rem;
         }
         body.high-contrast .collapsible-toggle { background: #000000; color: #ffffff; }
         .collapsible-toggle:hover { background: #cbd5e1; }
         .collapsible-content { display: none; padding: 1rem 0 0 0; font-size: 0.9rem; line-height: 1.5; }
         .collapsible-content.active { display: block; }
 
-        .info-badge {
-            background-color: #f0fdf4; border-left: 4px solid #22c55e;
-            padding: 0.8rem 1rem; border-radius: 8px; font-size: 1rem; margin-bottom: 0.8rem;
-        }
-
-        .tab-buttons {
-            display: flex; gap: 0.4rem; border-bottom: 2px solid #cbd5e1; padding-bottom: 0.4rem; margin-bottom: 1rem;
-        }
-        .tab-btn {
-            background: #f1f5f9; border: none; padding: 0.5rem 1rem; border-radius: 6px 6px 0 0;
-            font-family: var(--font-clinical); font-weight: 700; color: #64748b; cursor: pointer;
-        }
+        .info-badge { background-color: #f0fdf4; border-left: 4px solid #22c55e; padding: 0.8rem 1rem; border-radius: 8px; font-size: 1rem; margin-bottom: 0.8rem; }
+        .tab-buttons { display: flex; gap: 0.4rem; border-bottom: 2px solid #cbd5e1; padding-bottom: 0.4rem; margin-bottom: 1rem; flex-wrap: wrap;}
+        .tab-btn { background: #f1f5f9; border: none; padding: 0.5rem 1rem; border-radius: 6px 6px 0 0; font-family: var(--font-clinical); font-weight: 700; color: #64748b; cursor: pointer; }
         .tab-btn.active { background: var(--primary); color: white; }
-
-        .filter-bar {
-            display: flex; gap: 1rem; flex-wrap: wrap; background: #f8fafc; padding: 0.6rem 0.8rem;
-            border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 1rem; align-items: center;
-        }
-
+        .filter-bar { display: flex; gap: 1rem; flex-wrap: wrap; background: #f8fafc; padding: 0.6rem 0.8rem; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 1rem; align-items: center; }
         .history-table { width: 100%; border-collapse: collapse; margin-top: 0.5rem; font-size: 0.85rem; }
         .history-table th, .history-table td { border: 1px solid #cbd5e1; padding: 0.4rem 0.6rem; text-align: center; }
         .history-table th { background-color: #f1f5f9; font-weight: 700; color: #475569; }
-
-        .metric-card {
-            background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;
-            padding: 0.6rem 0.8rem; text-align: center; flex: 1; min-width: 130px;
-        }
+        .metric-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.6rem 0.8rem; text-align: center; flex: 1; min-width: 130px; }
         .metric-card .val { font-size: 1.2rem; font-weight: 700; color: var(--primary); }
         .metric-card .lbl { font-size: 0.72rem; color: #64748b; font-weight: 700; }
-
-        .chart-container {
-            background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px;
-            padding: 1rem; margin-bottom: 1rem;
-        }
-        .chart-controls {
-            display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; flex-wrap: wrap; gap: 0.5rem;
-        }
+        .chart-container { background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; }
+        .chart-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; flex-wrap: wrap; gap: 0.5rem; }
 
         /* OVERLAYS Y PANTALLAS FLOTANTES */
         #flashcard-overlay, #result-overlay, #card-calib-modal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(255, 255, 255, 0.98); z-index: 9999;
-            display: none; flex-direction: column; justify-content: center; align-items: center;
-            text-align: center; padding: 2rem; box-sizing: border-box; touch-action: manipulation; cursor: pointer;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(255, 255, 255, 0.98); z-index: 9999;
+            display: none; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 2rem; box-sizing: border-box; touch-action: manipulation; cursor: pointer;
         }
-        body.high-contrast #flashcard-overlay, body.high-contrast #result-overlay, body.high-contrast #card-calib-modal {
-            background-color: #ffffff; color: #000000;
-        }
+        body.high-contrast #flashcard-overlay, body.high-contrast #result-overlay, body.high-contrast #card-calib-modal { background-color: #ffffff; color: #000000; }
         #flashcard-overlay.active, #result-overlay.active { display: flex; }
-        
         #flashcard-main { font-size: clamp(3rem, 10vw, 7rem); font-weight: 700; color: #0f172a; margin-bottom: 1.5rem; line-height: 1.2; }
         body.high-contrast #flashcard-main { color: #000000; }
 
         .flashcard-distance-badge {
-            font-size: clamp(1.4rem, 3.5vw, 2.2rem);
-            font-weight: 900;
-            background: #fef08a;
-            color: #854d0e;
-            padding: 0.8rem 1.8rem;
-            border-radius: 50px;
-            margin-bottom: 1.8rem;
-            border: 3px solid #eab308;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            font-size: clamp(1.4rem, 3.5vw, 2.2rem); font-weight: 900; background: #fef08a; color: #854d0e; padding: 0.8rem 1.8rem; border-radius: 50px; margin-bottom: 1.8rem; border: 3px solid #eab308; box-shadow: 0 4px 12px rgba(0,0,0,0.08);
         }
-        body.high-contrast .flashcard-distance-badge {
-            background: #000000; color: #ffffff; border-color: #000000;
-        }
-
+        body.high-contrast .flashcard-distance-badge { background: #000000; color: #ffffff; border-color: #000000; }
         .result-title { font-size: clamp(2.2rem, 5vw, 3.8rem); font-weight: 900; color: #16a34a; margin-bottom: 1.5rem; }
         body.high-contrast .result-title { color: #000000; }
-
-        .result-stats-grid {
-            display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-bottom: 2.5rem; width: 100%; max-width: 700px;
-        }
-        .result-stat-card {
-            background: #f8fafc; border: 3px solid #cbd5e1; border-radius: 16px;
-            padding: 1.2rem 1.8rem; flex: 1; min-width: 160px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-        }
+        .result-stats-grid { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-bottom: 2.5rem; width: 100%; max-width: 700px; }
+        .result-stat-card { background: #f8fafc; border: 3px solid #cbd5e1; border-radius: 16px; padding: 1.2rem 1.8rem; flex: 1; min-width: 160px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
         body.high-contrast .result-stat-card { background: #ffffff; border: 3px solid #000000; }
         .result-stat-val { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 900; color: var(--primary); }
         body.high-contrast .result-stat-val { color: #000000; }
         .result-stat-lbl { font-size: 0.9rem; font-weight: 700; color: #64748b; margin-top: 0.2rem; }
         body.high-contrast .result-stat-lbl { color: #000000; }
-
-        .overlay-sub-banner {
-            font-size: 1.3rem; color: #3b82f6; font-weight: 700; background: #eff6ff;
-            padding: 1rem 2rem; border-radius: 50px; border: 2px solid #bfdbfe;
-        }
+        .overlay-sub-banner { font-size: 1.3rem; color: #3b82f6; font-weight: 700; background: #eff6ff; padding: 1rem 2rem; border-radius: 50px; border: 2px solid #bfdbfe; }
         body.high-contrast .overlay-sub-banner { background: #000000; color: #ffffff; border-color: #000000; }
 
-        /* ENCABEZADO DE MEMBRETE CLÍNICO PARA IMPRESIÓN (NUEVO V3.08) */
-        .print-clinic-header {
-            display: none;
-        }
+        .print-clinic-header { display: none; }
 
-        /* =========================================================
-           DISEÑO IMPRESO CLÍNICO CON MEMBRETE DE CENTRO (v3.08)
-           ========================================================= */
+        /* REGLAS DE IMPRESIÓN */
         @media print {
-            @page {
-                size: A4 portrait;
-                margin: 8mm 10mm;
-            }
+            @page { size: A4 portrait; margin: 8mm 10mm; }
+            body { background: white !important; color: #000000 !important; font-size: 9pt !important; line-height: 1.15 !important; padding: 0 !important; margin: 0 !important; }
+            .btn, button, input, select, textarea, #virtual-keypad, #flashcard-overlay, #result-overlay, #card-calib-modal, .collapsible-toggle, .filter-bar, .tab-buttons, #detection-badge, .routine-designer-box, #patient-modal-content h3, #patient-modal-content > div:first-child, .patient-row, .controls-row, .grid-wrapper, .ac-wrapper, .config-row, #inst-content, .chart-controls, #clinic-config-content, .exercises-grid, .top-nav-btn { display: none !important; }
+            .container { max-width: 100% !important; gap: 0.3rem !important; }
+            .panel { box-shadow: none !important; border: 1px solid #94a3b8 !important; border-radius: 4px !important; padding: 0.4rem 0.6rem !important; background: #ffffff !important; }
 
-            body {
-                background: white !important;
-                color: #000000 !important;
-                font-size: 9pt !important;
-                line-height: 1.15 !important;
-                padding: 0 !important;
-                margin: 0 !important;
-            }
+            /* REPORTE CLINICO */
+            body.print-report-only .app-view { display: none !important; }
+            body.print-report-only #view-dashboard { display: flex !important; }
+            body.print-report-only .print-clinic-header { display: flex !important; justify-content: space-between !important; align-items: center !important; border-bottom: 2px solid #000000 !important; padding-bottom: 6px !important; margin-bottom: 8px !important; }
+            .print-clinic-logo { max-height: 50px !important; max-width: 180px !important; object-fit: contain !important; }
+            .print-clinic-info { text-align: right !important; font-size: 8pt !important; line-height: 1.2 !important; }
+            body.print-report-only h1 { display: block !important; text-align: left !important; font-size: 13pt !important; font-weight: 900 !important; margin: 0 0 4px 0 !important; color: #000000 !important; }
+            body.print-report-only #patient-modal-content { display: block !important; padding: 0 !important; background: transparent !important; border: none !important; }
+            body.print-report-only #patient-details-card { display: block !important; border: 1px solid #94a3b8 !important; background: #f8fafc !important; padding: 5px 8px !important; border-radius: 4px !important; font-size: 8.5pt !important; margin-bottom: 4px !important; }
+            body.print-report-only #routine-panel { display: block !important; border: 1px solid #94a3b8 !important; background: #ffffff !important; padding: 5px 8px !important; border-radius: 4px !important; margin-bottom: 4px !important; }
+            body.print-report-only .task-item { border: 1px solid #cbd5e1 !important; padding: 2px 5px !important; margin-top: 2px !important; font-size: 8pt !important; background: #ffffff !important; }
+            body.print-report-only #stats-content { display: block !important; padding: 0 !important; border: none !important; }
+            body.print-report-only .metric-card { border: 1px solid #cbd5e1 !important; padding: 3px 5px !important; border-radius: 4px !important; background: #ffffff !important; }
+            body.print-report-only .metric-card .val { font-size: 10pt !important; font-weight: 900 !important; }
+            body.print-report-only .metric-card .lbl { font-size: 6.5pt !important; font-weight: 700 !important; }
+            body.print-report-only .chart-container { border: 1px solid #94a3b8 !important; padding: 4px !important; border-radius: 4px !important; margin-bottom: 4px !important; page-break-inside: avoid; height: 130px !important; }
+            body.print-report-only #evolution-chart { height: 110px !important; }
+            body.print-report-only .history-table { width: 100% !important; border-collapse: collapse !important; font-size: 8pt !important; margin-top: 4px !important; }
+            body.print-report-only .history-table th { background-color: #f1f5f9 !important; border: 1px solid #94a3b8 !important; padding: 2px 4px !important; font-weight: 700 !important; }
+            body.print-report-only .history-table td { border: 1px solid #cbd5e1 !important; padding: 2px 4px !important; }
 
-            /* Ocultar elementos de interfaz web */
-            .btn, button, input, select, textarea,
-            #virtual-keypad, #flashcard-overlay, #result-overlay, #card-calib-modal,
-            .collapsible-toggle, .filter-bar, .tab-buttons, #detection-badge,
-            .routine-designer-box, #patient-modal-content h3, #patient-modal-content > div:first-child,
-            .patient-row, .controls-row, .grid-wrapper, .config-row, #inst-content, .chart-controls, #clinic-config-content {
-                display: none !important;
-            }
-
-            .container {
-                max-width: 100% !important;
-                gap: 0.3rem !important;
-            }
-
-            .panel {
-                box-shadow: none !important;
-                border: 1px solid #94a3b8 !important;
-                border-radius: 4px !important;
-                padding: 0.4rem 0.6rem !important;
-                background: #ffffff !important;
-            }
-
-            /* MEMBRETE IMPRESO DE LA CLÍNICA */
-            body.print-report-only .print-clinic-header {
-                display: flex !important;
-                justify-content: space-between !important;
-                align-items: center !important;
-                border-bottom: 2px solid #000000 !important;
-                padding-bottom: 6px !important;
-                margin-bottom: 8px !important;
-            }
-            .print-clinic-logo {
-                max-height: 50px !important;
-                max-width: 180px !important;
-                object-fit: contain !important;
-            }
-            .print-clinic-info {
-                text-align: right !important;
-                font-size: 8pt !important;
-                line-height: 1.2 !important;
-            }
-
-            /* MODO 1: REPORTE CLÍNICO DOCUMENTAL (body.print-report-only) */
-            body.print-report-only h1 {
-                display: block !important;
-                text-align: left !important;
-                font-size: 13pt !important;
-                font-weight: 900 !important;
-                margin: 0 0 4px 0 !important;
-                color: #000000 !important;
-            }
-
-            body.print-report-only #patient-modal-content {
-                display: block !important;
-                padding: 0 !important;
-                background: transparent !important;
-            }
-
-            body.print-report-only #patient-details-card {
-                display: block !important;
-                border: 1px solid #94a3b8 !important;
-                background: #f8fafc !important;
-                padding: 5px 8px !important;
-                border-radius: 4px !important;
-                font-size: 8.5pt !important;
-                margin-bottom: 4px !important;
-            }
-
-            body.print-report-only #routine-panel {
-                display: block !important;
-                border: 1px solid #94a3b8 !important;
-                background: #ffffff !important;
-                padding: 5px 8px !important;
-                border-radius: 4px !important;
-                margin-bottom: 4px !important;
-            }
-
-            body.print-report-only .task-item {
-                border: 1px solid #cbd5e1 !important;
-                padding: 2px 5px !important;
-                margin-top: 2px !important;
-                font-size: 8pt !important;
-                background: #ffffff !important;
-            }
-
-            body.print-report-only #stats-content {
-                display: block !important;
-                padding: 0 !important;
-            }
-
-            body.print-report-only .metric-card {
-                border: 1px solid #cbd5e1 !important;
-                padding: 3px 5px !important;
-                border-radius: 4px !important;
-                background: #ffffff !important;
-            }
-            body.print-report-only .metric-card .val {
-                font-size: 10pt !important;
-                font-weight: 900 !important;
-            }
-            body.print-report-only .metric-card .lbl {
-                font-size: 6.5pt !important;
-                font-weight: 700 !important;
-            }
-
-            body.print-report-only .chart-container {
-                border: 1px solid #94a3b8 !important;
-                padding: 4px !important;
-                border-radius: 4px !important;
-                margin-bottom: 4px !important;
-                page-break-inside: avoid;
-                height: 130px !important;
-            }
-
-            body.print-report-only #evolution-chart {
-                height: 110px !important;
-            }
-
-            body.print-report-only .history-table {
-                width: 100% !important;
-                border-collapse: collapse !important;
-                font-size: 8pt !important;
-                margin-top: 4px !important;
-            }
-
-            body.print-report-only .history-table th {
-                background-color: #f1f5f9 !important;
-                border: 1px solid #94a3b8 !important;
-                padding: 2px 4px !important;
-                font-weight: 700 !important;
-            }
-
-            body.print-report-only .history-table td {
-                border: 1px solid #cbd5e1 !important;
-                padding: 2px 4px !important;
-            }
-
-            /* MODO 2: HOJA DE TRABAJO EN PAPEL (body.print-grid-only) */
-            body.print-grid-only .print-clinic-header,
-            body.print-grid-only h1,
-            body.print-grid-only .patient-row,
-            body.print-grid-only #patient-modal-content,
-            body.print-grid-only #routine-panel,
-            body.print-grid-only .config-row,
-            body.print-grid-only #inst-content,
-            body.print-grid-only #stats-content {
-                display: none !important;
-            }
-            body.print-grid-only .controls-row {
-                display: block !important;
-                border: none !important;
-                text-align: center !important;
-                font-size: 1.4rem !important;
-                margin-bottom: 1rem !important;
-            }
+            /* HOJA CUADRICULA */
+            body.print-grid-only #view-grid { display: flex !important; }
+            body.print-grid-only #view-dashboard, body.print-grid-only #view-anticrowding { display: none !important; }
+            body.print-grid-only .controls-row { display: block !important; border: none !important; text-align: center !important; font-size: 1.4rem !important; margin-bottom: 1rem !important; }
             body.print-grid-only .grid-wrapper { display: flex !important; }
-            body.print-grid-only #grid-container {
-                width: 100% !important;
-                height: auto !important;
-                aspect-ratio: 1/1 !important;
-                border: 3px solid #000 !important;
-                page-break-inside: avoid;
-            }
+            body.print-grid-only #grid-container { width: 100% !important; height: auto !important; aspect-ratio: 1/1 !important; border: 3px solid #000 !important; page-break-inside: avoid; }
             body.print-grid-only .cell { border: 1px solid #000 !important; }
         }
 
@@ -511,7 +260,7 @@
 </head>
 <body>
 
-    <!-- OVERLAY 1: FLASHCARD CON AVISO GIGANTE DE DISTANCIA -->
+    <!-- OVERLAYS (FLASHCARD, RESULTADO, CALIBRACIÓN) -->
     <div id="flashcard-overlay">
         <div class="flashcard-distance-badge" id="flashcard-distance-badge">
             📏 DISTANCIA RECOMENDADA: <span id="flashcard-dist-val">--</span> cm
@@ -520,357 +269,305 @@
         <div class="overlay-sub-banner">TOCA LA PANTALLA O PULSA CUALQUIER TECLA</div>
     </div>
 
-    <!-- OVERLAY 2: RESUMEN FLOTANTE DE RESULTADOS -->
     <div id="result-overlay">
         <div class="result-title">🎉 ¡Sesión Completada!</div>
         <div class="result-stats-grid">
-            <div class="result-stat-card">
-                <div class="result-stat-val" id="res-time">00:00.0</div>
-                <div class="result-stat-lbl">TIEMPO TOTAL</div>
-            </div>
-            <div class="result-stat-card">
-                <div class="result-stat-val" id="res-errors" style="color: #dc2626;">0</div>
-                <div class="result-stat-lbl">FALLOS</div>
-            </div>
-            <div class="result-stat-card">
-                <div class="result-stat-val" id="res-accuracy" style="color: #16a34a;">100%</div>
-                <div class="result-stat-lbl">PRECISIÓN</div>
-            </div>
+            <div class="result-stat-card"><div class="result-stat-val" id="res-time">00:00.0</div><div class="result-stat-lbl">TIEMPO TOTAL</div></div>
+            <div class="result-stat-card"><div class="result-stat-val" id="res-errors" style="color: #dc2626;">0</div><div class="result-stat-lbl">FALLOS</div></div>
+            <div class="result-stat-card"><div class="result-stat-val" id="res-accuracy" style="color: #16a34a;">100%</div><div class="result-stat-lbl">PRECISIÓN</div></div>
         </div>
         <div class="overlay-sub-banner">TOCA EN CUALQUIER PARTE O PULSA UNA TECLA PARA CONTINUAR</div>
     </div>
 
-    <!-- MODAL DE CALIBRACIÓN POR TARJETA -->
     <div id="card-calib-modal">
         <div style="background: white; color: #0f172a; padding: 1.5rem; border-radius: 16px; max-width: 520px; width: 90%; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.2); border: 3px solid #000; cursor: default;" onclick="event.stopPropagation();">
-            <h2 style="margin-top:0; color: var(--primary);">💳 Calibración Física de Pantalla</h2>
-            <p style="font-size: 0.95rem; line-height: 1.4; color: #475569; font-weight: bold;">
-                Coloque una tarjeta de crédito o carné sobre la pantalla y mueva el deslizador hasta que el recuadro azul coincida exactamente con el tamaño real de la tarjeta.
-            </p>
-            
+            <h2 style="margin-top:0; color: var(--primary);">💳 Calibración Física</h2>
+            <p style="font-size: 0.95rem; line-height: 1.4; color: #475569; font-weight: bold;">Coloque una tarjeta de crédito sobre la pantalla y mueva el deslizador hasta que el recuadro coincida.</p>
             <div style="display: flex; justify-content: center; align-items: center; margin: 1.5rem 0;">
-                <div id="calib-card-box" style="width: 320px; height: 200px; border: 4px dashed #2563eb; border-radius: 12px; background: #eff6ff; display: flex; align-items: center; justify-content: center; font-weight: 900; color: #1e40af; font-size: 1.1rem; box-sizing: border-box;">
-                    💳 PONGA LA TARJETA AQUÍ
-                </div>
+                <div id="calib-card-box" style="width: 320px; height: 200px; border: 4px dashed #2563eb; border-radius: 12px; background: #eff6ff; display: flex; align-items: center; justify-content: center; font-weight: 900; color: #1e40af;">💳 TARJETA AQUÍ</div>
             </div>
-
-            <div style="margin-bottom: 1.5rem;">
-                <label for="calib-slider" style="font-weight: 700; font-size: 0.9rem; display: block; margin-bottom: 0.4rem;">Ajuste de Ancho:</label>
-                <input type="range" id="calib-slider" min="160" max="600" value="320" style="width: 85%; height: 10px; cursor: pointer;">
-            </div>
-
-            <div style="display: flex; gap: 0.6rem; justify-content: center; flex-wrap: wrap;">
-                <button class="btn" id="save-calib-btn" style="background-color: #16a34a;">💾 Guardar Calibración</button>
+            <input type="range" id="calib-slider" min="160" max="600" value="320" style="width: 85%; height: 10px; cursor: pointer; margin-bottom: 1.5rem;">
+            <div style="display: flex; gap: 0.6rem; justify-content: center;">
+                <button class="btn" id="save-calib-btn" style="background-color: #16a34a;">💾 Guardar</button>
                 <button class="btn btn-secondary" id="close-calib-btn">Cancelar</button>
             </div>
         </div>
     </div>
 
     <div class="container">
-        <!-- MEMBRETE OFICIAL DE IMPRESIÓN (NUEVO V3.08) -->
+        <!-- MEMBRETE PDF -->
         <div class="print-clinic-header">
             <div>
                 <img id="print-logo-img" class="print-clinic-logo" src="" alt="Logo Centro" style="display:none;">
-                <strong id="print-clinic-name" style="font-size: 13pt; display: block; color: #000;">Centro de Terapia Visual</strong>
+                <strong id="print-clinic-name" style="font-size: 13pt; display: block; color: #000;">Centro Clínico</strong>
             </div>
             <div class="print-clinic-info">
-                <strong id="print-specialist-name" style="font-size: 10pt; color: #000;">Especialista: Optometrista</strong><br>
+                <strong id="print-specialist-name" style="font-size: 10pt; color: #000;">Especialista</strong><br>
                 <span id="print-col-num">Nº Col: --</span><br>
-                <span id="print-clinic-contact">Tel / Dirección</span><br>
-                <span id="print-date-stamp" style="font-size: 7.5pt; color: #475569;">Fecha Informe: --</span>
+                <span id="print-clinic-contact">Contacto</span><br>
+                <span id="print-date-stamp" style="font-size: 7.5pt; color: #475569;">Fecha</span>
             </div>
         </div>
 
-        <h1>Informe Clínico de Evolución - Terapia Visual</h1>
+        <h1>Suite de Terapia Visual (v4.01)</h1>
 
-        <!-- 0. SELECCIÓN DE PACIENTE ACTIVO Y CONFIGURACIÓN DE CENTRO -->
+        <!-- BARRA GLOBAL PACIENTE/CLINICA -->
         <div class="patient-row">
             <div class="patient-select-group">
-                <label for="active-patient-select" style="font-weight: 700; font-size: 0.95rem;">👤 Paciente Activo:</label>
+                <label for="active-patient-select" style="font-weight: 700; font-size: 0.95rem;">👤 Paciente:</label>
                 <select id="active-patient-select" style="flex-grow: 1; max-width: 280px; font-weight: 700;"></select>
             </div>
             <div style="display: flex; gap: 0.4rem; flex-wrap: wrap;">
-                <button class="btn btn-secondary" onclick="document.getElementById('patient-modal-content').classList.toggle('active')">
-                    ⚙️ Pacientes
-                </button>
-                <button class="btn btn-secondary" style="background-color: #0284c7; color: white;" onclick="document.getElementById('clinic-config-content').classList.toggle('active')">
-                    🏥 Configurar Clínica
-                </button>
+                <button class="btn btn-secondary top-nav-btn" onclick="document.getElementById('patient-modal-content').classList.toggle('active')">⚙️ Pacientes</button>
+                <button class="btn btn-secondary top-nav-btn" style="background-color: #0284c7; color: white;" onclick="document.getElementById('clinic-config-content').classList.toggle('active')">🏥 Configurar</button>
             </div>
         </div>
 
-        <!-- PANEL CONFIGURACIÓN DE CLÍNICA Y ESPECIALISTA (NUEVO V3.08) -->
+        <!-- CONFIGURACIÓN CLÍNICA -->
         <div class="panel" style="padding: 0;">
             <div id="clinic-config-content" class="collapsible-content" style="padding: 1rem; background: #f0f9ff; border-radius: 12px;">
-                <h3 style="margin-top: 0; color: #0284c7;">🏥 Datos del Centro y Especialista (Membrete PDF)</h3>
-                
+                <h3 style="margin-top: 0; color: #0284c7;">🏥 Datos del Centro y Especialista</h3>
                 <div style="display: flex; gap: 0.8rem; flex-wrap: wrap; margin-bottom: 0.8rem;">
-                    <input type="text" id="cfg-clinic-name" placeholder="Nombre de la Clínica u Óptica" style="flex: 2; min-width: 220px;">
-                    <input type="text" id="cfg-specialist-name" placeholder="Nombre del Especialista / Optometrista" style="flex: 2; min-width: 220px;">
-                    <input type="text" id="cfg-col-num" placeholder="Nº de Colegiado" style="flex: 1; min-width: 130px;">
+                    <input type="text" id="cfg-clinic-name" placeholder="Nombre Clínica" style="flex: 2; min-width: 220px;">
+                    <input type="text" id="cfg-specialist-name" placeholder="Especialista" style="flex: 2; min-width: 220px;">
+                    <input type="text" id="cfg-col-num" placeholder="Nº Colegiado" style="flex: 1; min-width: 130px;">
                 </div>
-                
-                <div style="display: flex; gap: 0.8rem; flex-wrap: wrap; margin-bottom: 0.8rem;">
-                    <input type="text" id="cfg-clinic-contact" placeholder="Dirección, Teléfono o Email de contacto" style="flex-grow: 1;">
-                </div>
-
-                <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; background: white; padding: 0.8rem; border-radius: 8px; border: 1px solid #cbd5e1;">
+                <input type="text" id="cfg-clinic-contact" placeholder="Dirección / Teléfono" style="width: 100%; box-sizing: border-box; margin-bottom: 0.8rem;">
+                <div style="display: flex; gap: 1rem; align-items: center; background: white; padding: 0.8rem; border-radius: 8px; border: 1px solid #cbd5e1;">
                     <div>
-                        <label style="font-weight: 700; font-size: 0.85rem; display: block;">Logo del Centro (PNG/JPG):</label>
+                        <label style="font-weight: 700; font-size: 0.85rem;">Logo (PNG/JPG):</label>
                         <input type="file" id="cfg-logo-input" accept="image/*" style="font-size: 0.85rem; margin-top: 0.3rem;">
                     </div>
-                    <img id="cfg-logo-preview" src="" alt="Vista previa logo" style="max-height: 45px; max-width: 150px; display: none; object-fit: contain;">
-                    <button class="btn btn-secondary" id="clear-logo-btn" style="display: none; background-color: #ef4444; font-size: 0.8rem; padding: 0.3rem 0.6rem;">Quitar Logo</button>
+                    <img id="cfg-logo-preview" src="" style="max-height: 45px; max-width: 150px; display: none;">
+                    <button class="btn btn-secondary" id="clear-logo-btn" style="display: none; background-color: #ef4444;">Quitar Logo</button>
                 </div>
-
-                <div style="margin-top: 0.8rem; text-align: right;">
-                    <button class="btn" id="save-clinic-cfg-btn" style="background-color: #0284c7;">💾 Guardar Datos del Centro</button>
-                </div>
+                <div style="margin-top: 0.8rem; text-align: right;"><button class="btn" id="save-clinic-cfg-btn" style="background-color: #0284c7;">💾 Guardar Datos</button></div>
             </div>
         </div>
 
-        <!-- PANEL GESTOR DE PERFILES DE PACIENTES -->
+        <!-- GESTOR PACIENTES -->
         <div class="panel" style="padding: 0;">
             <div id="patient-modal-content" class="collapsible-content" style="padding: 1rem; background: #f8fafc; border-radius: 12px;">
-                <h3 style="margin-top: 0; color: var(--primary);">👤 Crear / Administrar Pacientes</h3>
-                
+                <h3 style="margin-top: 0; color: var(--primary);">👤 Administrar Pacientes</h3>
                 <div style="display: flex; gap: 0.8rem; flex-wrap: wrap; margin-bottom: 1rem;">
-                    <input type="text" id="new-patient-name" placeholder="Nombre completo o ID clínico" style="flex-grow: 1; min-width: 200px;">
-                    <input type="date" id="new-patient-dob" title="Fecha de nacimiento">
-                    <button class="btn" id="create-patient-btn" style="font-size: 0.9rem; padding: 0.5rem 1rem;">➕ Registrar Paciente</button>
+                    <input type="text" id="new-patient-name" placeholder="Nombre completo" style="flex-grow: 1; min-width: 200px;">
+                    <input type="date" id="new-patient-dob">
+                    <button class="btn" id="create-patient-btn">➕ Registrar</button>
                 </div>
-                
-                <textarea id="new-patient-notes" placeholder="Notas clínicas o diagnóstico (ej. Nistagmo motor / Ambliopía OD)..." style="width: 100%; height: 60px; box-sizing: border-box; margin-bottom: 1rem;"></textarea>
-
+                <textarea id="new-patient-notes" placeholder="Notas clínicas..." style="width: 100%; height: 60px; box-sizing: border-box; margin-bottom: 1rem;"></textarea>
                 <div id="patient-details-card" style="background: white; padding: 0.8rem; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 0.9rem;">
-                    <strong>Ficha del Paciente Activo:</strong> <span id="patient-info-display">-</span>
+                    <strong>Ficha Paciente:</strong> <span id="patient-info-display">-</span>
                 </div>
             </div>
         </div>
 
-        <!-- PAUTA TERAPÉUTICA DIARIA -->
-        <div class="panel routine-card" id="routine-panel">
-            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
-                <div>
-                    <strong style="font-size: 1.05rem; color: #15803d;">📋 Pauta Terapéutica Prescrita</strong>
-                    <div id="routine-summary-text" style="font-size: 0.85rem; color: #475569; font-weight: 700;">
-                        Sin pauta activa.
-                    </div>
-                </div>
-                <div style="display: flex; gap: 0.4rem; flex-wrap: wrap;">
-                    <button class="btn" id="launch-routine-btn" style="background-color: #16a34a; font-size: 0.9rem; padding: 0.5rem 1rem;">▶️ Iniciar Siguiente Tarea</button>
-                    <button class="btn btn-secondary" onclick="document.getElementById('routine-designer-content').classList.toggle('active')">🛠️ Diseñar Pauta</button>
-                </div>
-            </div>
-
-            <div id="routine-tasks-list" style="margin-top: 0.6rem;"></div>
-
-            <div id="routine-designer-content" class="collapsible-content routine-designer-box" style="margin-top: 0.8rem; background: white; padding: 0.8rem; border-radius: 8px; border: 1px solid #cbd5e1;">
-                <strong style="font-size: 0.9rem; color: var(--primary);">➕ Añadir Ejercicio a la Prescripción</strong>
-                <div style="display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: center; margin-top: 0.5rem;">
-                    <select id="routine-add-mode" style="font-size: 0.85rem;">
-                        <option value="search">1. Búsqueda</option>
-                        <option value="coord">2. Coordenadas</option>
-                        <option value="pursuit">3. Seguimiento</option>
-                    </select>
-                    <select id="routine-add-eye" style="font-size: 0.85rem;">
-                        <option value="BIN">Binocular</option>
-                        <option value="OD">Ojo Derecho (OD)</option>
-                        <option value="OI">Ojo Izquierdo (OI)</option>
-                    </select>
-                    <select id="routine-add-lines" style="font-size: 0.85rem;">
-                        <option value="Sí">Con Líneas</option>
-                        <option value="No">Sin Líneas</option>
-                    </select>
-                    <input type="number" id="routine-add-count" value="2" min="1" max="10" style="width: 50px; font-size: 0.85rem;" title="Series/Repeticiones">
-                    <button class="btn" id="add-task-to-routine-btn" style="font-size: 0.85rem; padding: 0.4rem 0.8rem;">➕ Añadir Tarea</button>
-                    <button class="btn btn-secondary" id="clear-routine-btn" style="background-color: #ef4444; font-size: 0.85rem; padding: 0.4rem 0.8rem;">Vaciar Pauta</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- 1. BARRA DE ESTADO Y OBJETIVO -->
-        <div class="panel controls-row" id="game-controls-anchor">
-            <div id="instruction-text">
-                Objetivo: <span id="target-display" class="target-badge">-</span>
-            </div>
-            <div id="progress-container">
-                Progreso: <span id="score-display" class="progress-badge"><span id="score">0</span> / <span id="total-targets">0</span></span>
-            </div>
-            <div style="font-size: 1.1rem; color: #dc2626;">Fallos: <strong id="error-count">0</strong></div>
-            <div style="font-family: monospace; font-size: 1.4rem; font-weight: bold; color: #475569;" id="timer">00:00.0</div>
-        </div>
-
-        <!-- 2. CUADRÍCULA -->
-        <div class="grid-wrapper">
-            <div id="grid-container" class="mode-search"></div>
-        </div>
-        
-        <!-- 3. TECLADO VIRTUAL -->
-        <div id="virtual-keypad"></div>
-
-        <!-- 4. CONTROLES Y CONFIGURACIÓN -->
-        <div class="panel config-row">
-            <div class="config-item">
-                <label for="mode-select">Modo de Juego:</label>
-                <select id="mode-select">
-                    <option value="search">1. Búsqueda (Tocar en cuadrícula)</option>
-                    <option value="coord">2. Coordenadas (Usar teclado/flechas)</option>
-                    <option value="pursuit">3. Seguimiento Dinámico (Usar teclado/flechas)</option>
-                </select>
-            </div>
-
-            <div class="config-item">
-                <label for="eye-select">Ojo Entrenado:</label>
-                <select id="eye-select" style="background-color: #f0fdf4; border-color: #86efac;">
-                    <option value="BIN">Binocular (Ambos)</option>
-                    <option value="OD">Ojo Derecho (OD)</option>
-                    <option value="OI">Ojo Izquierdo (OI)</option>
-                </select>
-            </div>
+        <!-- ==========================================
+             VISTA 1: DASHBOARD (MENÚ PRINCIPAL)
+             ========================================== -->
+        <div id="view-dashboard" class="app-view active">
             
-            <div class="config-item">
-                <label for="monitor-size">Pulgadas: <span id="detection-badge" style="font-size: 0.7rem; color: #2563eb; font-weight: normal;">(Auto)</span></label>
-                <div style="display: flex; gap: 0.3rem; align-items: center;">
-                    <input type="number" id="monitor-size" value="34" min="5" max="120" style="width: 60px;">
-                    <button class="btn btn-secondary" id="open-calib-btn" style="padding: 0.4rem 0.6rem; font-size: 0.8rem;" title="Calibrar pantalla usando una tarjeta física">💳 Calibrar</button>
+            <!-- PAUTA TERAPÉUTICA -->
+            <div class="panel routine-card" id="routine-panel">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+                    <div>
+                        <strong style="font-size: 1.05rem; color: #15803d;">📋 Plan de Trabajo del Día</strong>
+                        <div id="routine-summary-text" style="font-size: 0.85rem; color: #475569; font-weight: 700;">Sin pauta activa.</div>
+                    </div>
+                    <div style="display: flex; gap: 0.4rem; flex-wrap: wrap;">
+                        <button class="btn" id="launch-routine-btn" style="background-color: #16a34a; font-size: 0.9rem;">▶️ Iniciar Siguiente</button>
+                        <button class="btn btn-secondary" onclick="document.getElementById('routine-designer-content').classList.toggle('active')">🛠️ Diseñar</button>
+                    </div>
                 </div>
-            </div>
-
-            <label class="toggle-option">
-                <input type="checkbox" id="lines-toggle" checked> 📐 Líneas
-            </label>
-            <label class="toggle-option">
-                <input type="checkbox" id="contrast-toggle"> ☯️ Alto Contraste
-            </label>
-            <label class="toggle-option">
-                <input type="checkbox" id="audio-toggle"> 🔊 Audio
-            </label>
-
-            <div style="display: flex; gap: 0.4rem; flex-wrap: wrap;">
-                <button class="btn" id="start-btn">Iniciar Sesión</button>
-                <button class="btn btn-secondary" id="print-grid-btn" title="Imprimir hoja de trabajo para lápiz/papel">📄 Papel</button>
-            </div>
-        </div>
-
-        <!-- 5. INSTRUCCIONES Y CALIBRACIÓN DE DISTANCIA -->
-        <div class="panel" style="padding: 0;">
-            <button class="collapsible-toggle" onclick="document.getElementById('inst-content').classList.toggle('active')">
-                <span>📖 Instrucciones Clínicas y Distancia</span>
-                <span>▼</span>
-            </button>
-            <div id="inst-content" class="collapsible-content" style="padding: 1rem;">
-                <div class="info-badge" id="distance-info">
-                    Calculando distancia sugerida...
-                </div>
-                <ul>
-                    <li><strong>Postura:</strong> Mantenga la espalda recta. <strong>No mueva la cabeza</strong> en ningún momento. Solo deben moverse los ojos.</li>
-                    <li><strong>Oclusión Monocular:</strong> Es altamente recomendable entrenar primero tapando un ojo con un parche o mano, luego tapando el otro, y finalmente hacer una sesión binocular.</li>
-                    <li><strong>Navegación Teclado:</strong> Use <code>Flecha Izquierda</code> / <code>Flecha Derecha</code> para elegir letra y <code>Flecha Arriba</code> / <code>Flecha Abajo</code> para confirmar. O teclee la letra directamente.</li>
-                </ul>
-            </div>
-        </div>
-
-        <!-- 6. ANALÍTICA Y REPORTES -->
-        <div class="panel" style="padding: 0;">
-            <button class="collapsible-toggle" onclick="document.getElementById('stats-content').classList.toggle('active')">
-                <span>📊 Estadísticas del Paciente y Reportes</span>
-                <span>▼</span>
-            </button>
-            <div id="stats-content" class="collapsible-content" style="padding: 1rem;">
+                <div id="routine-tasks-list" style="margin-top: 0.6rem;"></div>
                 
-                <div class="tab-buttons">
-                    <button class="tab-btn active" onclick="switchStatsTab('search')">🔍 Búsqueda</button>
-                    <button class="tab-btn" onclick="switchStatsTab('coord')">📍 Coordenadas</button>
-                    <button class="tab-btn" onclick="switchStatsTab('pursuit')">🎯 Seguimiento</button>
+                <!-- DISEÑADOR -->
+                <div id="routine-designer-content" class="collapsible-content routine-designer-box" style="margin-top: 0.8rem; background: white; padding: 0.8rem; border-radius: 8px; border: 1px solid #cbd5e1;">
+                    <strong style="font-size: 0.9rem; color: var(--primary);">➕ Añadir a Prescripción</strong>
+                    <div style="display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: center; margin-top: 0.5rem;">
+                        <select id="routine-add-mode" style="font-size: 0.85rem;">
+                            <optgroup label="Cuadrícula Clásica">
+                                <option value="search">Búsqueda 10x10</option>
+                                <option value="coord">Coordenadas 10x10</option>
+                                <option value="pursuit">Seguimiento 10x10</option>
+                            </optgroup>
+                            <optgroup label="Módulos Específicos">
+                                <option value="anticrowding">Anti-Crowding</option>
+                            </optgroup>
+                        </select>
+                        <select id="routine-add-eye" style="font-size: 0.85rem;">
+                            <option value="BIN">Binocular</option><option value="OD">Ojo Derecho</option><option value="OI">Ojo Izquierdo</option>
+                        </select>
+                        <select id="routine-add-lines" style="font-size: 0.85rem;">
+                            <option value="Sí">Con Líneas (Grid)</option><option value="No">Sin Líneas</option>
+                        </select>
+                        <input type="number" id="routine-add-count" value="2" min="1" max="10" style="width: 50px; font-size: 0.85rem;" title="Repeticiones">
+                        <button class="btn" id="add-task-to-routine-btn" style="font-size: 0.85rem; padding: 0.4rem 0.8rem;">➕ Añadir</button>
+                        <button class="btn btn-secondary" id="clear-routine-btn" style="background-color: #ef4444; font-size: 0.85rem;">Vaciar Pauta</button>
+                    </div>
                 </div>
+            </div>
 
-                <div class="filter-bar">
-                    <div style="font-weight: 700; font-size: 0.85rem; color: #475569;">⚙️ Filtros:</div>
-                    <div style="display: flex; align-items: center; gap: 0.4rem; font-size: 0.85rem;">
-                        <label for="filter-eye">Ojo:</label>
+            <!-- TARJETAS DE EJERCICIOS (NUEVO V4.01) -->
+            <div style="margin-top: 0.5rem;">
+                <h2 style="font-size: 1.1rem; color: #334155; margin-bottom: 0;">📚 Biblioteca de Ejercicios</h2>
+                <div class="exercises-grid">
+                    <!-- Tarjeta 1: Cuadrícula -->
+                    <div class="exercise-card" onclick="switchView('view-grid')">
+                        <div class="exercise-card-icon">🔠</div>
+                        <div class="exercise-card-title">Cuadrícula Espacial</div>
+                        <div class="exercise-card-desc">Búsqueda, Coordenadas y Seguimiento Foveal en matriz 10x10.</div>
+                    </div>
+                    <!-- Tarjeta 2: Anti-Crowding -->
+                    <div class="exercise-card" onclick="switchView('view-anticrowding')">
+                        <div class="exercise-card-icon">🎯</div>
+                        <div class="exercise-card-title">Anti-Crowding</div>
+                        <div class="exercise-card-desc">Discriminación de agudeza visual contra el amontonamiento.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ANALÍTICA Y REPORTES -->
+            <div class="panel" style="padding: 0; margin-top: 0.5rem;">
+                <button class="collapsible-toggle" onclick="document.getElementById('stats-content').classList.toggle('active')">
+                    <span>📊 Estadísticas Clínicas y Reportes</span><span>▼</span>
+                </button>
+                <div id="stats-content" class="collapsible-content active" style="padding: 1rem;">
+                    
+                    <div class="tab-buttons">
+                        <button class="tab-btn active" onclick="switchStatsTab('search')">Búsqueda (Grid)</button>
+                        <button class="tab-btn" onclick="switchStatsTab('coord')">Coord (Grid)</button>
+                        <button class="tab-btn" onclick="switchStatsTab('pursuit')">Seguimiento (Grid)</button>
+                        <button class="tab-btn" onclick="switchStatsTab('anticrowding')">Anti-Crowding</button>
+                    </div>
+
+                    <div class="filter-bar">
+                        <div style="font-weight: 700; font-size: 0.85rem; color: #475569;">⚙️ Filtros:</div>
                         <select id="filter-eye" style="padding: 0.3rem; font-size: 0.85rem;" onchange="renderHistory()">
-                            <option value="ALL">Todos</option>
-                            <option value="BIN">Binocular</option>
-                            <option value="OD">Ojo Derecho (OD)</option>
-                            <option value="OI">Ojo Izquierdo (OI)</option>
+                            <option value="ALL">Todos los Ojos</option><option value="BIN">Binocular</option><option value="OD">OD</option><option value="OI">OI</option>
                         </select>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 0.4rem; font-size: 0.85rem;">
-                        <label for="filter-lines">Guías:</label>
                         <select id="filter-lines" style="padding: 0.3rem; font-size: 0.85rem;" onchange="renderHistory()">
-                            <option value="ALL">Todas</option>
-                            <option value="Sí">Con Líneas</option>
-                            <option value="No">Sin Líneas</option>
+                            <option value="ALL">Cualquier Guía</option><option value="Sí">Con Líneas</option><option value="No">Sin Líneas</option>
                         </select>
                     </div>
-                </div>
 
-                <div style="display: flex; gap: 0.6rem; flex-wrap: wrap; margin-bottom: 1rem;">
-                    <div class="metric-card">
-                        <div class="val" id="metric-total-sessions">0</div>
-                        <div class="lbl">SESIONES MOSTRADAS</div>
+                    <div style="display: flex; gap: 0.6rem; flex-wrap: wrap; margin-bottom: 1rem;">
+                        <div class="metric-card"><div class="val" id="metric-total-sessions">0</div><div class="lbl">SESIONES</div></div>
+                        <div class="metric-card"><div class="val" id="metric-total-time">00:00:00</div><div class="lbl">TIEMPO</div></div>
+                        <div class="metric-card"><div class="val" id="metric-best-time">--:--</div><div class="lbl">MEJOR TIEMPO</div></div>
+                        <div class="metric-card"><div class="val" id="metric-avg-accuracy" style="color: #16a34a;">--%</div><div class="lbl">PRECISIÓN</div></div>
                     </div>
-                    <div class="metric-card">
-                        <div class="val" id="metric-total-time">00:00:00</div>
-                        <div class="lbl">TIEMPO JUGADO</div>
-                    </div>
-                    <div class="metric-card">
-                        <div class="val" id="metric-best-time">--:--</div>
-                        <div class="lbl">MEJOR TIEMPO</div>
-                    </div>
-                    <div class="metric-card">
-                        <div class="val" id="metric-avg-accuracy" style="color: #16a34a;">--%</div>
-                        <div class="lbl">PRECISIÓN MEDIA</div>
-                    </div>
-                </div>
 
-                <div class="chart-container">
-                    <div class="chart-controls">
-                        <strong style="font-size: 0.95rem; color: #334155;">📈 Evolución del Tiempo de Resolución</strong>
-                        <div style="font-size: 0.85rem;">
-                            Eje X: 
-                            <button class="btn btn-secondary" id="chart-axis-btn" style="padding: 0.3rem 0.6rem;">🔢 Por nº de prueba</button>
+                    <div class="chart-container">
+                        <div class="chart-controls">
+                            <strong style="font-size: 0.95rem; color: #334155;">📈 Evolución de Tiempo</strong>
+                            <button class="btn btn-secondary" id="chart-axis-btn" style="padding: 0.3rem 0.6rem; font-size:0.8rem;">Eje X: Pruebas</button>
+                        </div>
+                        <div style="width: 100%; height: 200px; position: relative;">
+                            <svg id="evolution-chart" width="100%" height="100%" style="overflow: visible;"></svg>
                         </div>
                     </div>
-                    
-                    <div style="width: 100%; height: 200px; position: relative;">
-                        <svg id="evolution-chart" width="100%" height="100%" style="overflow: visible;"></svg>
-                    </div>
-                </div>
 
-                <div style="overflow-x: auto;">
-                    <table class="history-table">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Fecha</th>
-                                <th>Ojo</th>
-                                <th>Tiempo Total</th>
-                                <th>Precisión (Fallos)</th>
-                                <th>Líneas</th>
-                                <th>Entorno / Pantalla</th>
-                            </tr>
-                        </thead>
-                        <tbody id="history-tbody">
-                            <tr><td colspan="7" style="color: #94a3b8;">Sin datos acumulados para este paciente.</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <div style="margin-top: 1rem; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;">
-                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                        <button class="btn btn-secondary" id="export-stats-btn">📥 Exportar (JSON)</button>
-                        <button class="btn btn-secondary" id="import-stats-btn">📤 Importar</button>
-                        <button class="btn btn-secondary" id="print-report-btn" style="background-color: #0d9488;">🖨️ Reporte PDF</button>
-                        <input type="file" id="import-file-input" accept=".json" style="display: none;">
+                    <div style="overflow-x: auto;">
+                        <table class="history-table">
+                            <thead><tr><th>#</th><th>Fecha</th><th>Ojo</th><th>Tiempo</th><th>Precisión</th><th>Líneas</th><th>Pantalla</th></tr></thead>
+                            <tbody id="history-tbody"><tr><td colspan="7">Sin datos.</td></tr></tbody>
+                        </table>
                     </div>
-                    <button class="btn btn-secondary" id="clear-stats-btn" style="background-color: #ef4444;">Borrar Historial Paciente</button>
+
+                    <div style="margin-top: 1rem; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;">
+                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                            <button class="btn btn-secondary" id="export-stats-btn">📥 Backup JSON</button>
+                            <button class="btn btn-secondary" id="import-stats-btn">📤 Restaurar</button>
+                            <button class="btn" id="print-report-btn" style="background-color: #0d9488;">🖨️ Reporte PDF Clínico</button>
+                            <input type="file" id="import-file-input" accept=".json" style="display: none;">
+                        </div>
+                        <button class="btn btn-secondary" id="clear-stats-btn" style="background-color: #ef4444;">Borrar Paciente</button>
+                    </div>
                 </div>
             </div>
-        </div>
 
-    </div>
+        </div> <!-- /view-dashboard -->
+
+        <!-- ==========================================
+             VISTA 2: MÓDULO CUADRÍCULA 10x10
+             ========================================== -->
+        <div id="view-grid" class="app-view">
+            <button class="btn btn-secondary" style="align-self: flex-start; margin-bottom: 0.2rem;" onclick="switchView('view-dashboard')">⬅️ Volver al Menú Principal</button>
+            
+            <div class="panel controls-row" id="grid-controls-anchor">
+                <div id="grid-instruction-text">Objetivo: <span id="grid-target-display" class="target-badge">-</span></div>
+                <div id="grid-progress-container">Progreso: <span class="progress-badge"><span id="grid-score">0</span> / <span id="grid-total-targets">0</span></span></div>
+                <div style="font-size: 1.1rem; color: #dc2626;">Fallos: <strong id="grid-error-count">0</strong></div>
+                <div style="font-family: monospace; font-size: 1.4rem; font-weight: bold; color: #475569;" id="grid-timer">00:00.0</div>
+            </div>
+
+            <div class="grid-wrapper"><div id="grid-container" class="mode-search"></div></div>
+
+            <div class="panel config-row">
+                <div class="config-item">
+                    <label>Modo:</label>
+                    <select id="grid-mode-select">
+                        <option value="search">Búsqueda Táctil</option><option value="coord">Coordenadas</option><option value="pursuit">Seguimiento</option>
+                    </select>
+                </div>
+                <div class="config-item">
+                    <label>Ojo:</label>
+                    <select id="grid-eye-select" style="background-color: #f0fdf4;"><option value="BIN">Binocular</option><option value="OD">OD</option><option value="OI">OI</option></select>
+                </div>
+                <div class="config-item">
+                    <label>Pulgadas: <span id="grid-detection-badge" style="font-size:0.7rem;"></span></label>
+                    <div style="display: flex; gap: 0.3rem;"><input type="number" id="grid-monitor-size" min="5" max="120" style="width: 60px;"><button class="btn btn-secondary" id="grid-open-calib-btn" style="padding: 0.4rem;">💳</button></div>
+                </div>
+                <label class="toggle-option"><input type="checkbox" id="grid-lines-toggle" checked> 📐 Líneas</label>
+                <label class="toggle-option"><input type="checkbox" id="grid-contrast-toggle"> ☯️ e-Ink</label>
+                <label class="toggle-option"><input type="checkbox" id="grid-audio-toggle"> 🔊 Audio</label>
+                
+                <div style="display: flex; gap: 0.4rem;">
+                    <button class="btn" id="grid-start-btn">Iniciar Sesión</button>
+                    <button class="btn btn-secondary" id="print-grid-btn">📄 Papel</button>
+                </div>
+            </div>
+            <div id="grid-distance-info" class="info-badge" style="background: white; border: 1px solid #cbd5e1;">Calculando...</div>
+        </div> <!-- /view-grid -->
+
+        <!-- ==========================================
+             VISTA 3: MÓDULO ANTI-CROWDING (NUEVO V4.01)
+             ========================================== -->
+        <div id="view-anticrowding" class="app-view">
+            <button class="btn btn-secondary" style="align-self: flex-start; margin-bottom: 0.2rem;" onclick="switchView('view-dashboard')">⬅️ Volver al Menú Principal</button>
+            
+            <div class="panel controls-row" id="ac-controls-anchor">
+                <div style="font-size: 1.15rem;">Identifica la letra <strong style="color:var(--primary);">CENTRAL</strong></div>
+                <div id="ac-progress-container">Progreso: <span class="progress-badge"><span id="ac-score">0</span> / 10</span></div>
+                <div style="font-size: 1.1rem; color: #dc2626;">Fallos: <strong id="ac-error-count">0</strong></div>
+                <div style="font-family: monospace; font-size: 1.4rem; font-weight: bold; color: #475569;" id="ac-timer">00:00.0</div>
+            </div>
+
+            <!-- CONTENEDOR ANTI-CROWDING -->
+            <div class="ac-wrapper" id="ac-wrapper">
+                <div id="ac-display" style="font-size: 100px; letter-spacing: 20px;">
+                    <span class="ac-flanker">A</span> <span class="ac-target">B</span> <span class="ac-flanker">C</span>
+                </div>
+            </div>
+
+            <div class="panel config-row">
+                <div class="config-item">
+                    <label>Ojo:</label>
+                    <select id="ac-eye-select" style="background-color: #f0fdf4;"><option value="BIN">Binocular</option><option value="OD">OD</option><option value="OI">OI</option></select>
+                </div>
+                <label class="toggle-option"><input type="checkbox" id="ac-contrast-toggle"> ☯️ Alto Contraste</label>
+                <label class="toggle-option"><input type="checkbox" id="ac-audio-toggle" checked> 🔊 Audio</label>
+                <button class="btn" id="ac-start-btn" style="padding: 0.8rem 2rem;">Iniciar Sesión Anti-Crowding</button>
+            </div>
+            <div class="info-badge" style="background: white; border: 1px solid #cbd5e1;">
+                <strong>Instrucciones:</strong> Mire fijamente al centro. Utilice el teclado (físico o virtual) para teclear la letra que aparece en el centro exacto. Si acierta, las letras se harán más pequeñas y se amontonarán más para forzar la agudeza foveal.
+            </div>
+        </div> <!-- /view-anticrowding -->
+
+        <!-- TECLADO VIRTUAL COMPARTIDO -->
+        <div id="virtual-keypad"></div>
+
+    </div> <!-- /container -->
 
     <script>
         const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -884,824 +581,96 @@
             'Y': ['V','X','T','U'], 'Z': ['S','X','N','E']
         };
 
-        let currentMode = 'search'; 
-        let activeStatsTab = 'search'; 
-        let chartXAxisType = 'index'; 
+        // ESTADO GLOBAL
         let activePatientId = null;
-        let currentSuggestedDistanceCm = 75;
         let currentClinicLogoBase64 = '';
-        
-        let targetLetter = '';
-        let targetRow = 0, targetCol = 0;
-        let totalTargets = 0, foundTargets = 0, sessionErrors = 0;
-        
-        let timerInterval, pursuitInterval, flashcardTimeout;
-        let timeElapsedMs = 0; 
+        let currentSuggestedDistanceCm = 75;
+        let activeView = 'view-dashboard'; // SPA State
+        let currentExercise = null; // 'search', 'coord', 'pursuit', 'anticrowding'
         let isPlaying = false;
         let isPausedByOverlay = false;
         let selectedKeypadIndex = 0;
+        let timeElapsedMs = 0;
+        let sessionErrors = 0;
+        let totalTargets = 0, foundTargets = 0;
+        let globalTimerInterval, globalPursuitInterval, flashcardTimeout;
 
-        const gridContainer = document.getElementById('grid-container');
-        const targetDisplay = document.getElementById('target-display');
-        const scoreElement = document.getElementById('score');
-        const totalTargetsElement = document.getElementById('total-targets');
-        const errorCountElement = document.getElementById('error-count');
-        const timerElement = document.getElementById('timer');
-        const startBtn = document.getElementById('start-btn');
-        const modeSelect = document.getElementById('mode-select');
-        const eyeSelect = document.getElementById('eye-select');
+        // ELEMENTOS DOM COMPARTIDOS
         const virtualKeypad = document.getElementById('virtual-keypad');
-        const audioToggle = document.getElementById('audio-toggle');
-        const linesToggle = document.getElementById('lines-toggle');
-        const contrastToggle = document.getElementById('contrast-toggle');
-        const monitorInput = document.getElementById('monitor-size');
-        const detectionBadge = document.getElementById('detection-badge');
-        const distanceInfo = document.getElementById('distance-info');
-        
-        const activePatientSelect = document.getElementById('active-patient-select');
-        const newPatientName = document.getElementById('new-patient-name');
-        const newPatientDob = document.getElementById('new-patient-dob');
-        const newPatientNotes = document.getElementById('new-patient-notes');
-        const createPatientBtn = document.getElementById('create-patient-btn');
-        const patientInfoDisplay = document.getElementById('patient-info-display');
-
-        const routineTasksList = document.getElementById('routine-tasks-list');
-        const routineSummaryText = document.getElementById('routine-summary-text');
-        const launchRoutineBtn = document.getElementById('launch-routine-btn');
-        const addRoutineTaskBtn = document.getElementById('add-task-to-routine-btn');
-        const clearRoutineBtn = document.getElementById('clear-routine-btn');
-
-        // CONFIGURACIÓN DE CENTRO / CLINICA (NUEVO V3.08)
-        const cfgClinicName = document.getElementById('cfg-clinic-name');
-        const cfgSpecialistName = document.getElementById('cfg-specialist-name');
-        const cfgColNum = document.getElementById('cfg-col-num');
-        const cfgClinicContact = document.getElementById('cfg-clinic-contact');
-        const cfgLogoInput = document.getElementById('cfg-logo-input');
-        const cfgLogoPreview = document.getElementById('cfg-logo-preview');
-        const clearLogoBtn = document.getElementById('clear-logo-btn');
-        const saveClinicCfgBtn = document.getElementById('save-clinic-cfg-btn');
-
-        const printLogoImg = document.getElementById('print-logo-img');
-        const printClinicName = document.getElementById('print-clinic-name');
-        const printSpecialistName = document.getElementById('print-specialist-name');
-        const printColNum = document.getElementById('print-col-num');
-        const printClinicContact = document.getElementById('print-clinic-contact');
-        const printDateStamp = document.getElementById('print-date-stamp');
-
         const flashcardOverlay = document.getElementById('flashcard-overlay');
         const flashcardMain = document.getElementById('flashcard-main');
         const flashcardDistVal = document.getElementById('flashcard-dist-val');
-        let overlayCallback = null;
-
         const resultOverlay = document.getElementById('result-overlay');
         const resTime = document.getElementById('res-time');
         const resErrors = document.getElementById('res-errors');
         const resAccuracy = document.getElementById('res-accuracy');
+        let overlayCallback = null;
 
-        // GESTIÓN DE CONFIGURACIÓN DE CLÍNICA
-        function loadClinicSettings() {
-            const saved = JSON.parse(localStorage.getItem('nystagmus_clinic_cfg') || '{}');
-            cfgClinicName.value = saved.clinicName || 'Centro de Terapia Visual';
-            cfgSpecialistName.value = saved.specialistName || 'Especialista en Terapia Visual';
-            cfgColNum.value = saved.colNum || '';
-            cfgClinicContact.value = saved.contact || '';
-            currentClinicLogoBase64 = saved.logoBase64 || '';
+        // DOM GRID
+        const gridContainer = document.getElementById('grid-container');
+        const gridTargetDisplay = document.getElementById('grid-target-display');
+        const gridScore = document.getElementById('grid-score');
+        const gridTotalTargets = document.getElementById('grid-total-targets');
+        const gridErrorCount = document.getElementById('grid-error-count');
+        const gridTimer = document.getElementById('grid-timer');
+        const gridStartBtn = document.getElementById('grid-start-btn');
+        const gridModeSelect = document.getElementById('grid-mode-select');
+        const gridEyeSelect = document.getElementById('grid-eye-select');
+        const gridLinesToggle = document.getElementById('grid-lines-toggle');
+        const gridContrastToggle = document.getElementById('grid-contrast-toggle');
+        const gridAudioToggle = document.getElementById('grid-audio-toggle');
+        const gridMonitorSize = document.getElementById('grid-monitor-size');
+        const gridDistanceInfo = document.getElementById('grid-distance-info');
+        let targetRow = 0, targetCol = 0, gridTargetLetter = '';
 
-            if (currentClinicLogoBase64) {
-                cfgLogoPreview.src = currentClinicLogoBase64;
-                cfgLogoPreview.style.display = 'block';
-                clearLogoBtn.style.display = 'inline-block';
-            } else {
-                cfgLogoPreview.style.display = 'none';
-                clearLogoBtn.style.display = 'none';
-            }
+        // DOM ANTI-CROWDING (V4.01)
+        const acWrapper = document.getElementById('ac-wrapper');
+        const acDisplay = document.getElementById('ac-display');
+        const acScore = document.getElementById('ac-score');
+        const acErrorCount = document.getElementById('ac-error-count');
+        const acTimer = document.getElementById('ac-timer');
+        const acStartBtn = document.getElementById('ac-start-btn');
+        const acEyeSelect = document.getElementById('ac-eye-select');
+        const acContrastToggle = document.getElementById('ac-contrast-toggle');
+        const acAudioToggle = document.getElementById('ac-audio-toggle');
+        let acTargetLetter = '';
+        let acLevelParams = { fontSize: 140, letterSpacing: 30, flankers: 1 }; // Inicial
+
+        // --- SISTEMA DE NAVEGACIÓN SPA ---
+        function switchView(viewId) {
+            if(isPlaying) stopAnyGame();
+            document.querySelectorAll('.app-view').forEach(v => v.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+            activeView = viewId;
+            virtualKeypad.style.display = 'none';
+
+            if(viewId === 'view-dashboard') renderHistory();
+            if(viewId === 'view-grid') updateGridLines();
         }
 
-        cfgLogoInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                currentClinicLogoBase64 = event.target.result;
-                cfgLogoPreview.src = currentClinicLogoBase64;
-                cfgLogoPreview.style.display = 'block';
-                clearLogoBtn.style.display = 'inline-block';
-            };
-            reader.readAsDataURL(file);
-        });
-
-        clearLogoBtn.addEventListener('click', () => {
-            currentClinicLogoBase64 = '';
-            cfgLogoInput.value = '';
-            cfgLogoPreview.style.display = 'none';
-            clearLogoBtn.style.display = 'none';
-        });
-
-        saveClinicCfgBtn.addEventListener('click', () => {
-            const cfg = {
-                clinicName: cfgClinicName.value.trim(),
-                specialistName: cfgSpecialistName.value.trim(),
-                colNum: cfgColNum.value.trim(),
-                contact: cfgClinicContact.value.trim(),
-                logoBase64: currentClinicLogoBase64
-            };
-            localStorage.setItem('nystagmus_clinic_cfg', JSON.stringify(cfg));
-            alert('¡Configuración de clínica guardada con éxito!');
-        });
-
-        function updatePrintHeaderData() {
-            const saved = JSON.parse(localStorage.getItem('nystagmus_clinic_cfg') || '{}');
-            printClinicName.textContent = saved.clinicName || 'Centro de Terapia Visual';
-            printSpecialistName.textContent = saved.specialistName ? `Especialista: ${saved.specialistName}` : 'Especialista en Terapia Visual';
-            printColNum.textContent = saved.colNum ? `Nº Col: ${saved.colNum}` : '';
-            printClinicContact.textContent = saved.contact || '';
-            printDateStamp.textContent = `Fecha Emisión: ${new Date().toLocaleDateString('es-ES')}`;
-
-            if (saved.logoBase64) {
-                printLogoImg.src = saved.logoBase64;
-                printLogoImg.style.display = 'block';
-            } else {
-                printLogoImg.style.display = 'none';
-            }
-        }
-
-        // CALIBRACIÓN POR TARJETA
-        const cardCalibModal = document.getElementById('card-calib-modal');
-        const calibCardBox = document.getElementById('calib-card-box');
-        const calibSlider = document.getElementById('calib-slider');
-        const saveCalibBtn = document.getElementById('save-calib-btn');
-        const closeCalibBtn = document.getElementById('close-calib-btn');
-        const openCalibBtn = document.getElementById('open-calib-btn');
-
-        openCalibBtn.addEventListener('click', () => {
-            const inches = parseFloat(monitorInput.value) || 24;
-            const ppi = Math.hypot(window.screen.width, window.screen.height) / inches;
-            const cardWidthPx = Math.round(ppi * 3.3700787);
-            calibSlider.value = Math.min(Math.max(cardWidthPx, 160), 600);
-            updateCalibBox();
-            cardCalibModal.style.display = 'flex';
-        });
-
-        calibSlider.addEventListener('input', updateCalibBox);
-
-        function updateCalibBox() {
-            const w = parseInt(calibSlider.value);
-            const h = Math.round(w * (53.98 / 85.6));
-            calibCardBox.style.width = w + 'px';
-            calibCardBox.style.height = h + 'px';
-        }
-
-        saveCalibBtn.addEventListener('click', () => {
-            const cardWidthPx = parseInt(calibSlider.value);
-            const ppi = cardWidthPx / 3.3700787;
-            const calculatedInches = Math.hypot(window.screen.width, window.screen.height) / ppi;
-            const roundedInches = Math.round(calculatedInches * 10) / 10;
-            
-            monitorInput.value = roundedInches;
-            localStorage.setItem('nystagmus_monitor_size', roundedInches);
-            detectionBadge.textContent = '💾 Calibrado';
-            updateDistanceCalibration();
-            cardCalibModal.style.display = 'none';
-            alert(`¡Pantalla calibrada con éxito! Diagonal ajustada: ${roundedInches}"`);
-        });
-
-        closeCalibBtn.addEventListener('click', () => cardCalibModal.style.display = 'none');
-        cardCalibModal.addEventListener('click', () => cardCalibModal.style.display = 'none');
-
-        // RESUMEN DE RESULTADOS
-        function showResultOverlay(timeStr, errors, accuracyPct) {
-            isPausedByOverlay = true;
-            resTime.textContent = timeStr;
-            resErrors.textContent = errors;
-            resAccuracy.textContent = `${accuracyPct}%`;
-            resultOverlay.classList.add('active');
-        }
-
-        function dismissResultOverlay() {
-            if (!resultOverlay.classList.contains('active')) return;
-            resultOverlay.classList.remove('active');
-            isPausedByOverlay = false;
-        }
-
-        resultOverlay.addEventListener('click', dismissResultOverlay);
-
-        function scrollToGameFocus() {
-            setTimeout(() => {
-                const anchor = document.getElementById('game-controls-anchor');
-                if (anchor) {
-                    anchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
-            }, 100);
-        }
-
-        // GESTIÓN MULTIUSUARIO
-        function getPatients() {
-            let patients = JSON.parse(localStorage.getItem('nystagmus_patients') || '[]');
-            if (patients.length === 0) {
-                const defaultPatient = {
-                    id: 'p_default',
-                    name: 'Paciente General',
-                    dob: '',
-                    notes: 'Perfil creado automáticamente.'
-                };
-                patients.push(defaultPatient);
-                localStorage.setItem('nystagmus_patients', JSON.stringify(patients));
-            }
-            return patients;
-        }
-
-        function initPatientSystem() {
-            const patients = getPatients();
-            activePatientSelect.innerHTML = '';
-            patients.forEach(p => {
-                const opt = document.createElement('option');
-                opt.value = p.id;
-                opt.textContent = p.name;
-                activePatientSelect.appendChild(opt);
-            });
-
-            const savedActiveId = localStorage.getItem('nystagmus_active_patient_id');
-            if (savedActiveId && patients.some(p => p.id === savedActiveId)) {
-                activePatientId = savedActiveId;
-            } else {
-                activePatientId = patients[0].id;
-            }
-            activePatientSelect.value = activePatientId;
-            updatePatientCardDisplay();
-            renderRoutineUI();
-        }
-
-        function updatePatientCardDisplay() {
-            const patients = getPatients();
-            const activeP = patients.find(p => p.id === activePatientId) || patients[0];
-            const dobText = activeP.dob ? ` | Nacimiento: ${activeP.dob}` : '';
-            patientInfoDisplay.innerHTML = `<strong>${activeP.name}</strong>${dobText}<br><em>${activeP.notes || 'Sin notas adicionales.'}</em>`;
-        }
-
-        activePatientSelect.addEventListener('change', () => {
-            activePatientId = activePatientSelect.value;
-            localStorage.setItem('nystagmus_active_patient_id', activePatientId);
-            updatePatientCardDisplay();
-            renderRoutineUI();
-            renderHistory();
-        });
-
-        createPatientBtn.addEventListener('click', () => {
-            const name = newPatientName.value.trim();
-            if (!name) { alert('Introduzca un nombre para el paciente.'); return; }
-
-            const patients = getPatients();
-            const newP = {
-                id: 'p_' + Date.now(),
-                name: name,
-                dob: newPatientDob.value || '',
-                notes: newPatientNotes.value.trim()
-            };
-
-            patients.push(newP);
-            localStorage.setItem('nystagmus_patients', JSON.stringify(patients));
-            
-            newPatientName.value = ''; newPatientDob.value = ''; newPatientNotes.value = '';
-            initPatientSystem();
-            activePatientSelect.value = newP.id;
-            activePatientSelect.dispatchEvent(new Event('change'));
-            alert(`¡Paciente "${name}" registrado con éxito!`);
-        });
-
-        // PAUTAS TERAPÉUTICAS
-        function getRoutines() {
-            return JSON.parse(localStorage.getItem('nystagmus_routines') || '{}');
-        }
-
-        function getActivePatientRoutine() {
-            const routines = getRoutines();
-            return routines[activePatientId] || [];
-        }
-
-        function saveActivePatientRoutine(tasks) {
-            const routines = getRoutines();
-            routines[activePatientId] = tasks;
-            localStorage.setItem('nystagmus_routines', JSON.stringify(routines));
-            renderRoutineUI();
-        }
-
-        function renderRoutineUI() {
-            const tasks = getActivePatientRoutine();
-            routineTasksList.innerHTML = '';
-
-            if (tasks.length === 0) {
-                routineSummaryText.textContent = "Sin pauta prescrita para este paciente.";
-                launchRoutineBtn.style.display = 'none';
-                return;
-            }
-
-            launchRoutineBtn.style.display = 'inline-block';
-            let totalReq = 0, totalComp = 0;
-            const modeLabels = { 'search': 'Búsqueda', 'coord': 'Coordenadas', 'pursuit': 'Seguimiento' };
-
-            tasks.forEach((t, idx) => {
-                totalReq += t.required;
-                totalComp += Math.min(t.completed, t.required);
-                
-                const isDone = t.completed >= t.required;
-                const div = document.createElement('div');
-                div.className = 'task-item' + (isDone ? ' completed' : '');
-                
-                const eyeLabel = t.eye === 'OD' ? '🔴 OD' : (t.eye === 'OI' ? '🔵 OI' : '👁️ Bin');
-                const linesLabel = t.lines === 'Sí' ? '📐 Con líneas' : '⬛ Sin líneas';
-
-                div.innerHTML = `
-                    <div>
-                        <strong>#${idx + 1} ${modeLabels[t.mode]}</strong> (${eyeLabel}, ${linesLabel})
-                    </div>
-                    <div>
-                        <strong>${t.completed}/${t.required} series</strong> ${isDone ? '✅' : ''}
-                    </div>
-                `;
-                routineTasksList.appendChild(div);
-            });
-
-            routineSummaryText.textContent = `Progreso del Día: ${totalComp} de ${totalReq} ejercicios completados (${Math.round((totalComp/totalReq)*100)}%)`;
-        }
-
-        addRoutineTaskBtn.addEventListener('click', () => {
-            const mode = document.getElementById('routine-add-mode').value;
-            const eye = document.getElementById('routine-add-eye').value;
-            const lines = document.getElementById('routine-add-lines').value;
-            const req = parseInt(document.getElementById('routine-add-count').value) || 1;
-
-            const tasks = getActivePatientRoutine();
-            tasks.push({
-                id: 'task_' + Date.now(),
-                mode: mode,
-                eye: eye,
-                lines: lines,
-                required: req,
-                completed: 0
-            });
-
-            saveActivePatientRoutine(tasks);
-        });
-
-        clearRoutineBtn.addEventListener('click', () => {
-            if (confirm('¿Desea eliminar la pauta del paciente activo?')) {
-                saveActivePatientRoutine([]);
-            }
-        });
-
-        launchRoutineBtn.addEventListener('click', () => {
-            const tasks = getActivePatientRoutine();
-            const nextTask = tasks.find(t => t.completed < t.required);
-
-            if (!nextTask) {
-                alert('¡Felicidades! Este paciente ya ha completado toda su pauta diaria.');
-                return;
-            }
-
-            modeSelect.value = nextTask.mode;
-            eyeSelect.value = nextTask.eye;
-            linesToggle.checked = (nextTask.lines === 'Sí');
-
-            updateGridLines();
-            generateGrid();
-            startGame();
-        });
-
-        function checkAndUpdateRoutineProgress(session) {
-            const tasks = getActivePatientRoutine();
-            let updated = false;
-
-            for (let t of tasks) {
-                if (t.completed < t.required && t.mode === session.mode && t.eye === session.eye && t.lines === session.lines) {
-                    t.completed++;
-                    updated = true;
-                    break;
-                }
-            }
-
-            if (updated) {
-                saveActivePatientRoutine(tasks);
-            }
-        }
-
-        // MANEJO DE ALTO CONTRASTE
+        // --- MANEJO DE ALTO CONTRASTE UNIFICADO ---
         function updateHighContrast() {
-            if (contrastToggle.checked) {
+            const isContrast = gridContrastToggle.checked || acContrastToggle.checked;
+            if (isContrast) {
                 document.body.classList.add('high-contrast');
+                gridContrastToggle.checked = true; acContrastToggle.checked = true;
             } else {
                 document.body.classList.remove('high-contrast');
+                gridContrastToggle.checked = false; acContrastToggle.checked = false;
             }
         }
-        contrastToggle.addEventListener('change', updateHighContrast);
+        gridContrastToggle.addEventListener('change', updateHighContrast);
+        acContrastToggle.addEventListener('change', updateHighContrast);
 
-        // REFLOW Y TAMAÑO CUADRÍCULA
-        function updateLayoutAndGridSize() {
-            const wrapper = document.querySelector('.grid-wrapper');
-            if (!wrapper || !gridContainer) return;
-
-            const maxW = Math.min(window.innerWidth * 0.90, 600);
-            const maxH = Math.min(window.innerHeight * 0.58, 600);
-            const squareSize = Math.floor(Math.min(maxW, maxH));
-            
-            gridContainer.style.width = squareSize + 'px';
-            gridContainer.style.height = squareSize + 'px';
-
-            setTimeout(() => {
-                const sampleCell = document.querySelector('.cell');
-                if (sampleCell) {
-                    const cellH = sampleCell.clientHeight;
-                    if (cellH > 0) {
-                        const fontPx = Math.round(cellH * 0.68);
-                        document.querySelectorAll('.cell').forEach(c => c.style.fontSize = fontPx + 'px');
-                    }
-                }
-                const sampleLabel = document.querySelector('.label-cell');
-                if (sampleLabel) {
-                    const labelH = sampleLabel.clientHeight;
-                    if (labelH > 0) {
-                        const labelFontPx = Math.round(labelH * 0.45);
-                        document.querySelectorAll('.label-cell').forEach(l => l.style.fontSize = labelFontPx + 'px');
-                    }
-                }
-            }, 20);
-        }
-
-        // AUTODETECCIÓN DE HARDWARE
-        function autoDetectScreenInches() {
-            const saved = localStorage.getItem('nystagmus_monitor_size');
-            const ua = navigator.userAgent || '';
-            
-            if (/Kindle|Silk|Book/.test(ua)) {
-                contrastToggle.checked = true;
-                updateHighContrast();
-            }
-
-            if (saved) {
-                detectionBadge.textContent = '💾 Guardado';
-                return parseFloat(saved);
-            }
-
-            detectionBadge.textContent = '⚡ Auto';
-            const w = window.screen.width, h = window.screen.height;
-            const maxDim = Math.max(w, h), minDim = Math.min(w, h);
-
-            if (/Kindle|Silk|Book/.test(ua)) return 10.2;
-
-            if (/iPad/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) {
-                if (maxDim >= 1366) return 12.9;
-                if (maxDim <= 1133 && minDim <= 744) return 8.3;
-                return 10.9;
-            }
-
-            if (/iPhone/.test(ua)) return 6.1;
-            if (/Android/.test(ua)) {
-                if (minDim >= 600) return 10.5;
-                return 6.5;
-            }
-
-            if (maxDim >= 2500) return 34;
-            return 24;
-        }
-
-        function initMonitorSize() {
-            const initialInches = autoDetectScreenInches();
-            monitorInput.value = initialInches;
-        }
-
-        monitorInput.addEventListener('input', () => {
-            const val = parseFloat(monitorInput.value);
-            if (val && val > 0) {
-                localStorage.setItem('nystagmus_monitor_size', val);
-                detectionBadge.textContent = '💾 Guardado';
-            }
-            updateDistanceCalibration();
-        });
-
-        function detectDeviceType() {
-            const ua = navigator.userAgent || '';
-            if (/iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) return "iPad / iOS";
-            if (/Kindle|Silk|Book/.test(ua)) return "Kindle";
-            if (/Android/.test(ua)) return "Android";
-            if (/Mac/.test(ua)) return "Mac";
-            if (/Win/.test(ua)) return "Windows";
-            return "Web / Tablet";
-        }
-
-        // PERSISTENCIA E HISTORIAL
-        function saveSessionData() {
-            const modeNames = { 'search': 'Búsqueda', 'coord': 'Coordenadas', 'pursuit': 'Seguimiento' };
-            const totalInputs = foundTargets + sessionErrors;
-            const accuracyPct = totalInputs > 0 ? Math.round((foundTargets / totalInputs) * 100) : 100;
-            const inches = parseFloat(monitorInput.value) || 34;
-
-            const session = {
-                id: Date.now(),
-                patientId: activePatientId,
-                timestamp: Date.now(),
-                date: new Date().toLocaleString('es-ES', { dateStyle: 'short', timeStyle: 'short' }),
-                mode: currentMode,
-                modeName: modeNames[currentMode] || currentMode,
-                eye: eyeSelect.value,
-                timeMs: timeElapsedMs,
-                timeFormatted: timerElement.textContent,
-                targets: totalTargets,
-                errors: sessionErrors,
-                accuracy: accuracyPct,
-                lines: linesToggle.checked ? 'Sí' : 'No',
-                screenInches: inches,
-                device: detectDeviceType(),
-                resolution: `${window.screen.width}x${window.screen.height}`
-            };
-
-            let history = JSON.parse(localStorage.getItem('nystagmus_history') || '[]');
-            history.push(session);
-            localStorage.setItem('nystagmus_history', JSON.stringify(history));
-
-            checkAndUpdateRoutineProgress(session);
-            renderHistory();
-        }
-
-        function formatDuration(ms) {
-            const totalSecs = Math.floor(ms / 1000);
-            const hrs = Math.floor(totalSecs / 3600).toString().padStart(2, '0');
-            const mins = Math.floor((totalSecs % 3600) / 60).toString().padStart(2, '0');
-            const secs = (totalSecs % 60).toString().padStart(2, '0');
-            return `${hrs}:${mins}:${secs}`;
-        }
-
-        function switchStatsTab(mode) {
-            activeStatsTab = mode;
-            document.querySelectorAll('.tab-btn').forEach((btn, idx) => {
-                const modes = ['search', 'coord', 'pursuit'];
-                if (modes[idx] === mode) btn.classList.add('active');
-                else btn.classList.remove('active');
-            });
-            renderHistory();
-        }
-
-        function renderHistory() {
-            const history = JSON.parse(localStorage.getItem('nystagmus_history') || '[]');
-            const filterEyeVal = document.getElementById('filter-eye').value;
-            const filterLinesVal = document.getElementById('filter-lines').value;
-
-            const filteredHistory = history.filter(s => {
-                const matchPatient = (s.patientId === activePatientId) || (!s.patientId && activePatientId === 'p_default');
-                const matchMode = s.mode === activeStatsTab;
-                const matchEye = (filterEyeVal === 'ALL') || (s.eye === filterEyeVal);
-                const matchLines = (filterLinesVal === 'ALL') || (s.lines === filterLinesVal);
-                return matchPatient && matchMode && matchEye && matchLines;
-            });
-            
-            const tbody = document.getElementById('history-tbody');
-            const totalSessionsEl = document.getElementById('metric-total-sessions');
-            const totalTimeEl = document.getElementById('metric-total-time');
-            const bestTimeEl = document.getElementById('metric-best-time');
-            const avgAccuracyEl = document.getElementById('metric-avg-accuracy');
-
-            totalSessionsEl.textContent = filteredHistory.length;
-
-            const totalMs = filteredHistory.reduce((acc, curr) => acc + (curr.timeMs || 0), 0);
-            totalTimeEl.textContent = formatDuration(totalMs);
-
-            if (filteredHistory.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" style="color: #94a3b8;">Sin datos acumulados para este paciente.</td></tr>';
-                bestTimeEl.textContent = '--:--';
-                avgAccuracyEl.textContent = '--%';
-                renderChart([]);
-                return;
-            }
-
-            const sumAccuracy = filteredHistory.reduce((acc, curr) => acc + (curr.accuracy !== undefined ? curr.accuracy : 100), 0);
-            const avgAccuracy = Math.round(sumAccuracy / filteredHistory.length);
-            avgAccuracyEl.textContent = `${avgAccuracy}%`;
-
-            const bestMs = Math.min(...filteredHistory.map(s => s.timeMs));
-            const bestSession = filteredHistory.find(s => s.timeMs === bestMs);
-            bestTimeEl.textContent = bestSession ? bestSession.timeFormatted : '--:--';
-
-            const reversed = [...filteredHistory].reverse();
-            tbody.innerHTML = reversed.map((s, idx) => {
-                const eyeBadge = s.eye === 'OD' ? '🔴 OD' : (s.eye === 'OI' ? '🔵 OI' : '👁️ Bin');
-                const errText = s.errors !== undefined ? `${s.accuracy}% (${s.errors} err)` : '100% (0 err)';
-                const screenText = `${s.screenInches || 34}" (${s.device || 'Web'})`;
-                return `
-                    <tr>
-                        <td><strong>#${filteredHistory.length - idx}</strong></td>
-                        <td>${s.date}</td>
-                        <td><strong>${eyeBadge}</strong></td>
-                        <td><strong>${s.timeFormatted}</strong></td>
-                        <td>${errText}</td>
-                        <td>${s.lines}</td>
-                        <td><small style="color:#64748b;">${screenText}</small></td>
-                    </tr>
-                `;
-            }).join('');
-
-            renderChart(filteredHistory);
-        }
-
-        function renderChart(data) {
-            const svg = document.getElementById('evolution-chart');
-            svg.innerHTML = '';
-            if (!data || data.length === 0) return;
-
-            const width = svg.clientWidth || 700;
-            const height = 200;
-            const padding = 35;
-
-            const maxTime = Math.max(...data.map(d => d.timeMs / 1000));
-            const minTime = Math.min(...data.map(d => d.timeMs / 1000));
-
-            const points = data.map((d, idx) => {
-                let x;
-                if (chartXAxisType === 'index') {
-                    x = data.length === 1 ? width / 2 : padding + (idx / (data.length - 1)) * (width - 2 * padding);
-                } else {
-                    const minTs = data[0].timestamp;
-                    const maxTs = data[data.length - 1].timestamp;
-                    x = (maxTs === minTs) ? width / 2 : padding + ((d.timestamp - minTs) / (maxTs - minTs)) * (width - 2 * padding);
-                }
-                
-                const ySecs = d.timeMs / 1000;
-                const range = (maxTime - minTime) || 1;
-                const y = height - padding - ((ySecs - minTime) / range) * (height - 2 * padding);
-                return { 
-                    x, y, secs: ySecs.toFixed(1), date: d.date, idx: idx + 1, 
-                    eye: d.eye || 'BIN', acc: d.accuracy || 100, 
-                    screen: `${d.screenInches || 34}" (${d.device || 'Web'})` 
-                };
-            });
-
-            for(let i = 0; i <= 3; i++) {
-                const yVal = padding + i * (height - 2 * padding) / 3;
-                const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-                line.setAttribute("x1", padding);
-                line.setAttribute("x2", width - padding);
-                line.setAttribute("y1", yVal);
-                line.setAttribute("y2", yVal);
-                line.setAttribute("stroke", "#e2e8f0");
-                line.setAttribute("stroke-dasharray", "4");
-                svg.appendChild(line);
-            }
-
-            if (points.length > 1) {
-                const pathD = points.reduce((acc, p, i) => i === 0 ? `M ${p.x} ${p.y}` : `${acc} L ${p.x} ${p.y}`, '');
-                const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-                path.setAttribute("d", pathD);
-                path.setAttribute("fill", "none");
-                path.setAttribute("stroke", "#3b82f6");
-                path.setAttribute("stroke-width", "3");
-                svg.appendChild(path);
-            }
-
-            points.forEach(p => {
-                const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-                circle.setAttribute("cx", p.x);
-                circle.setAttribute("cy", p.y);
-                circle.setAttribute("r", "5");
-                circle.setAttribute("fill", p.eye === 'OD' ? '#ef4444' : (p.eye === 'OI' ? '#3b82f6' : '#10b981'));
-                circle.setAttribute("cursor", "pointer");
-
-                const title = document.createElementNS("http://www.w3.org/2000/svg", "title");
-                title.textContent = `Prueba #${p.idx} (${p.eye})\nTiempo: ${p.secs}s\nPrecisión: ${p.acc}%\nPantalla: ${p.screen}\nFecha: ${p.date}`;
-                circle.appendChild(title);
-
-                svg.appendChild(circle);
-            });
-        }
-
-        document.getElementById('chart-axis-btn').addEventListener('click', () => {
-            const btn = document.getElementById('chart-axis-btn');
-            if (chartXAxisType === 'index') {
-                chartXAxisType = 'date';
-                btn.textContent = '📅 Por fecha y hora';
-            } else {
-                chartXAxisType = 'index';
-                btn.textContent = '🔢 Por nº de prueba';
-            }
-            renderHistory();
-        });
-
-        // MANEJO DE IMPRESIÓN Y REPORTE CON MEMBRETE
-        document.getElementById('print-report-btn').addEventListener('click', () => {
-            updatePrintHeaderData();
-            document.body.classList.remove('print-grid-only');
-            document.body.classList.add('print-report-only');
-            document.getElementById('stats-content').classList.add('active');
-            
-            renderHistory();
-            
-            setTimeout(() => {
-                window.print();
-                document.body.classList.remove('print-report-only');
-            }, 150);
-        });
-
-        document.getElementById('print-grid-btn').addEventListener('click', () => {
-            document.body.classList.remove('print-report-only');
-            document.body.classList.add('print-grid-only');
-            window.print();
-            document.body.classList.remove('print-grid-only');
-        });
-
-        document.getElementById('export-stats-btn').addEventListener('click', () => {
-            const patients = getPatients();
-            const history = JSON.parse(localStorage.getItem('nystagmus_history') || '[]');
-            const routines = getRoutines();
-            const clinicCfg = JSON.parse(localStorage.getItem('nystagmus_clinic_cfg') || '{}');
-            
-            const bundle = {
-                version: "3.08",
-                clinic: clinicCfg,
-                patients: patients,
-                routines: routines,
-                history: history,
-                exportDate: new Date().toISOString()
-            };
-
-            const blob = new Blob([JSON.stringify(bundle, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `respaldo_terapia_v3.08_${new Date().toISOString().slice(0, 10)}.json`;
-            a.click();
-            URL.revokeObjectURL(url);
-        });
-
-        const importFileInput = document.getElementById('import-file-input');
-        document.getElementById('import-stats-btn').addEventListener('click', () => importFileInput.click());
-
-        importFileInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                try {
-                    const importedData = JSON.parse(event.target.result);
-                    if (importedData.patients && importedData.history) {
-                        localStorage.setItem('nystagmus_patients', JSON.stringify(importedData.patients));
-                        localStorage.setItem('nystagmus_history', JSON.stringify(importedData.history));
-                        if (importedData.routines) {
-                            localStorage.setItem('nystagmus_routines', JSON.stringify(importedData.routines));
-                        }
-                        if (importedData.clinic) {
-                            localStorage.setItem('nystagmus_clinic_cfg', JSON.stringify(importedData.clinic));
-                            loadClinicSettings();
-                        }
-                        initPatientSystem();
-                        renderHistory();
-                        alert('¡Base de datos completa de la clínica importada con éxito!');
-                    } else if (Array.isArray(importedData)) {
-                        localStorage.setItem('nystagmus_history', JSON.stringify(importedData));
-                        renderHistory();
-                        alert('¡Historial importado!');
-                    } else alert('Formato no válido.');
-                } catch (err) { alert('Error al leer el archivo.'); }
-            };
-            reader.readAsText(file);
-        });
-
-        document.getElementById('clear-stats-btn').addEventListener('click', () => {
-            if (confirm('¿Desea borrar el historial completo del PACIENTE ACTIVO?')) {
-                let history = JSON.parse(localStorage.getItem('nystagmus_history') || '[]');
-                history = history.filter(s => s.patientId !== activePatientId);
-                localStorage.setItem('nystagmus_history', JSON.stringify(history));
-                renderHistory();
-            }
-        });
-
-        // CALIBRACIÓN DE DISTANCIA DE TRABAJO
-        function updateDistanceCalibration() {
-            const diagonalInches = parseFloat(monitorInput.value) || 34;
-            const screenW = window.screen.width, screenH = window.screen.height;
-            const ppi = Math.hypot(screenW, screenH) / diagonalInches;
-            const fontPx = window.innerHeight * 0.04; 
-            const fontMm = (fontPx / ppi) * 25.4;
-            currentSuggestedDistanceCm = Math.max(40, Math.round(fontMm * 8));
-            
-            distanceInfo.innerHTML = `Tamaño letra: <strong>~${fontMm.toFixed(1)} mm</strong> | Distancia clínica recomendada: <strong style="font-size: 1.25rem; color: #2563eb;">~${currentSuggestedDistanceCm} cm</strong>`;
-        }
-        
-        window.addEventListener('resize', () => {
-            updateDistanceCalibration();
-            updateLayoutAndGridSize();
-        });
-
-        function updateGridLines() {
-            if (linesToggle.checked) gridContainer.classList.remove('hide-lines');
-            else gridContainer.classList.add('hide-lines');
-            updateLayoutAndGridSize();
-        }
-        linesToggle.addEventListener('change', updateGridLines);
-
+        // --- OVERLAYS Y AUDIO ---
         function speakText(text) {
-            if (!audioToggle.checked) return;
+            const audioOn = (activeView==='view-grid') ? gridAudioToggle.checked : acAudioToggle.checked;
+            if (!audioOn) return;
             try {
                 if (!window.speechSynthesis) return;
                 window.speechSynthesis.cancel();
                 const utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = 'es-ES';
-                utterance.rate = 0.9; 
+                utterance.lang = 'es-ES'; utterance.rate = 0.9;
                 window.speechSynthesis.speak(utterance);
             } catch(e) {}
         }
@@ -1710,16 +679,11 @@
             isPausedByOverlay = true;
             flashcardMain.innerHTML = visualText;
             flashcardDistVal.textContent = currentSuggestedDistanceCm;
-
             flashcardOverlay.classList.add('active');
             overlayCallback = callback;
-            
-            speakText(`Distancia recomendada: ${currentSuggestedDistanceCm} centímetros. ` + spokenText);
-
+            speakText(`Distancia: ${currentSuggestedDistanceCm} cm. ` + spokenText);
             clearTimeout(flashcardTimeout);
-            flashcardTimeout = setTimeout(() => {
-                if(flashcardOverlay.classList.contains('active')) dismissFlashcard();
-            }, 3500);
+            flashcardTimeout = setTimeout(() => { if(flashcardOverlay.classList.contains('active')) dismissFlashcard(); }, 3500);
         }
 
         function dismissFlashcard() {
@@ -1727,115 +691,35 @@
             flashcardOverlay.classList.remove('active');
             try { window.speechSynthesis.cancel(); } catch(e){}
             isPausedByOverlay = false;
-            if (overlayCallback) {
-                let tempCallback = overlayCallback;
-                overlayCallback = null;
-                tempCallback();
-            }
+            if (overlayCallback) { let temp = overlayCallback; overlayCallback = null; temp(); }
         }
-
         flashcardOverlay.addEventListener('click', dismissFlashcard);
 
-        function generateGrid() {
-            gridContainer.innerHTML = '';
-            currentMode = modeSelect.value;
-            gridContainer.className = `mode-${currentMode}`;
-            updateGridLines();
-            updateDistanceCalibration();
-            
-            virtualKeypad.style.display = (currentMode === 'search') ? 'none' : 'grid';
-            
-            if(currentMode === 'search') {
-                totalTargets = 0; 
-                targetLetter = alphabet[Math.floor(Math.random() * alphabet.length)];
-            } else if (currentMode === 'coord') {
-                totalTargets = 10;
-                totalTargetsElement.textContent = "10";
-            } else if (currentMode === 'pursuit') {
-                totalTargets = 15;
-                totalTargetsElement.textContent = "15";
-            }
-
-            foundTargets = 0;
-            sessionErrors = 0;
-            scoreElement.textContent = foundTargets;
-            errorCountElement.textContent = sessionErrors;
-
-            gridContainer.appendChild(createLabelCell(''));
-            for (let c = 1; c <= 10; c++) gridContainer.appendChild(createLabelCell(c));
-
-            for (let r = 1; r <= 10; r++) {
-                gridContainer.appendChild(createLabelCell(r));
-                for (let c = 1; c <= 10; c++) {
-                    const cell = document.createElement('div');
-                    cell.className = 'cell';
-                    cell.dataset.row = r;
-                    cell.dataset.col = c;
-                    
-                    let char;
-                    if (currentMode === 'search' && Math.random() < 0.15) {
-                        char = targetLetter;
-                        totalTargets++;
-                    } else {
-                        do { char = alphabet[Math.floor(Math.random() * alphabet.length)]; } 
-                        while (currentMode === 'search' && char === targetLetter);
-                    }
-                    
-                    cell.textContent = char;
-                    if(currentMode === 'search') {
-                        cell.addEventListener('click', () => handleSearchClick(cell, char));
-                    }
-                    gridContainer.appendChild(cell);
-                }
-            }
-
-            updateLayoutAndGridSize();
-
-            if (currentMode === 'search') {
-                if (totalTargets === 0) return generateGrid(); 
-                totalTargetsElement.textContent = totalTargets;
-                if(isPlaying) {
-                    showFlashcard(
-                        `Busca la letra <span style="color:#e11d48">${targetLetter}</span>`, 
-                        `Busca todas las letras ${targetLetter}`, 
-                        () => { targetDisplay.textContent = targetLetter; }
-                    );
-                } else {
-                    targetDisplay.textContent = targetLetter;
-                }
-            } else if (currentMode === 'coord' && isPlaying) {
-                pickNewCoordinate();
-            } else if (currentMode === 'pursuit' && isPlaying) {
-                showFlashcard(
-                    `Sigue la celda <span style="color:#3b82f6">AZUL</span>`, 
-                    "Sigue la celda azul y pulsa la letra correspondiente", 
-                    () => { targetDisplay.textContent = "AZUL"; startPursuitTarget(); }
-                );
-            } else {
-                targetDisplay.textContent = "-";
-                virtualKeypad.innerHTML = '';
-            }
+        function showResultOverlay(timeStr, errors, accuracyPct) {
+            isPausedByOverlay = true;
+            resTime.textContent = timeStr; resErrors.textContent = errors; resAccuracy.textContent = `${accuracyPct}%`;
+            resultOverlay.classList.add('active');
         }
-
-        function createLabelCell(text) {
-            const div = document.createElement('div');
-            div.className = 'label-cell';
-            div.textContent = text;
-            return div;
+        function dismissResultOverlay() {
+            if (!resultOverlay.classList.contains('active')) return;
+            resultOverlay.classList.remove('active');
+            isPausedByOverlay = false;
         }
+        resultOverlay.addEventListener('click', dismissResultOverlay);
 
+        function scrollToAnchor(id) { setTimeout(() => { const el = document.getElementById(id); if(el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100); }
+
+        // --- TECLADO VIRTUAL GLOBAL ---
         function updateVirtualKeypad(correctChar) {
             virtualKeypad.innerHTML = '';
             let options = confusionMatrix[correctChar] ? [...confusionMatrix[correctChar]] : [];
             options = options.sort(() => 0.5 - Math.random()).slice(0, 3);
             options.push(correctChar);
-            
             while(options.length < 4) {
-               let randomChar = alphabet[Math.floor(Math.random() * alphabet.length)];
-               if(!options.includes(randomChar)) options.push(randomChar);
+               let rand = alphabet[Math.floor(Math.random() * alphabet.length)];
+               if(!options.includes(rand)) options.push(rand);
             }
             options.sort(() => 0.5 - Math.random());
-
             selectedKeypadIndex = 0;
 
             options.forEach((char, idx) => {
@@ -1843,128 +727,200 @@
                 btn.className = 'keypad-btn' + (idx === selectedKeypadIndex ? ' focused' : '');
                 btn.textContent = char;
                 btn.addEventListener('click', (e) => {
-                    e.preventDefault(); 
-                    selectedKeypadIndex = idx;
+                    e.preventDefault(); selectedKeypadIndex = idx;
                     updateKeypadFocusVisuals();
-                    handleVirtualKeyPress(char);
+                    handleGlobalKeyPress(char);
                 });
                 virtualKeypad.appendChild(btn);
             });
+            virtualKeypad.style.display = 'grid';
         }
-
         function updateKeypadFocusVisuals() {
             const buttons = virtualKeypad.querySelectorAll('.keypad-btn');
-            buttons.forEach((btn, idx) => {
-                if (idx === selectedKeypadIndex) btn.classList.add('focused');
-                else btn.classList.remove('focused');
-            });
-        }
-
-        function handleVirtualKeyPress(pressedChar) {
-            if (!isPlaying || currentMode === 'search' || isPausedByOverlay) return;
-            const targetCell = document.querySelector(`.cell[data-row="${targetRow}"][data-col="${targetCol}"]`);
-            if (!targetCell) return;
-
-            if (pressedChar === targetCell.textContent) {
-                foundTargets++;
-                scoreElement.textContent = foundTargets;
-                targetCell.classList.remove('pursuit-active');
-                targetCell.classList.add('found');
-                setTimeout(() => targetCell.classList.remove('found'), 400);
-
-                if (foundTargets >= totalTargets) endGame();
-                else {
-                    if (currentMode === 'coord') pickNewCoordinate();
-                    else if (currentMode === 'pursuit') {
-                        clearInterval(pursuitInterval);
-                        movePursuitTarget();
-                        pursuitInterval = setInterval(movePursuitTarget, 3500); 
-                    }
-                }
-            } else {
-                triggerWrongAnimation(targetCell);
-            }
+            buttons.forEach((b, i) => { if (i === selectedKeypadIndex) b.classList.add('focused'); else b.classList.remove('focused'); });
         }
 
         document.addEventListener('keydown', (e) => {
-            if (flashcardOverlay.classList.contains('active')) {
-                dismissFlashcard();
-                return;
-            }
-
-            if (resultOverlay.classList.contains('active')) {
-                dismissResultOverlay();
-                return;
-            }
-
-            if (!isPlaying || currentMode === 'search' || isPausedByOverlay) return;
+            if (flashcardOverlay.classList.contains('active')) { dismissFlashcard(); return; }
+            if (resultOverlay.classList.contains('active')) { dismissResultOverlay(); return; }
+            if (!isPlaying || isPausedByOverlay) return;
 
             const buttons = virtualKeypad.querySelectorAll('.keypad-btn');
-            if (buttons.length === 4) {
-                if (e.key === 'ArrowLeft') {
-                    e.preventDefault();
-                    selectedKeypadIndex = (selectedKeypadIndex - 1 + 4) % 4;
-                    updateKeypadFocusVisuals();
-                } else if (e.key === 'ArrowRight') {
-                    e.preventDefault();
-                    selectedKeypadIndex = (selectedKeypadIndex + 1) % 4;
-                    updateKeypadFocusVisuals();
-                } else if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    const pressedChar = buttons[selectedKeypadIndex].textContent;
-                    handleVirtualKeyPress(pressedChar);
-                } else {
-                    const typedChar = e.key.toUpperCase();
-                    if (/^[A-ZÑ]$/.test(typedChar)) {
-                        handleVirtualKeyPress(typedChar);
-                    }
+            if (buttons.length === 4 && virtualKeypad.style.display !== 'none') {
+                if (e.key === 'ArrowLeft') { e.preventDefault(); selectedKeypadIndex = (selectedKeypadIndex - 1 + 4) % 4; updateKeypadFocusVisuals(); } 
+                else if (e.key === 'ArrowRight') { e.preventDefault(); selectedKeypadIndex = (selectedKeypadIndex + 1) % 4; updateKeypadFocusVisuals(); } 
+                else if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault(); handleGlobalKeyPress(buttons[selectedKeypadIndex].textContent);
+                } else if (/^[a-zA-ZñÑ]$/.test(e.key)) {
+                    handleGlobalKeyPress(e.key.toUpperCase());
                 }
+            } else if (/^[a-zA-ZñÑ]$/.test(e.key)) {
+                handleGlobalKeyPress(e.key.toUpperCase());
             }
         });
 
-        function handleSearchClick(cell, char) {
-            if (!isPlaying || currentMode !== 'search' || isPausedByOverlay) return;
-            if (char === targetLetter) {
-                if (!cell.classList.contains('found')) {
-                    cell.classList.add('found');
-                    foundTargets++;
-                    scoreElement.textContent = foundTargets;
-                    if (foundTargets === totalTargets) endGame();
+        function handleGlobalKeyPress(pressedChar) {
+            if(activeView === 'view-grid') handleGridKeyPress(pressedChar);
+            if(activeView === 'view-anticrowding') handleACKeyPress(pressedChar);
+        }
+
+        // --- MOTOR COMÚN ---
+        function updateGlobalTimer() {
+            if (!isPlaying || isPausedByOverlay) return;
+            timeElapsedMs += 100;
+            const mins = Math.floor(timeElapsedMs / 60000).toString().padStart(2, '0');
+            const secs = Math.floor((timeElapsedMs % 60000) / 1000).toString().padStart(2, '0');
+            const decis = Math.floor((timeElapsedMs % 1000) / 100);
+            const str = `${mins}:${secs}.${decis}`;
+            if(activeView === 'view-grid') gridTimer.textContent = str;
+            if(activeView === 'view-anticrowding') acTimer.textContent = str;
+        }
+
+        function triggerErrorGlobal(element) {
+            sessionErrors++;
+            if(activeView === 'view-grid') {
+                gridErrorCount.textContent = sessionErrors;
+                element.classList.remove('wrong'); void element.offsetWidth; element.classList.add('wrong');
+            }
+            if(activeView === 'view-anticrowding') {
+                acErrorCount.textContent = sessionErrors;
+                acWrapper.classList.remove('error'); void acWrapper.offsetWidth; acWrapper.classList.add('error');
+            }
+            try { if (navigator.vibrate) navigator.vibrate(200); } catch(e){}
+        }
+
+        function stopAnyGame() {
+            isPlaying = false; clearInterval(globalTimerInterval); clearInterval(globalPursuitInterval);
+            virtualKeypad.style.display = 'none';
+            gridStartBtn.textContent = "Iniciar Sesión"; gridStartBtn.style.backgroundColor = "var(--primary)";
+            acStartBtn.textContent = "Iniciar Sesión Anti-Crowding"; acStartBtn.style.backgroundColor = "var(--primary)";
+        }
+
+        function endGlobalGame() {
+            isPlaying = false; clearInterval(globalTimerInterval); clearInterval(globalPursuitInterval);
+            speakText("¡Sesión completada!");
+            saveSessionData();
+            virtualKeypad.innerHTML = ''; virtualKeypad.style.display = 'none';
+
+            let finalTime = (activeView==='view-grid') ? gridTimer.textContent : acTimer.textContent;
+            gridStartBtn.textContent = "Nueva Sesión"; gridStartBtn.style.backgroundColor = "var(--primary)";
+            acStartBtn.textContent = "Nueva Sesión"; acStartBtn.style.backgroundColor = "var(--primary)";
+
+            const totalInputs = foundTargets + sessionErrors;
+            const accuracyPct = totalInputs > 0 ? Math.round((foundTargets / totalInputs) * 100) : 100;
+            showResultOverlay(finalTime, sessionErrors, accuracyPct);
+            if(activeView === 'view-grid') document.querySelectorAll('.pursuit-active').forEach(el => el.classList.remove('pursuit-active'));
+        }
+
+        // ==========================================
+        // MÓDULO 1: CUADRÍCULA
+        // ==========================================
+        function updateLayoutAndGridSize() {
+            if(activeView !== 'view-grid') return;
+            const wrapper = document.querySelector('.grid-wrapper');
+            if (!wrapper || !gridContainer) return;
+            const maxW = Math.min(window.innerWidth * 0.90, 600);
+            const maxH = Math.min(window.innerHeight * 0.58, 600);
+            const squareSize = Math.floor(Math.min(maxW, maxH));
+            gridContainer.style.width = squareSize + 'px'; gridContainer.style.height = squareSize + 'px';
+
+            setTimeout(() => {
+                const sc = document.querySelector('.cell');
+                if (sc && sc.clientHeight > 0) {
+                    const fontPx = Math.round(sc.clientHeight * 0.68);
+                    document.querySelectorAll('.cell').forEach(c => c.style.fontSize = fontPx + 'px');
                 }
-            } else { triggerWrongAnimation(cell); }
+                const sl = document.querySelector('.label-cell');
+                if (sl && sl.clientHeight > 0) {
+                    const lFontPx = Math.round(sl.clientHeight * 0.45);
+                    document.querySelectorAll('.label-cell').forEach(l => l.style.fontSize = lFontPx + 'px');
+                }
+            }, 20);
+        }
+
+        function updateGridLines() {
+            if (gridLinesToggle.checked) gridContainer.classList.remove('hide-lines');
+            else gridContainer.classList.add('hide-lines');
+            updateLayoutAndGridSize();
+        }
+        gridLinesToggle.addEventListener('change', updateGridLines);
+
+        function handleGridSearchClick(cell, char) {
+            if (!isPlaying || currentExercise !== 'search' || isPausedByOverlay) return;
+            if (char === gridTargetLetter) {
+                if (!cell.classList.contains('found')) {
+                    cell.classList.add('found'); foundTargets++; gridScore.textContent = foundTargets;
+                    if (foundTargets === totalTargets) endGlobalGame();
+                }
+            } else { triggerErrorGlobal(cell); }
+        }
+
+        function generateGrid() {
+            gridContainer.innerHTML = '';
+            currentExercise = gridModeSelect.value;
+            gridContainer.className = `mode-${currentExercise}`;
+            updateGridLines(); updateDistanceCalibration();
+            
+            if(currentExercise === 'search') {
+                totalTargets = 0; gridTargetLetter = alphabet[Math.floor(Math.random() * alphabet.length)];
+            } else if (currentExercise === 'coord') {
+                totalTargets = 10; gridTotalTargets.textContent = "10";
+            } else if (currentExercise === 'pursuit') {
+                totalTargets = 15; gridTotalTargets.textContent = "15";
+            }
+            foundTargets = 0; sessionErrors = 0; gridScore.textContent = 0; gridErrorCount.textContent = 0;
+
+            gridContainer.appendChild(createLabelCell(''));
+            for (let c = 1; c <= 10; c++) gridContainer.appendChild(createLabelCell(c));
+            for (let r = 1; r <= 10; r++) {
+                gridContainer.appendChild(createLabelCell(r));
+                for (let c = 1; c <= 10; c++) {
+                    const cell = document.createElement('div'); cell.className = 'cell'; cell.dataset.row = r; cell.dataset.col = c;
+                    let char;
+                    if (currentExercise === 'search' && Math.random() < 0.15) { char = gridTargetLetter; totalTargets++; } 
+                    else { do { char = alphabet[Math.floor(Math.random() * alphabet.length)]; } while (currentExercise === 'search' && char === gridTargetLetter); }
+                    cell.textContent = char;
+                    if(currentExercise === 'search') cell.addEventListener('click', () => handleGridSearchClick(cell, char));
+                    gridContainer.appendChild(cell);
+                }
+            }
+            updateLayoutAndGridSize();
+
+            if (currentExercise === 'search') {
+                if (totalTargets === 0) return generateGrid(); 
+                gridTotalTargets.textContent = totalTargets;
+                if(isPlaying) {
+                    showFlashcard(`Busca la letra <span style="color:#e11d48">${gridTargetLetter}</span>`, `Busca todas las letras ${gridTargetLetter}`, () => { gridTargetDisplay.textContent = gridTargetLetter; });
+                } else { gridTargetDisplay.textContent = gridTargetLetter; }
+            } else if (currentExercise === 'coord' && isPlaying) {
+                pickNewCoordinate();
+            } else if (currentExercise === 'pursuit' && isPlaying) {
+                showFlashcard(`Sigue la celda <span style="color:#3b82f6">AZUL</span>`, "Sigue la celda azul y pulsa la letra", () => { gridTargetDisplay.textContent = "AZUL"; startPursuitTarget(); });
+            } else { gridTargetDisplay.textContent = "-"; }
         }
 
         function pickNewCoordinate() {
-            targetRow = Math.floor(Math.random() * 10) + 1;
-            targetCol = Math.floor(Math.random() * 10) + 1;
-            
-            const visualText = `Fila <span style="color:#e11d48">${targetRow}</span><br>Columna <span style="color:#e11d48">${targetCol}</span>`;
-            const spokenText = `Fila ${targetRow}, Columna ${targetCol}`;
-            
-            showFlashcard(visualText, spokenText, () => {
-                targetDisplay.innerHTML = `F${targetRow}, C${targetCol}`;
+            targetRow = Math.floor(Math.random() * 10) + 1; targetCol = Math.floor(Math.random() * 10) + 1;
+            showFlashcard(`Fila <span style="color:#e11d48">${targetRow}</span><br>Columna <span style="color:#e11d48">${targetCol}</span>`, `Fila ${targetRow}, Columna ${targetCol}`, () => {
+                gridTargetDisplay.innerHTML = `F${targetRow}, C${targetCol}`;
                 const correctChar = document.querySelector(`.cell[data-row="${targetRow}"][data-col="${targetCol}"]`).textContent;
                 updateVirtualKeypad(correctChar);
             });
         }
 
         function startPursuitTarget() {
-            targetRow = Math.floor(Math.random() * 10) + 1;
-            targetCol = Math.floor(Math.random() * 10) + 1;
+            targetRow = Math.floor(Math.random() * 10) + 1; targetCol = Math.floor(Math.random() * 10) + 1;
             updatePursuitVisuals();
-            clearInterval(pursuitInterval);
-            pursuitInterval = setInterval(movePursuitTarget, 3500); 
+            clearInterval(globalPursuitInterval);
+            globalPursuitInterval = setInterval(movePursuitTarget, 3500); 
         }
 
         function movePursuitTarget() {
-            if(isPausedByOverlay) return;
+            if(isPausedByOverlay || activeView !== 'view-grid') return;
             const oldCell = document.querySelector(`.cell[data-row="${targetRow}"][data-col="${targetCol}"]`);
             if(oldCell) oldCell.classList.remove('pursuit-active');
-
-            let rowOffset = Math.floor(Math.random() * 3) - 1; 
-            let colOffset = Math.floor(Math.random() * 3) - 1;
+            let rowOffset = Math.floor(Math.random() * 3) - 1; let colOffset = Math.floor(Math.random() * 3) - 1;
             if (rowOffset === 0 && colOffset === 0) rowOffset = 1;
-
             targetRow += rowOffset; targetCol += colOffset;
             if(targetRow < 1) targetRow = 2; if(targetRow > 10) targetRow = 9;
             if(targetCol < 1) targetCol = 2; if(targetCol > 10) targetCol = 9;
@@ -1973,98 +929,309 @@
 
         function updatePursuitVisuals() {
             const newCell = document.querySelector(`.cell[data-row="${targetRow}"][data-col="${targetCol}"]`);
-            if(newCell) {
-                newCell.classList.add('pursuit-active');
-                updateVirtualKeypad(newCell.textContent);
+            if(newCell) { newCell.classList.add('pursuit-active'); updateVirtualKeypad(newCell.textContent); }
+        }
+
+        function handleGridKeyPress(pressedChar) {
+            if (currentExercise === 'search') return;
+            const targetCell = document.querySelector(`.cell[data-row="${targetRow}"][data-col="${targetCol}"]`);
+            if (!targetCell) return;
+            if (pressedChar === targetCell.textContent) {
+                foundTargets++; gridScore.textContent = foundTargets;
+                targetCell.classList.remove('pursuit-active'); targetCell.classList.add('found');
+                setTimeout(() => targetCell.classList.remove('found'), 400);
+                if (foundTargets >= totalTargets) endGlobalGame();
+                else {
+                    if (currentExercise === 'coord') pickNewCoordinate();
+                    else if (currentExercise === 'pursuit') { clearInterval(globalPursuitInterval); movePursuitTarget(); globalPursuitInterval = setInterval(movePursuitTarget, 3500); }
+                }
+            } else { triggerErrorGlobal(targetCell); }
+        }
+
+        gridStartBtn.addEventListener('click', () => {
+            if (isPlaying) { stopAnyGame(); generateGrid(); } 
+            else {
+                isPlaying = true; timeElapsedMs = 0; sessionErrors = 0; gridTimer.textContent = "00:00.0";
+                gridStartBtn.textContent = "Detener Sesión"; gridStartBtn.style.backgroundColor = "#ef4444";
+                scrollToAnchor('grid-controls-anchor');
+                generateGrid();
+                clearInterval(globalTimerInterval); globalTimerInterval = setInterval(updateGlobalTimer, 100);
             }
+        });
+        gridModeSelect.addEventListener('change', () => { if(isPlaying) stopAnyGame(); generateGrid(); switchStatsTab(gridModeSelect.value); });
+
+        // ==========================================
+        // MÓDULO 2: ANTI-CROWDING (NUEVO V4.01)
+        // ==========================================
+        function resetACLevel() {
+            acLevelParams = { fontSize: 130, letterSpacing: 30, flankers: 1 };
         }
 
-        function triggerWrongAnimation(cell) {
-            cell.classList.remove('wrong');
-            void cell.offsetWidth;
-            cell.classList.add('wrong');
-            
-            sessionErrors++;
-            errorCountElement.textContent = sessionErrors;
-
-            if (navigator.vibrate) {
-                try { navigator.vibrate(200); } catch(e){}
+        function renderACRound() {
+            acTargetLetter = alphabet[Math.floor(Math.random() * alphabet.length)];
+            let flankerHTML = '';
+            for(let i=0; i<acLevelParams.flankers; i++) {
+                let f1 = alphabet[Math.floor(Math.random() * alphabet.length)];
+                let f2 = alphabet[Math.floor(Math.random() * alphabet.length)];
+                flankerHTML = `<span class="ac-flanker">${f1}</span> ` + flankerHTML + ` <span class="ac-flanker">${f2}</span>`;
             }
-        }
-
-        function updateTimerDisplay() {
-            if (!isPlaying || isPausedByOverlay) return;
-            timeElapsedMs += 100;
-            const mins = Math.floor(timeElapsedMs / 60000).toString().padStart(2, '0');
-            const secs = Math.floor((timeElapsedMs % 60000) / 1000).toString().padStart(2, '0');
-            const decis = Math.floor((timeElapsedMs % 1000) / 100);
-            timerElement.textContent = `${mins}:${secs}.${decis}`;
-        }
-
-        function startGame() {
-            isPlaying = true;
-            timeElapsedMs = 0;
-            sessionErrors = 0;
-            timerElement.textContent = "00:00.0";
-            generateGrid(); 
+            // Insert target in middle
+            const parts = flankerHTML.split(' ');
+            const midIndex = Math.floor(parts.length / 2);
+            parts.splice(midIndex, 0, `<span class="ac-target">${acTargetLetter}</span>`);
             
-            startBtn.textContent = "Detener Sesión";
-            startBtn.style.backgroundColor = "#ef4444";
-            
-            scrollToGameFocus();
+            acDisplay.style.fontSize = acLevelParams.fontSize + 'px';
+            acDisplay.style.letterSpacing = acLevelParams.letterSpacing + 'px';
+            acDisplay.innerHTML = parts.join('');
 
-            clearInterval(timerInterval);
-            clearInterval(pursuitInterval);
-            timerInterval = setInterval(updateTimerDisplay, 100);
+            updateVirtualKeypad(acTargetLetter);
         }
 
-        function endGame() {
-            isPlaying = false;
-            clearInterval(timerInterval);
-            clearInterval(pursuitInterval);
-            speakText("¡Sesión completada!");
-            
-            saveSessionData();
+        function handleACKeyPress(pressedChar) {
+            if (pressedChar === acTargetLetter) {
+                foundTargets++; acScore.textContent = foundTargets;
+                acWrapper.classList.add('success');
+                setTimeout(() => acWrapper.classList.remove('success'), 200);
 
-            document.querySelectorAll('.pursuit-active').forEach(el => el.classList.remove('pursuit-active'));
-            virtualKeypad.innerHTML = '';
-
-            startBtn.textContent = "Nueva Sesión";
-            startBtn.style.backgroundColor = "var(--primary)";
-
-            const totalInputs = foundTargets + sessionErrors;
-            const accuracyPct = totalInputs > 0 ? Math.round((foundTargets / totalInputs) * 100) : 100;
-
-            showResultOverlay(timerElement.textContent, sessionErrors, accuracyPct);
+                if (foundTargets >= totalTargets) endGlobalGame();
+                else {
+                    // Progression: Shrink and squeeze
+                    acLevelParams.fontSize = Math.max(30, acLevelParams.fontSize * 0.90);
+                    acLevelParams.letterSpacing = Math.max(0, acLevelParams.letterSpacing - 3);
+                    if(foundTargets === 5) acLevelParams.flankers = 2; // Add more flankers midway
+                    renderACRound();
+                }
+            } else { triggerErrorGlobal(null); }
         }
 
-        startBtn.addEventListener('click', () => {
-            if (isPlaying) {
-                isPlaying = false;
-                clearInterval(timerInterval);
-                clearInterval(pursuitInterval);
-                startBtn.textContent = "Iniciar Sesión";
-                startBtn.style.backgroundColor = "var(--primary)";
-                targetDisplay.textContent = "-";
-                virtualKeypad.innerHTML = '';
-            } else {
-                startGame();
+        acStartBtn.addEventListener('click', () => {
+            if (isPlaying) { stopAnyGame(); acDisplay.innerHTML = 'A B C'; } 
+            else {
+                currentExercise = 'anticrowding';
+                isPlaying = true; timeElapsedMs = 0; sessionErrors = 0; foundTargets = 0; totalTargets = 10;
+                acTimer.textContent = "00:00.0"; acScore.textContent = "0"; acErrorCount.textContent = "0";
+                acStartBtn.textContent = "Detener Sesión"; acStartBtn.style.backgroundColor = "#ef4444";
+                scrollToAnchor('ac-controls-anchor');
+                
+                resetACLevel();
+                showFlashcard(`Busca la letra <strong style="color:var(--primary);">CENTRAL</strong>`, "Identifica la letra central rodeada de distractores", () => {
+                    renderACRound();
+                });
+
+                clearInterval(globalTimerInterval); globalTimerInterval = setInterval(updateGlobalTimer, 100);
             }
         });
 
-        modeSelect.addEventListener('change', () => {
-            if(isPlaying) startBtn.click();
-            generateGrid();
-            switchStatsTab(modeSelect.value);
+
+        // ==========================================
+        // GESTIÓN DE PACIENTES Y CLINICA
+        // ==========================================
+        const activePatientSelect = document.getElementById('active-patient-select');
+        const newPatientName = document.getElementById('new-patient-name');
+        const newPatientDob = document.getElementById('new-patient-dob');
+        const newPatientNotes = document.getElementById('new-patient-notes');
+        const patientInfoDisplay = document.getElementById('patient-info-display');
+
+        function loadClinicSettings() {
+            const saved = JSON.parse(localStorage.getItem('nystagmus_clinic_cfg') || '{}');
+            document.getElementById('cfg-clinic-name').value = saved.clinicName || '';
+            document.getElementById('cfg-specialist-name').value = saved.specialistName || '';
+            document.getElementById('cfg-col-num').value = saved.colNum || '';
+            document.getElementById('cfg-clinic-contact').value = saved.contact || '';
+            currentClinicLogoBase64 = saved.logoBase64 || '';
+            if (currentClinicLogoBase64) {
+                document.getElementById('cfg-logo-preview').src = currentClinicLogoBase64;
+                document.getElementById('cfg-logo-preview').style.display = 'block';
+                document.getElementById('clear-logo-btn').style.display = 'inline-block';
+            }
+        }
+        document.getElementById('cfg-logo-input').addEventListener('change', (e) => {
+            const file = e.target.files[0]; if (!file) return; const reader = new FileReader();
+            reader.onload = (ev) => { currentClinicLogoBase64 = ev.target.result; document.getElementById('cfg-logo-preview').src = currentClinicLogoBase64; document.getElementById('cfg-logo-preview').style.display = 'block'; document.getElementById('clear-logo-btn').style.display = 'inline-block'; };
+            reader.readAsDataURL(file);
         });
+        document.getElementById('clear-logo-btn').addEventListener('click', () => { currentClinicLogoBase64 = ''; document.getElementById('cfg-logo-input').value = ''; document.getElementById('cfg-logo-preview').style.display = 'none'; document.getElementById('clear-logo-btn').style.display = 'none'; });
+        document.getElementById('save-clinic-cfg-btn').addEventListener('click', () => {
+            const cfg = { clinicName: document.getElementById('cfg-clinic-name').value.trim(), specialistName: document.getElementById('cfg-specialist-name').value.trim(), colNum: document.getElementById('cfg-col-num').value.trim(), contact: document.getElementById('cfg-clinic-contact').value.trim(), logoBase64: currentClinicLogoBase64 };
+            localStorage.setItem('nystagmus_clinic_cfg', JSON.stringify(cfg)); alert('¡Datos del centro guardados!');
+        });
+        function updatePrintHeaderData() {
+            const saved = JSON.parse(localStorage.getItem('nystagmus_clinic_cfg') || '{}');
+            document.getElementById('print-clinic-name').textContent = saved.clinicName || 'Centro Clínico';
+            document.getElementById('print-specialist-name').textContent = saved.specialistName ? `Especialista: ${saved.specialistName}` : 'Especialista';
+            document.getElementById('print-col-num').textContent = saved.colNum ? `Nº Col: ${saved.colNum}` : '';
+            document.getElementById('print-clinic-contact').textContent = saved.contact || '';
+            document.getElementById('print-date-stamp').textContent = `Fecha: ${new Date().toLocaleDateString('es-ES')}`;
+            if (saved.logoBase64) { document.getElementById('print-logo-img').src = saved.logoBase64; document.getElementById('print-logo-img').style.display = 'block'; }
+            else { document.getElementById('print-logo-img').style.display = 'none'; }
+        }
+
+        function getPatients() {
+            let patients = JSON.parse(localStorage.getItem('nystagmus_patients') || '[]');
+            if (patients.length === 0) { patients.push({ id: 'p_default', name: 'Paciente General', dob: '', notes: 'Perfil por defecto.' }); localStorage.setItem('nystagmus_patients', JSON.stringify(patients)); }
+            return patients;
+        }
+        function initPatientSystem() {
+            const patients = getPatients(); activePatientSelect.innerHTML = '';
+            patients.forEach(p => { const opt = document.createElement('option'); opt.value = p.id; opt.textContent = p.name; activePatientSelect.appendChild(opt); });
+            const savedActiveId = localStorage.getItem('nystagmus_active_patient_id');
+            activePatientId = (savedActiveId && patients.some(p => p.id === savedActiveId)) ? savedActiveId : patients[0].id;
+            activePatientSelect.value = activePatientId; updatePatientCardDisplay(); renderRoutineUI();
+        }
+        function updatePatientCardDisplay() {
+            const activeP = getPatients().find(p => p.id === activePatientId) || getPatients()[0];
+            patientInfoDisplay.innerHTML = `<strong>${activeP.name}</strong> ${activeP.dob ? `(${activeP.dob})` : ''}<br><em>${activeP.notes || ''}</em>`;
+        }
+        activePatientSelect.addEventListener('change', () => {
+            activePatientId = activePatientSelect.value; localStorage.setItem('nystagmus_active_patient_id', activePatientId);
+            updatePatientCardDisplay(); renderRoutineUI(); renderHistory();
+        });
+        document.getElementById('create-patient-btn').addEventListener('click', () => {
+            const name = newPatientName.value.trim(); if (!name) return;
+            const patients = getPatients();
+            const newP = { id: 'p_' + Date.now(), name: name, dob: newPatientDob.value || '', notes: newPatientNotes.value.trim() };
+            patients.push(newP); localStorage.setItem('nystagmus_patients', JSON.stringify(patients));
+            newPatientName.value = ''; newPatientDob.value = ''; newPatientNotes.value = '';
+            initPatientSystem(); activePatientSelect.value = newP.id; activePatientSelect.dispatchEvent(new Event('change'));
+            alert(`Paciente añadido.`);
+        });
+
+        // ==========================================
+        // RUTINAS (PAUTAS) V4.01
+        // ==========================================
+        function getRoutines() { return JSON.parse(localStorage.getItem('nystagmus_routines') || '{}'); }
+        function saveActivePatientRoutine(tasks) { const r = getRoutines(); r[activePatientId] = tasks; localStorage.setItem('nystagmus_routines', JSON.stringify(r)); renderRoutineUI(); }
+        function renderRoutineUI() {
+            const tasks = getRoutines()[activePatientId] || [];
+            const list = document.getElementById('routine-tasks-list'); list.innerHTML = '';
+            if (tasks.length === 0) { document.getElementById('routine-summary-text').textContent = "Sin pauta activa."; document.getElementById('launch-routine-btn').style.display = 'none'; return; }
+            document.getElementById('launch-routine-btn').style.display = 'inline-block';
+            let tR=0, tC=0;
+            const ml = { 'search': 'Búsqueda Grid', 'coord': 'Coordenadas Grid', 'pursuit': 'Seguimiento Grid', 'anticrowding': 'Anti-Crowding' };
+            tasks.forEach((t, i) => {
+                tR+=t.required; tC+=Math.min(t.completed, t.required); const d = t.completed >= t.required;
+                list.innerHTML += `<div class="task-item ${d?'completed':''}"><div><strong>#${i+1} ${ml[t.mode]}</strong> (${t.eye})</div><div><strong>${t.completed}/${t.required}</strong> ${d?'✅':''}</div></div>`;
+            });
+            document.getElementById('routine-summary-text').textContent = `Completado: ${tC} de ${tR}`;
+        }
+        document.getElementById('add-task-to-routine-btn').addEventListener('click', () => {
+            const mode = document.getElementById('routine-add-mode').value;
+            const tasks = getRoutines()[activePatientId] || [];
+            tasks.push({ id: 't_'+Date.now(), mode: mode, eye: document.getElementById('routine-add-eye').value, lines: document.getElementById('routine-add-lines').value, required: parseInt(document.getElementById('routine-add-count').value)||1, completed: 0 });
+            saveActivePatientRoutine(tasks);
+        });
+        document.getElementById('clear-routine-btn').addEventListener('click', () => saveActivePatientRoutine([]));
         
-        // INICIALIZACIÓN
-        loadClinicSettings();
-        initPatientSystem();
-        initMonitorSize();
-        generateGrid();
-        renderHistory();
-        updateDistanceCalibration();
+        document.getElementById('launch-routine-btn').addEventListener('click', () => {
+            const tasks = getRoutines()[activePatientId] || []; const nextTask = tasks.find(t => t.completed < t.required);
+            if (!nextTask) { alert('Pauta diaria finalizada.'); return; }
+            
+            if(['search', 'coord', 'pursuit'].includes(nextTask.mode)) {
+                switchView('view-grid'); gridModeSelect.value = nextTask.mode; gridEyeSelect.value = nextTask.eye; gridLinesToggle.checked = (nextTask.lines === 'Sí');
+                updateGridLines(); generateGrid(); gridStartBtn.click();
+            } else if (nextTask.mode === 'anticrowding') {
+                switchView('view-anticrowding'); acEyeSelect.value = nextTask.eye;
+                acStartBtn.click();
+            }
+        });
+
+        // ==========================================
+        // ANALÍTICA, CALIBRACIÓN E IMPRESIÓN
+        // ==========================================
+        function saveSessionData() {
+            const modeNames = { 'search': 'Búsqueda Grid', 'coord': 'Coordenadas Grid', 'pursuit': 'Seguimiento Grid', 'anticrowding': 'Anti-Crowding' };
+            const totalInputs = foundTargets + sessionErrors; const accuracyPct = totalInputs > 0 ? Math.round((foundTargets / totalInputs) * 100) : 100;
+            const eye = activeView==='view-grid' ? gridEyeSelect.value : acEyeSelect.value;
+            const lines = activeView==='view-grid' ? (gridLinesToggle.checked ? 'Sí' : 'No') : 'N/A';
+            
+            const session = {
+                id: Date.now(), patientId: activePatientId, timestamp: Date.now(), date: new Date().toLocaleString('es-ES', { dateStyle: 'short', timeStyle: 'short' }),
+                mode: currentExercise, modeName: modeNames[currentExercise], eye: eye, timeMs: timeElapsedMs, timeFormatted: (activeView==='view-grid'?gridTimer:acTimer).textContent,
+                targets: totalTargets, errors: sessionErrors, accuracy: accuracyPct, lines: lines, screenInches: parseFloat(gridMonitorSize.value) || 34, device: detectDeviceType(), resolution: `${window.screen.width}x${window.screen.height}`
+            };
+
+            let history = JSON.parse(localStorage.getItem('nystagmus_history') || '[]'); history.push(session); localStorage.setItem('nystagmus_history', JSON.stringify(history));
+            
+            const tasks = getRoutines()[activePatientId] || []; let updated=false;
+            for(let t of tasks) { if(t.completed<t.required && t.mode===session.mode && t.eye===session.eye) { t.completed++; updated=true; break; } }
+            if(updated) saveActivePatientRoutine(tasks);
+            renderHistory();
+        }
+
+        function formatDuration(ms) { const s = Math.floor(ms/1000); return `${Math.floor(s/3600).toString().padStart(2,'0')}:${Math.floor((s%3600)/60).toString().padStart(2,'0')}:${(s%60).toString().padStart(2,'0')}`; }
+        function switchStatsTab(mode) {
+            activeStatsTab = mode;
+            document.querySelectorAll('.tab-btn').forEach((btn, idx) => { const modes = ['search', 'coord', 'pursuit', 'anticrowding']; if (modes[idx] === mode) btn.classList.add('active'); else btn.classList.remove('active'); });
+            renderHistory();
+        }
+
+        function renderHistory() {
+            const history = JSON.parse(localStorage.getItem('nystagmus_history') || '[]');
+            const filterEye = document.getElementById('filter-eye').value; const filterLines = document.getElementById('filter-lines').value;
+            const filtered = history.filter(s => { return (s.patientId === activePatientId || (!s.patientId && activePatientId === 'p_default')) && s.mode === activeStatsTab && (filterEye === 'ALL' || s.eye === filterEye) && (filterLines === 'ALL' || s.lines === filterLines || s.lines === 'N/A'); });
+            
+            document.getElementById('metric-total-sessions').textContent = filtered.length;
+            document.getElementById('metric-total-time').textContent = formatDuration(filtered.reduce((acc, curr) => acc + (curr.timeMs || 0), 0));
+            const avgAcc = filtered.length>0 ? Math.round(filtered.reduce((acc, curr) => acc + (curr.accuracy!==undefined?curr.accuracy:100), 0) / filtered.length) : '--';
+            document.getElementById('metric-avg-accuracy').textContent = `${avgAcc}%`;
+            document.getElementById('metric-best-time').textContent = filtered.length>0 ? filtered.find(s => s.timeMs === Math.min(...filtered.map(x=>x.timeMs))).timeFormatted : '--:--';
+
+            const tbody = document.getElementById('history-tbody');
+            if (filtered.length === 0) { tbody.innerHTML = '<tr><td colspan="7">Sin datos.</td></tr>'; renderChart([]); return; }
+
+            tbody.innerHTML = [...filtered].reverse().map((s, i) => `<tr><td><strong>#${filtered.length-i}</strong></td><td>${s.date}</td><td><strong>${s.eye}</strong></td><td><strong>${s.timeFormatted}</strong></td><td>${s.accuracy}% (${s.errors} err)</td><td>${s.lines}</td><td><small>${s.screenInches}"</small></td></tr>`).join('');
+            renderChart(filtered);
+        }
+
+        function renderChart(data) {
+            const svg = document.getElementById('evolution-chart'); svg.innerHTML = ''; if (data.length === 0) return;
+            const w = svg.clientWidth || 700, h = 200, p = 35;
+            const maxT = Math.max(...data.map(d => d.timeMs/1000)), minT = Math.min(...data.map(d => d.timeMs/1000));
+            const points = data.map((d, i) => { const x = data.length===1?w/2:p+(i/(data.length-1))*(w-2*p); const yS=d.timeMs/1000; const range=(maxT-minT)||1; const y=h-p-((yS-minT)/range)*(h-2*p); return {x, y, s:yS.toFixed(1), e:d.eye}; });
+            
+            for(let i=0; i<=3; i++) { const l = document.createElementNS("http://www.w3.org/2000/svg", "line"); l.setAttribute("x1",p); l.setAttribute("x2",w-p); l.setAttribute("y1",p+i*(h-2*p)/3); l.setAttribute("y2",p+i*(h-2*p)/3); l.setAttribute("stroke","#e2e8f0"); l.setAttribute("stroke-dasharray","4"); svg.appendChild(l); }
+            if(points.length>1) { const path = document.createElementNS("http://www.w3.org/2000/svg", "path"); path.setAttribute("d", points.reduce((acc, pt, i) => i===0?`M ${pt.x} ${pt.y}`:`${acc} L ${pt.x} ${pt.y}`, '')); path.setAttribute("fill","none"); path.setAttribute("stroke","#3b82f6"); path.setAttribute("stroke-width","3"); svg.appendChild(path); }
+            points.forEach(pt => { const c = document.createElementNS("http://www.w3.org/2000/svg", "circle"); c.setAttribute("cx",pt.x); c.setAttribute("cy",pt.y); c.setAttribute("r","5"); c.setAttribute("fill",pt.e==='OD'?'#ef4444':(pt.e==='OI'?'#3b82f6':'#10b981')); svg.appendChild(c); });
+        }
+
+        document.getElementById('chart-axis-btn').addEventListener('click', () => { chartXAxisType = chartXAxisType==='index'?'date':'index'; document.getElementById('chart-axis-btn').textContent = chartXAxisType==='index'?'Eje X: Pruebas':'Eje X: Fechas'; renderHistory(); });
+        document.getElementById('print-report-btn').addEventListener('click', () => { updatePrintHeaderData(); document.body.classList.remove('print-grid-only'); document.body.classList.add('print-report-only'); document.getElementById('stats-content').classList.add('active'); renderHistory(); setTimeout(() => { window.print(); document.body.classList.remove('print-report-only'); }, 150); });
+        document.getElementById('print-grid-btn').addEventListener('click', () => { document.body.classList.remove('print-report-only'); document.body.classList.add('print-grid-only'); window.print(); document.body.classList.remove('print-grid-only'); });
+        
+        // CALIBRACIÓN Y DISPOSITIVO
+        function updateDistanceCalibration() {
+            const ppi = Math.hypot(window.screen.width, window.screen.height) / (parseFloat(gridMonitorSize.value) || 34);
+            const fontMm = ((window.innerHeight * 0.04) / ppi) * 25.4; currentSuggestedDistanceCm = Math.max(40, Math.round(fontMm * 8));
+            gridDistanceInfo.innerHTML = `Letra: <strong>~${fontMm.toFixed(1)} mm</strong> | Distancia recomendada: <strong style="color: #2563eb;">~${currentSuggestedDistanceCm} cm</strong>`;
+        }
+        window.addEventListener('resize', () => { updateDistanceCalibration(); updateLayoutAndGridSize(); });
+        
+        function detectDeviceType() { const ua = navigator.userAgent; if(/iPad|iPhone/.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1)) return "iOS"; if(/Kindle|Silk/.test(ua)) return "Kindle"; if(/Android/.test(ua)) return "Android"; return "Web"; }
+        
+        function initMonitorSize() {
+            const saved = localStorage.getItem('nystagmus_monitor_size'); const ua = navigator.userAgent;
+            if(/Kindle|Silk/.test(ua)) { gridContrastToggle.checked=true; acContrastToggle.checked=true; updateHighContrast(); }
+            if(saved) { document.getElementById('grid-detection-badge').textContent = '💾'; return parseFloat(saved); }
+            const w=window.screen.width, h=window.screen.height, max=Math.max(w,h), min=Math.min(w,h);
+            if(/Kindle/.test(ua)) return 10.2; if(/iPad/.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1)) return max>=1366?12.9:10.9;
+            return max>=2500?34:24;
+        }
+        gridMonitorSize.addEventListener('input', () => { localStorage.setItem('nystagmus_monitor_size', gridMonitorSize.value); document.getElementById('grid-detection-badge').textContent = '💾'; updateDistanceCalibration(); });
+
+        // EXPORT / IMPORT
+        document.getElementById('export-stats-btn').addEventListener('click', () => {
+            const b = { version: "4.01", clinic: JSON.parse(localStorage.getItem('nystagmus_clinic_cfg')||'{}'), patients: getPatients(), routines: getRoutines(), history: JSON.parse(localStorage.getItem('nystagmus_history')||'[]') };
+            const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(b)], {type:'application/json'})); a.download = `terapia_v401_${new Date().getTime()}.json`; a.click();
+        });
+        document.getElementById('import-stats-btn').addEventListener('click', () => document.getElementById('import-file-input').click());
+        document.getElementById('import-file-input').addEventListener('change', (e) => {
+            if(!e.target.files[0]) return; const r = new FileReader();
+            r.onload = ev => { try { const d = JSON.parse(ev.target.result); if(d.patients) localStorage.setItem('nystagmus_patients', JSON.stringify(d.patients)); if(d.history) localStorage.setItem('nystagmus_history', JSON.stringify(d.history)); if(d.routines) localStorage.setItem('nystagmus_routines', JSON.stringify(d.routines)); if(d.clinic) localStorage.setItem('nystagmus_clinic_cfg', JSON.stringify(d.clinic)); location.reload(); } catch(err){} }; r.readAsText(e.target.files[0]);
+        });
+        document.getElementById('clear-stats-btn').addEventListener('click', () => { if(confirm('Borrar historial del paciente?')) { localStorage.setItem('nystagmus_history', JSON.stringify(JSON.parse(localStorage.getItem('nystagmus_history')||'[]').filter(s=>s.patientId!==activePatientId))); renderHistory(); } });
+
+        // BOOTSTRAP
+        loadClinicSettings(); initPatientSystem(); gridMonitorSize.value = initMonitorSize(); updateDistanceCalibration(); generateGrid(); renderHistory(); switchView('view-dashboard');
     </script>
 </body>
 </html>
