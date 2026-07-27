@@ -1,3 +1,91 @@
+# 👁️ Suite de Terapia Visual (v5.00)
+
+> **Software clínico web para entrenamiento oculomotor, estabilización de la mirada y agudeza visual**, diseñado específicamente para pacientes con nistagmo, ambliopía, déficits de fijación foveal, alteraciones de seguimiento y sacádicos.
+
+---
+
+## 📋 Descripción del Proyecto
+
+Esta aplicación web funciona como una **Suite Clínica Integral** (*Single Page Application*). Permite a optometristas y terapeutas visuales gestionar perfiles de pacientes, recetar pautas terapéuticas diarias y ejecutar **6 módulos de entrenamiento visual distintos**. 
+
+La aplicación se adapta automáticamente a cualquier pantalla (Mac, PC, iPads/Tablets y dispositivos e-Ink como Kindle Scribe), calculando la distancia clínica recomendada mediante calibración por tarjeta física. Todo el procesamiento de datos y la generación de informes se realizan de forma local en el navegador, garantizando total privacidad.
+
+---
+
+## 🎮 Catálogo de Ejercicios (6 Módulos)
+
+1. **🔠 Cuadrícula Espacial (Spatial Grid):**
+   * *Búsqueda Táctil:* Localización foveal entre distractores (matriz 10x10).
+   * *Coordenadas:* Discriminación espacial usando el teclado virtual/físico.
+   * *Seguimiento (Pursuit):* Rastreo de un objetivo saltarín en la cuadrícula.
+2. **🎯 Anti-Crowding:** 
+   * Entrenamiento contra el amontonamiento visual. El paciente debe identificar la letra central entre flanqueadores que se reducen progresivamente en tamaño y espaciado.
+3. **⚡ Saltos Sacádicos:** 
+   * Entrenamiento de reflejo periférico y fijación foveal ultrarrápida. Aparición aleatoria de dianas temporizadas.
+4. **🎾 Pelota de Marsden Virtual:** 
+   * Simulador pendular para entrenamiento de seguimiento dinámico suave (*Smooth Pursuit*). El cronómetro y la acción de validación solo se activan ante estímulos diana específicos.
+5. **🔀 Visual Tracing (Laberintos):** 
+   * Estabilización de la mirada. Generación aleatoria de curvas entrelazadas (Canvas) que el paciente debe seguir exclusivamente con los ojos de principio a fin.
+6. **📸 Taquistoscopio:** 
+   * Entrenamiento de memoria visual y fijación extrema. Flash de 250 milisegundos con caracteres alfanuméricos tras fijación central en cruz.
+
+---
+
+## ✨ Funcionalidades Clínicas
+
+* **Gestión Multiusuario Integral:** Creación, edición y borrado absoluto de perfiles de pacientes (incluyendo historial y pautas).
+* **Marca Blanca (Configuración de Clínica):** Personalización completa de los reportes con Nombre de Clínica, Nombre del Especialista, Nº de Colegiado, Contacto y **Logo personalizado (procesado en Base64)**.
+* **Pautas Terapéuticas (Diseñador):** Posibilidad de recetar "Planes del Día" combinando múltiples series de los 6 diferentes juegos, eligiendo ojo entrenado (BIN, OD, OI) y opciones visuales.
+* **Reportes Clínicos PDF:** Generador global de informes en A4, agrupando el desempeño de todos los juegos en métricas y gráficas de evolución vectorial (SVG) con el membrete oficial del centro.
+* **Base de Datos Portátil:** Exportación e importación de la base de datos completa (Pacientes, Rutinas, Historial y Configuración de la Clínica) en un único archivo JSON de seguridad.
+* **Modo e-Ink / Alto Contraste:** Interfaz e-Reader amigable.
+
+---
+
+## 🏗️ Arquitectura Técnica (Multifichero)
+
+A partir de la versión 5.00, el proyecto ha migrado de una estructura monolítica a un sistema modular ligero para facilitar el mantenimiento sin depender de librerías externas ni servidores (*Backend-less*):
+
+1. `index.html`: Estructura base de la aplicación (SPA), modales de interfaz y contenedores DOM.
+2. `styles.css`: Estilos visuales, variables CSS, Dark Mode / Alto Contraste y reglas estrictas de paginación `@media print` para los PDF.
+3. `app.js`: Motor clínico. Controla el *Router* de las vistas, la persistencia en `localStorage`, la gestión de pacientes, clínica, historial y el renderizado global SVG.
+4. `juegos.js`: Motor gráfico y bucles de juego (Game Loops). Incluye el Teclado Virtual dinámico interactivo y la lógica de validación/renderizado (Canvas/DOM) de los 6 ejercicios terapéuticos.
+
+---
+
+## 🚀 Instalación y Despliegue
+
+La aplicación está construida estrictamente en **Vanilla HTML5, CSS3 y JavaScript ES6+**. No requiere Node.js, bases de datos ni conexión a internet continua.
+
+### Opción A: Ejecución Local Offline
+1. Descarga el contenido del repositorio en una misma carpeta.
+2. Haz doble clic en el archivo `index.html` para abrirlo en cualquier navegador moderno (Chrome, Safari, Firefox).
+
+### Opción B: Servidor Web / GitHub Pages
+1. Clona este repositorio o actívalo directamente mediante GitHub Pages.
+2. Visita la URL pública y guárdala como App de Pantalla de Inicio (*PWA / Bookmark*) en tus dispositivos de trabajo.
+
+---
+
+## 🔒 Privacidad y Datos (GDPR / HIPAA)
+
+Este software es **100% Client-Side**. No existe transmisión de datos al exterior. Los datos de salud (historias clínicas, tiempos de resolución, diagnósticos y edad de pacientes) se cifran y guardan exclusivamente en el `localStorage` del navegador que ejecuta la aplicación web. El terapeuta es responsable de salvaguardar el dispositivo y exportar/borrar la base de datos según sus protocolos clínicos.
+
+---
+
+*Diseñado para la evolución tecnológica en la terapia y rehabilitación optométrica.*
+
+
+
+
+
+
+
+
+
+
+
+
 # 👁️ Terapia Visual: Estabilización Táctil y Fijación Foveal
 
 > **Software web de entrenamiento oculomotor y estabilización de la mirada**, diseñado específicamente para pacientes con nistagmo, ambliopía, déficits de fijación foveal o alteraciones de seguimiento y sacádicos.

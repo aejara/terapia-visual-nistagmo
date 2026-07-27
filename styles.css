@@ -1,0 +1,226 @@
+/* =========================================
+   VARIABLES Y ESTILOS GLOBALES
+   ========================================= */
+:root {
+    --bg-color: #f0f4f8;
+    --text-color: #1e293b;
+    --grid-border: #94a3b8;
+    --target-bg: #bbf7d0;
+    --target-text: #166534;
+    --wrong-bg: #fecdd3;
+    --primary: #3b82f6;
+    --primary-hover: #2563eb;
+    --font-clinical: 'Atkinson Hyperlegible', 'Verdana', sans-serif;
+    --panel-bg: #ffffff;
+}
+
+body.high-contrast {
+    --bg-color: #ffffff;
+    --text-color: #000000;
+    --grid-border: #000000;
+    --target-bg: #000000;
+    --target-text: #ffffff;
+    --wrong-bg: #888888;
+    --primary: #000000;
+    --primary-hover: #333333;
+    --panel-bg: #ffffff;
+}
+
+body {
+    font-family: var(--font-clinical);
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    margin: 0;
+    padding: 0.8rem;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    touch-action: manipulation;
+}
+
+h1 { margin: 0 0 0.4rem 0; font-size: 1.4rem; text-align: center; font-weight: 700; color: var(--text-color); }
+.container { width: 100%; max-width: 920px; display: flex; flex-direction: column; gap: 0.6rem; }
+
+.panel {
+    background-color: var(--panel-bg);
+    padding: 0.8rem 1rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    border: 1px solid #cbd5e1;
+    width: 100%;
+    box-sizing: border-box;
+}
+body.high-contrast .panel { border: 2px solid #000000; }
+
+/* =========================================
+   SISTEMA DE VISTAS (SPA)
+   ========================================= */
+.app-view { display: none; flex-direction: column; gap: 0.6rem; width: 100%; animation: fadeIn 0.3s ease; }
+.app-view.active { display: flex; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* =========================================
+   BOTONES Y FORMULARIOS
+   ========================================= */
+.btn { font-family: var(--font-clinical); background-color: var(--primary); color: white; border: none; padding: 0.6rem 1.2rem; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 1rem; transition: background-color 0.2s; }
+.btn:hover { background-color: var(--primary-hover); }
+.btn-secondary { background-color: #64748b; font-size: 0.85rem; padding: 0.5rem 0.9rem; }
+.btn-secondary:hover { background-color: #475569; }
+input[type="text"], input[type="number"], input[type="date"], select, textarea { font-family: var(--font-clinical); padding: 0.5rem; border: 2px solid #cbd5e1; border-radius: 8px; font-weight: 700; }
+
+/* HEADER PACIENTE Y DASHBOARD */
+.patient-row { display: flex; justify-content: space-between; align-items: center; background-color: #eff6ff; border-left: 4px solid var(--primary); padding: 0.6rem 1rem; border-radius: 8px; flex-wrap: wrap; gap: 0.6rem; }
+body.high-contrast .patient-row { background-color: #f1f5f9; border-color: #000000; }
+.exercises-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin-top: 0.5rem; }
+.exercise-card { background-color: white; border: 2px solid #cbd5e1; border-radius: 12px; padding: 1.2rem; cursor: pointer; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: all 0.2s; }
+body.high-contrast .exercise-card { border: 3px solid #000000; }
+.exercise-card:hover { border-color: var(--primary); transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.2); }
+.exercise-card-icon { font-size: 2.8rem; margin-bottom: 0.5rem; }
+.exercise-card-title { font-size: 1.15rem; font-weight: 900; margin-bottom: 0.3rem; color: #0f172a; }
+.exercise-card-desc { font-size: 0.85rem; color: #475569; line-height: 1.3; }
+
+/* =========================================
+   CABECERA DE JUEGO (GAME HEADER)
+   ========================================= */
+.controls-row { display: flex; justify-content: space-between; align-items: center; font-size: 1.1rem; font-weight: 700; flex-wrap: wrap; gap: 0.8rem; }
+.target-badge { font-size: clamp(2rem, 4vh, 3rem); font-weight: 900; color: var(--primary); background-color: #eff6ff; padding: 0.1rem 0.8rem; border-radius: 10px; border: 3px solid var(--primary); display: inline-block; vertical-align: middle; margin-left: 0.3rem; line-height: 1.1; }
+body.high-contrast .target-badge { background-color: #000000 !important; color: #ffffff !important; border-color: #000000 !important; }
+.progress-badge { font-size: clamp(1.8rem, 3.5vh, 2.5rem); font-weight: 900; color: #16a34a; }
+body.high-contrast .progress-badge { color: #000000; }
+
+/* =========================================
+   MÓDULO 1: CUADRÍCULA ESPACIAL
+   ========================================= */
+.grid-wrapper { display: flex; justify-content: center; width: 100%; }
+#grid-container { display: grid; grid-template-columns: 32px repeat(10, 1fr); gap: 4px; background-color: var(--grid-border); border: 4px solid var(--grid-border); border-radius: 10px; box-sizing: border-box; transition: background-color 0.2s ease; }
+.cell, .label-cell { background-color: white; display: flex; justify-content: center; align-items: center; user-select: none; font-weight: 700; box-sizing: border-box; overflow: hidden; color: #000000; }
+.label-cell { background-color: #e2e8f0; color: #475569; }
+body.high-contrast .label-cell { background-color: #cccccc; color: #000000; border: 1px solid #000000; }
+.mode-search .cell { cursor: pointer; }
+.mode-search .cell:active { background-color: #f1f5f9; }
+.cell.found { background-color: var(--target-bg); color: var(--target-text); }
+body.high-contrast .cell.found { background-color: #000000 !important; color: #ffffff !important; }
+.cell.wrong { background-color: var(--wrong-bg); animation: shake 0.4s; }
+.cell.pursuit-active { background-color: var(--primary); color: white; transform: scale(1.05); border-radius: 4px; z-index: 10; box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); }
+
+#grid-container.hide-lines { gap: 0; background-color: #ffffff; border-color: #cbd5e1; }
+body.high-contrast #grid-container.hide-lines { border-color: #000000; }
+#grid-container.hide-lines .cell { border: 1px solid #f8fafc; }
+body.high-contrast #grid-container.hide-lines .cell { border: 1px solid #e2e8f0; }
+
+/* =========================================
+   ÁREA DE JUEGOS GENERAL (MÓDULOS 2 AL 6)
+   ========================================= */
+.game-area { display: flex; justify-content: center; align-items: center; width: 100%; height: min(55vh, 500px); background-color: #ffffff; border: 4px solid #cbd5e1; border-radius: 12px; position: relative; overflow: hidden; box-sizing: border-box; }
+body.high-contrast .game-area { border-color: #000000; }
+.game-area.success { background-color: var(--target-bg); }
+.game-area.error { background-color: var(--wrong-bg); animation: shake 0.4s; }
+
+/* MÓDULO 2: ANTI-CROWDING */
+#ac-display { font-weight: 900; white-space: nowrap; user-select: none; color: #0f172a; transition: all 0.3s ease; }
+body.high-contrast #ac-display { color: #000000; }
+.ac-flanker { color: #0f172a; opacity: 1; }
+body.high-contrast .ac-flanker { color: #000000; }
+.ac-target { color: #0f172a; }
+body.high-contrast .ac-target { color: #000000; }
+
+/* MÓDULO 3: SALTOS SACÁDICOS */
+#saccadic-target { position: absolute; width: 60px; height: 60px; background-color: #ef4444; border-radius: 50%; border: 4px solid #ffffff; box-shadow: 0 4px 10px rgba(0,0,0,0.3); cursor: pointer; display: none; transition: transform 0.1s; }
+#saccadic-target:active { transform: scale(0.8); }
+body.high-contrast #saccadic-target { background-color: #000000; border-color: #ffffff; }
+
+/* MÓDULO 4: PELOTA DE MARSDEN */
+#marsden-pendulum { position: absolute; top: 0; transform-origin: top center; display: flex; flex-direction: column; align-items: center; }
+.marsden-string { width: 4px; height: 280px; background-color: #94a3b8; }
+#marsden-ball { width: 80px; height: 80px; background-color: var(--primary); border-radius: 50%; display: flex; justify-content: center; align-items: center; color: white; font-size: 2.5rem; font-weight: 900; box-shadow: 0 10px 20px rgba(0,0,0,0.2); user-select: none; }
+body.high-contrast #marsden-ball { background-color: #000000; }
+@keyframes swing { 0% { transform: rotate(35deg); } 100% { transform: rotate(-35deg); } }
+
+/* MÓDULO 5: VISUAL TRACING (LABERINTO) */
+#tracing-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+.tracing-label { position: absolute; font-weight: 900; font-size: 1.5rem; background-color: white; padding: 0.2rem 0.8rem; border-radius: 8px; border: 2px solid #cbd5e1; z-index: 10; }
+
+/* MÓDULO 6: TAQUISTOSCOPIO */
+#tach-display { font-size: 5rem; font-weight: 900; letter-spacing: 15px; display: none; color: #0f172a; }
+body.high-contrast #tach-display { color: #000000; }
+#tach-fixation { font-size: 4rem; color: #94a3b8; }
+#tach-input-area { position: absolute; bottom: 20px; display: none; gap: 0.5rem; }
+
+@keyframes shake { 0%, 100% { transform: translateX(0); } 25%, 75% { transform: translateX(-5px); } 50% { transform: translateX(5px); } }
+
+/* =========================================
+   TECLADO VIRTUAL COMPARTIDO
+   ========================================= */
+#virtual-keypad { display: none; grid-template-columns: repeat(4, 1fr); gap: 10px; width: 100%; margin-bottom: 0.6rem; }
+.keypad-btn { font-family: var(--font-clinical); background-color: white; border: 3px solid var(--grid-border); border-radius: 12px; font-size: 2.2rem; font-weight: 700; padding: 0.8rem 0; cursor: pointer; box-shadow: 0 4px 0 var(--grid-border); touch-action: manipulation; }
+.keypad-btn:active { transform: translateY(4px); box-shadow: none; }
+.keypad-btn.focused { border-color: #2563eb; background-color: #eff6ff; box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.4), 0 4px 0 #2563eb; transform: translateY(-2px); }
+body.high-contrast .keypad-btn.focused { border-color: #000000; background-color: #000000; color: #ffffff; }
+
+/* =========================================
+   COMPONENTES DE CONFIGURACIÓN Y OVERLAYS
+   ========================================= */
+.config-row { display: flex; gap: 0.8rem; flex-wrap: wrap; align-items: center; justify-content: space-between; }
+.toggle-option { display: flex; align-items: center; gap: 0.4rem; font-weight: 700; background-color: #e2e8f0; padding: 0.5rem 0.8rem; border-radius: 8px; cursor: pointer; }
+body.high-contrast .toggle-option { background-color: #000000; color: #ffffff; }
+.collapsible-toggle { background-color: #e2e8f0; border: none; padding: 0.7rem 1rem; border-radius: 8px; font-weight: 700; width: 100%; text-align: left; display: flex; justify-content: space-between; font-family: var(--font-clinical); font-size: 0.95rem; cursor: pointer; }
+.collapsible-content { display: none; padding: 1rem 0 0 0; }
+.collapsible-content.active { display: block; }
+.info-badge { background-color: #f0fdf4; border-left: 4px solid #22c55e; padding: 0.8rem 1rem; border-radius: 8px; font-size: 1rem; margin-bottom: 0.8rem; }
+
+.overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(255,255,255,0.98); z-index: 9999; display: none; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 2rem; box-sizing: border-box; }
+.overlay.active { display: flex; }
+body.high-contrast .overlay { background-color: #ffffff; color: #000000; }
+.flashcard-distance-badge { font-size: clamp(1.4rem, 3.5vw, 2.2rem); font-weight: 900; background-color: #fef08a; color: #854d0e; padding: 0.8rem 1.8rem; border-radius: 50px; margin-bottom: 1.8rem; border: 3px solid #eab308; }
+body.high-contrast .flashcard-distance-badge { background-color: #000000; color: #ffffff; border-color: #000000; }
+
+/* ANALÍTICA Y TABLAS */
+.tab-buttons { display: flex; gap: 0.4rem; border-bottom: 2px solid #cbd5e1; padding-bottom: 0.4rem; margin-bottom: 1rem; flex-wrap: wrap; }
+.tab-btn { background-color: #f1f5f9; border: none; padding: 0.5rem 1rem; border-radius: 6px 6px 0 0; font-family: var(--font-clinical); font-weight: 700; color: #64748b; cursor: pointer; }
+.tab-btn.active { background-color: var(--primary); color: white; }
+.history-table { width: 100%; border-collapse: collapse; margin-top: 0.5rem; font-size: 0.85rem; }
+.history-table th, .history-table td { border: 1px solid #cbd5e1; padding: 0.4rem 0.6rem; text-align: center; }
+.history-table th { background-color: #f1f5f9; font-weight: 700; color: #475569; }
+.metric-card { background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.6rem 0.8rem; text-align: center; flex: 1; min-width: 130px; }
+.metric-card .val { font-size: 1.2rem; font-weight: 700; color: var(--primary); }
+.metric-card .lbl { font-size: 0.72rem; color: #64748b; font-weight: 700; }
+.chart-container { background-color: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; }
+.chart-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; flex-wrap: wrap; gap: 0.5rem; }
+
+/* =========================================
+   REGLAS DE IMPRESIÓN (PDF Y PAPEL)
+   ========================================= */
+@media print {
+    @page { size: A4 portrait; margin: 8mm 10mm; }
+    body { background: white !important; color: #000000 !important; font-size: 9pt !important; line-height: 1.15 !important; padding: 0 !important; margin: 0 !important; }
+    
+    /* Ocultar UI interactiva */
+    .btn, button, input, select, textarea, #virtual-keypad, .overlay, .collapsible-toggle, .filter-bar, .tab-buttons, .routine-designer-box, .exercises-grid, .app-view, .patient-row, .controls-row, .config-row { display: none !important; }
+    .container { max-width: 100% !important; gap: 0.3rem !important; }
+    .panel { box-shadow: none !important; border: 1px solid #94a3b8 !important; border-radius: 4px !important; padding: 0.4rem 0.6rem !important; background: #ffffff !important; }
+
+    /* REPORTE CLÍNICO (A4 Formal) */
+    body.print-report-only #view-dashboard { display: flex !important; }
+    body.print-report-only #print-header { display: flex !important; justify-content: space-between !important; align-items: center !important; border-bottom: 2px solid #000000 !important; padding-bottom: 6px !important; margin-bottom: 8px !important; }
+    .print-clinic-logo { max-height: 50px !important; max-width: 180px !important; object-fit: contain !important; }
+    
+    body.print-report-only h1 { display: block !important; text-align: left !important; font-size: 13pt !important; font-weight: 900 !important; margin: 0 0 4px 0 !important; color: #000000 !important; }
+    body.print-report-only #stats-box { display: block !important; padding: 0 !important; border: none !important;}
+    body.print-report-only .metric-card { border: 1px solid #cbd5e1 !important; padding: 3px 5px !important; border-radius: 4px !important; }
+    body.print-report-only .metric-card .val { font-size: 10pt !important; font-weight: 900 !important; }
+    body.print-report-only .metric-card .lbl { font-size: 6.5pt !important; font-weight: 700 !important; }
+    body.print-report-only .chart-container { border: 1px solid #94a3b8 !important; padding: 4px !important; border-radius: 4px !important; margin-bottom: 4px !important; page-break-inside: avoid; height: 130px !important; }
+    body.print-report-only #evolution-chart { height: 110px !important; }
+    body.print-report-only .history-table { width: 100% !important; border-collapse: collapse !important; font-size: 8pt !important; margin-top: 4px !important; }
+    body.print-report-only .history-table th { background-color: #f1f5f9 !important; border: 1px solid #94a3b8 !important; padding: 2px 4px !important; font-weight: 700 !important; }
+    body.print-report-only .history-table td { border: 1px solid #cbd5e1 !important; padding: 2px 4px !important; }
+
+    /* IMPRESIÓN CUADRÍCULA EN PAPEL */
+    body.print-grid-only #game-view-container { display: flex !important; }
+    body.print-grid-only #view-dashboard { display: none !important; }
+    body.print-grid-only .controls-row { display: block !important; border: none !important; text-align: center !important; font-size: 1.4rem !important; margin-bottom: 1rem !important; }
+    body.print-grid-only .grid-wrapper { display: flex !important; }
+    body.print-grid-only #grid-container { width: 100% !important; height: auto !important; aspect-ratio: 1/1 !important; border: 3px solid #000 !important; page-break-inside: avoid; }
+    body.print-grid-only .cell { border: 1px solid #000000 !important; }
+}
