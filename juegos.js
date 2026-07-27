@@ -1,8 +1,7 @@
 // ============================================================================
-// juegos.js - SUITE TERAPIA VISUAL (Motor Gráfico, 6 Juegos y Audio TTS)
+// juegos.js - SUITE TERAPIA VISUAL (Motor Gráfico, 8 Juegos Independientes)
 // ============================================================================
 
-// 1. ESTADO DE LOS JUEGOS
 const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 const confusionMatrix = {
     'A': ['V','X','Y','R'], 'B': ['P','R','E','D'], 'C': ['O','G','Q','D'], 'D': ['O','B','C','Q'],
@@ -10,7 +9,6 @@ const confusionMatrix = {
 };
 
 window.currentGame = null; 
-window.currentGridMode = 'search';
 let isPlaying = false;
 let isPausedByOverlay = false;
 let isTimerActive = true; 
@@ -27,7 +25,7 @@ const canvasArea = document.getElementById('game-canvas-area');
 const virtualKeypad = document.getElementById('virtual-keypad');
 let selectedKeypadIndex = 0;
 
-// 2. NAVEGACIÓN Y CONFIGURACIÓN HARDWARE
+// NAVEGACIÓN Y CONFIGURACIÓN HARDWARE
 window.initMonitorSize = function() {
     const saved = localStorage.getItem('nystagmus_monitor_size');
     const ua = navigator.userAgent || '';
@@ -89,15 +87,14 @@ window.openGame = function(gameId) {
     virtualKeypad.style.display = 'none';
     document.getElementById('btn-game-start').textContent = "Iniciar Ejercicio";
     
-    if (gameId === 'grid') {
-        document.getElementById('grid-mode-box').style.display = 'flex';
+    // Toggles exclusivos de las versiones de Cuadrícula (Ahora comprobando los 3 modos sueltos)
+    if (['search', 'coord', 'pursuit'].includes(gameId)) {
         document.getElementById('grid-lines-box').style.display = 'flex';
         document.getElementById('btn-print-grid').style.display = 'inline-block';
-        canvasArea.innerHTML = `<div class="grid-wrapper"><div id="grid-container" class="mode-${window.currentGridMode}"></div></div>`;
-        reqTargets = (window.currentGridMode === 'search') ? 0 : (window.currentGridMode === 'coord' ? 10 : 15);
+        canvasArea.innerHTML = `<div class="grid-wrapper"><div id="grid-container" class="mode-${gameId}"></div></div>`;
+        reqTargets = (gameId === 'search') ? 0 : (gameId === 'coord' ? 10 : 15);
         drawGrid();
     } else {
-        document.getElementById('grid-mode-box').style.display = 'none';
         document.getElementById('grid-lines-box').style.display = 'none';
         document.getElementById('btn-print-grid').style.display = 'none';
     }
@@ -133,7 +130,7 @@ window.closeGame = function() {
     window.renderDashboard(); 
 }
 
-// 3. MOTOR CENTRAL Y SÍNTESIS DE VOZ
+// MOTOR CENTRAL Y SÍNTESIS DE VOZ
 function speakText(text) {
     const audioToggle = document.getElementById('game-audio');
     if (!audioToggle || !audioToggle.checked) return;
@@ -160,22 +157,6 @@ document.getElementById('btn-game-start').addEventListener('click', () => {
     if (isPlaying) stopGame(); else startGame();
 });
 
-document.getElementById('btn-launch-routine').addEventListener('click', () => {
-    let r = window.routines[window.activePatientId] || []; 
-    let next = r.find(t => t.done < t.req);
-    
-    if(!next) { alert("¡Pauta clínica completada por hoy!"); return; }
-    
-    window.openGame(['search','coord','pursuit'].includes(next.mode) ? 'grid' : next.mode);
-    if(['search','coord','pursuit'].includes(next.mode)) { 
-        document.getElementById('game-grid-mode').value = next.mode; 
-        window.currentGridMode = next.mode; 
-        document.getElementById('game-lines-toggle').checked = (next.lines === 'Sí');
-    }
-    document.getElementById('game-eye').value = next.eye; 
-    setTimeout(startGame, 500); 
-});
-
 function startGame() {
     isPlaying = true; 
     isTimerActive = true; 
@@ -192,7 +173,7 @@ function startGame() {
         document.getElementById('game-timer').textContent = `${m}:${s}.${d}`;
     }, 100);
 
-    if (window.currentGame === 'grid') startGrid();
+    if (['search', 'coord', 'pursuit'].includes(window.currentGame)) startGrid();
     if (window.currentGame === 'anticrowding') startAntiCrowding();
     if (window.currentGame === 'saccadic') startSaccadic();
     if (window.currentGame === 'marsden') startMarsden();
@@ -214,17 +195,24 @@ function stopGame() {
 
 function endGame() {
     stopGame();
-    speakText("¡Sesión completada!"); // Voz al terminar
+    speakText("¡Sesión completada!"); 
     
     const acc = (foundTargets + sessionErrors) > 0 ? Math.round((foundTargets / (foundTargets + sessionErrors)) * 100) : 100;
-    const logName = window.currentGame === 'grid' ? `Cuadrícula: ${window.currentGridMode}` : window.currentGame;
+    
+    const logNames = {
+        'search': 'Búsqueda Táctil', 'coord': 'Coordenadas', 'pursuit': 'Seguimiento',
+        'anticrowding': 'Anti-Crowding', 'saccadic': 'Sacádicos', 'marsden': 'Pelota Marsden',
+        'tracing': 'Laberintos', 'tachisto': 'Taquistoscopio'
+    };
     
     let linesInfo = "N/A";
-    if (window.currentGame === 'grid') linesInfo = document.getElementById('game-lines-toggle').checked ? 'Sí' : 'No';
+    if (['search', 'coord', 'pursuit'].includes(window.currentGame)) {
+        linesInfo = document.getElementById('game-lines-toggle').checked ? 'Sí' : 'No';
+    }
 
     const log = { 
         id: Date.now(), patientId: window.activePatientId, date: new Date().toLocaleString('es-ES',{dateStyle:'short',timeStyle:'short'}), 
-        mode: window.currentGame, modeName: logName, eye: document.getElementById('game-eye').value, 
+        mode: window.currentGame, modeName: logNames[window.currentGame] || window.currentGame, eye: document.getElementById('game-eye').value, 
         timeMs: timeMs, timeFormatted: document.getElementById('game-timer').textContent, accuracy: acc, errors: sessionErrors,
         lines: linesInfo, screenInches: parseFloat(document.getElementById('game-inches').value) || 34
     };
@@ -244,7 +232,7 @@ function triggerError(element) {
     if (element) { 
         element.classList.remove('error', 'wrong'); 
         void element.offsetWidth; 
-        element.classList.add(window.currentGame === 'grid' ? 'wrong' : 'error'); 
+        element.classList.add(['search', 'coord', 'pursuit'].includes(window.currentGame) ? 'wrong' : 'error'); 
     }
 }
 
@@ -253,7 +241,7 @@ function registerHit() {
     if (foundTargets >= reqTargets) endGame();
 }
 
-// 4. INTERFAZ: TOGGLES Y FLASHCARDS CON AUDIO
+// INTERFAZ: TOGGLES Y FLASHCARDS CON AUDIO
 document.getElementById('game-contrast').addEventListener('change', (e) => {
     if(e.target.checked) document.body.classList.add('high-contrast');
     else document.body.classList.remove('high-contrast');
@@ -269,7 +257,6 @@ document.getElementById('game-lines-toggle').addEventListener('change', (e) => {
 
 let overlayCallback = null;
 
-// Lógica de Flashcards adaptada para recibir y reproducir texto
 function showFlash(htmlText, spokenText, callback) {
     isPausedByOverlay = true;
     document.getElementById('flashcard-main').innerHTML = htmlText; 
@@ -291,7 +278,7 @@ function hideFlash() {
 document.getElementById('flashcard-overlay').addEventListener('click', hideFlash);
 document.getElementById('result-overlay').addEventListener('click', () => { document.getElementById('result-overlay').classList.remove('active'); });
 
-// 5. TECLADO VIRTUAL Y NAVEGACIÓN UNIVERSAL
+// TECLADO VIRTUAL Y NAVEGACIÓN UNIVERSAL
 function renderKeypadCustom(options, correct) {
     virtualKeypad.innerHTML = ''; 
     selectedKeypadIndex = 0; 
@@ -329,14 +316,14 @@ function updateKeypadFocus() {
 function handleKey(char) {
     if (!isPlaying || isPausedByOverlay) return;
     
-    if (window.currentGame === 'grid') {
-        if (window.currentGridMode === 'search') return; 
+    if (['search', 'coord', 'pursuit'].includes(window.currentGame)) {
+        if (window.currentGame === 'search') return; 
         if (char === targetValue) {
             let c = document.querySelector('.pursuit-active'); 
             if(c) { c.classList.remove('pursuit-active'); c.classList.add('found'); setTimeout(() => c.classList.remove('found'), 400); }
             registerHit(); 
             if (isPlaying) { 
-                if (window.currentGridMode === 'coord') pickNewCoordinate();
+                if (window.currentGame === 'coord') pickNewCoordinate();
                 else { clearInterval(customInt1); gridNextPursuit(); customInt1 = setInterval(gridNextPursuit, 3000); }
             }
         } else { triggerError(document.querySelector('.pursuit-active')); }
@@ -362,7 +349,6 @@ function handleKey(char) {
     }
 }
 
-// Navegación Global por Teclado
 document.addEventListener('keydown', e => {
     if (document.getElementById('flashcard-overlay').classList.contains('active')) { hideFlash(); return; }
     if (document.getElementById('result-overlay').classList.contains('active')) { document.getElementById('result-overlay').classList.remove('active'); return; }
@@ -426,13 +412,13 @@ function updateLayoutAndGridSize() {
 
 window.addEventListener('resize', () => { 
     updateDistanceCalibration(); 
-    if(window.currentGame === 'grid') updateLayoutAndGridSize(); 
+    if(['search', 'coord', 'pursuit'].includes(window.currentGame)) updateLayoutAndGridSize(); 
 });
 
 function drawGrid() {
     const cont = document.getElementById('grid-container'); 
     if(!cont) return;
-    cont.innerHTML = ''; cont.className = `mode-${window.currentGridMode}`;
+    cont.innerHTML = ''; cont.className = `mode-${window.currentGame}`;
     if(!document.getElementById('game-lines-toggle').checked) cont.classList.add('hide-lines');
 
     cont.appendChild(document.createElement('div')); 
@@ -442,10 +428,10 @@ function drawGrid() {
         for(let c=1; c<=10; c++) {
             let d = document.createElement('div'); d.className = 'cell'; d.dataset.r = r; d.dataset.c = c;
             d.textContent = alphabet[Math.floor(Math.random()*26)];
-            if(window.currentGridMode === 'search') {
+            if(window.currentGame === 'search') {
                 d.style.cursor = 'pointer';
                 d.addEventListener('click', () => {
-                    if (!isPlaying || isPausedByOverlay || window.currentGridMode !== 'search') return;
+                    if (!isPlaying || isPausedByOverlay || window.currentGame !== 'search') return;
                     if (d.textContent === targetValue) {
                         if(!d.classList.contains('found')){ d.classList.add('found'); registerHit(); }
                     } else { triggerError(d); }
@@ -457,14 +443,9 @@ function drawGrid() {
     updateLayoutAndGridSize();
 }
 
-document.getElementById('game-grid-mode').addEventListener('change', e => { 
-    window.currentGridMode = e.target.value; 
-    if (!isPlaying) window.openGame('grid'); 
-});
-
 function startGrid() {
     isTimerActive = true;
-    if (window.currentGridMode === 'search') {
+    if (window.currentGame === 'search') {
         reqTargets = 0; targetValue = alphabet[Math.floor(Math.random() * 26)];
         document.querySelectorAll('.cell').forEach(c => { 
             if (Math.random() < 0.15) { c.textContent = targetValue; reqTargets++; } 
@@ -472,9 +453,9 @@ function startGrid() {
         });
         document.getElementById('game-total').textContent = reqTargets;
         showFlash(`Busca: <span style="color:#e11d48">${targetValue}</span>`, `Busca la letra ${targetValue}`, () => { document.getElementById('game-target').textContent = targetValue; });
-    } else if (window.currentGridMode === 'coord') {
+    } else if (window.currentGame === 'coord') {
         pickNewCoordinate();
-    } else if (window.currentGridMode === 'pursuit') {
+    } else if (window.currentGame === 'pursuit') {
         showFlash(`Sigue la celda <span style="color:#3b82f6">AZUL</span>`, `Sigue la celda azul`, () => { 
             document.getElementById('game-target').textContent = "Celdas AZULES"; gridNextPursuit(); customInt1 = setInterval(gridNextPursuit, 3000); 
         });

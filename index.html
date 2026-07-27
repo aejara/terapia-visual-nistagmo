@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Suite Terapia Visual - v5.03</title>
+    <title>Suite Terapia Visual - v5.04</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -71,7 +71,7 @@
             </div>
         </div>
 
-        <h1>Suite de Terapia Visual (v5.03)</h1>
+        <h1>Suite de Terapia Visual (v5.04)</h1>
 
         <!-- HEADER GLOBAL (PACIENTE / CLINICA) -->
         <div class="patient-row">
@@ -145,14 +145,15 @@
                     <strong style="color: var(--primary); display: block; margin-bottom: 0.5rem;">➕ Añadir Ejercicio a la Prescripción</strong>
                     <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
                         <select id="rout-add-mode">
-                            <option value="search">Cuadrícula: Búsqueda</option>
-                            <option value="coord">Cuadrícula: Coordenadas</option>
-                            <option value="pursuit">Cuadrícula: Seguimiento</option>
-                            <option value="anticrowding">Agudeza: Anti-Crowding</option>
-                            <option value="saccadic">Fijación: Saltos Sacádicos</option>
-                            <option value="marsden">Pursuit: Pelota de Marsden</option>
-                            <option value="tracing">Estabilidad: Laberintos</option>
-                            <option value="tachisto">Memoria: Taquistoscopio</option>
+                            <!-- 8 Juegos Independientes -->
+                            <option value="search">1. Búsqueda Táctil</option>
+                            <option value="coord">2. Coordenadas</option>
+                            <option value="pursuit">3. Seguimiento Cuadrícula</option>
+                            <option value="anticrowding">4. Anti-Crowding</option>
+                            <option value="saccadic">5. Saltos Sacádicos</option>
+                            <option value="marsden">6. Pelota de Marsden</option>
+                            <option value="tracing">7. Laberinto Visual</option>
+                            <option value="tachisto">8. Taquistoscopio</option>
                         </select>
                         <select id="rout-add-eye">
                             <option value="BIN">Binocular</option>
@@ -172,34 +173,45 @@
 
             <h2 style="margin: 0.5rem 0 0 0; color: #334155;">📚 Biblioteca de Ejercicios</h2>
             <div class="exercises-grid">
-                <div class="exercise-card" onclick="openGame('grid')">
+                <!-- Tarjetas Independientes para los 8 Juegos -->
+                <div class="exercise-card" onclick="openGame('search')">
                     <div class="exercise-card-icon">🔠</div>
-                    <div class="exercise-card-title">1. Cuadrícula Espacial</div>
-                    <div class="exercise-card-desc">Búsqueda, coordenadas y seguimiento foveal en matriz 10x10.</div>
+                    <div class="exercise-card-title">1. Búsqueda Táctil</div>
+                    <div class="exercise-card-desc">Localización espacial en cuadrícula 10x10.</div>
+                </div>
+                <div class="exercise-card" onclick="openGame('coord')">
+                    <div class="exercise-card-icon">🗺️</div>
+                    <div class="exercise-card-title">2. Coordenadas</div>
+                    <div class="exercise-card-desc">Discriminación de cuadrante Fila/Columna.</div>
+                </div>
+                <div class="exercise-card" onclick="openGame('pursuit')">
+                    <div class="exercise-card-icon">🏃</div>
+                    <div class="exercise-card-title">3. Seguimiento</div>
+                    <div class="exercise-card-desc">Rastreo de un objetivo foveal en la matriz.</div>
                 </div>
                 <div class="exercise-card" onclick="openGame('anticrowding')">
                     <div class="exercise-card-icon">🎯</div>
-                    <div class="exercise-card-title">2. Anti-Crowding</div>
-                    <div class="exercise-card-desc">Discriminación de agudeza visual central contra el amontonamiento.</div>
+                    <div class="exercise-card-title">4. Anti-Crowding</div>
+                    <div class="exercise-card-desc">Agudeza visual central contra amontonamiento.</div>
                 </div>
                 <div class="exercise-card" onclick="openGame('saccadic')">
                     <div class="exercise-card-icon">⚡</div>
-                    <div class="exercise-card-title">3. Saltos Sacádicos</div>
-                    <div class="exercise-card-desc">Entrenamiento de reflejo y salto periférico rápido.</div>
+                    <div class="exercise-card-title">5. Saltos Sacádicos</div>
+                    <div class="exercise-card-desc">Entrenamiento de salto periférico rápido.</div>
                 </div>
                 <div class="exercise-card" onclick="openGame('marsden')">
                     <div class="exercise-card-icon">🎾</div>
-                    <div class="exercise-card-title">4. Pelota de Marsden</div>
-                    <div class="exercise-card-desc">Simulador pendular para seguimiento dinámico suave (Pursuit).</div>
+                    <div class="exercise-card-title">6. Pelota Marsden</div>
+                    <div class="exercise-card-desc">Simulador pendular para seguimiento dinámico.</div>
                 </div>
                 <div class="exercise-card" onclick="openGame('tracing')">
                     <div class="exercise-card-icon">🔀</div>
-                    <div class="exercise-card-title">5. Visual Tracing</div>
-                    <div class="exercise-card-desc">Rastreo de laberintos entrelazados con la mirada.</div>
+                    <div class="exercise-card-title">7. Visual Tracing</div>
+                    <div class="exercise-card-desc">Rastreo de laberintos entrelazados visuales.</div>
                 </div>
                 <div class="exercise-card" onclick="openGame('tachisto')">
                     <div class="exercise-card-icon">📸</div>
-                    <div class="exercise-card-title">6. Taquistoscopio</div>
+                    <div class="exercise-card-title">8. Taquistoscopio</div>
                     <div class="exercise-card-desc">Entrenamiento de memoria visual flash (250ms).</div>
                 </div>
             </div>
@@ -210,8 +222,11 @@
                 </button>
                 <div id="stats-box" class="collapsible-content active" style="padding: 1rem;">
                     
+                    <!-- 8 Pestañas de Estadísticas Independientes -->
                     <div class="tab-buttons">
-                        <button class="tab-btn active" onclick="switchStatsTab('grid', event)">Cuadrícula</button>
+                        <button class="tab-btn active" onclick="switchStatsTab('search', event)">Búsqueda</button>
+                        <button class="tab-btn" onclick="switchStatsTab('coord', event)">Coordenadas</button>
+                        <button class="tab-btn" onclick="switchStatsTab('pursuit', event)">Seguimiento</button>
                         <button class="tab-btn" onclick="switchStatsTab('anticrowding', event)">Anti-Crowding</button>
                         <button class="tab-btn" onclick="switchStatsTab('saccadic', event)">Sacádicos</button>
                         <button class="tab-btn" onclick="switchStatsTab('marsden', event)">Marsden</button>
@@ -286,15 +301,7 @@
                     </div>
                 </div>
                 
-                <div class="config-item" id="grid-mode-box" style="display:none;">
-                    <label>Modo de Cuadrícula:</label>
-                    <select id="game-grid-mode">
-                        <option value="search">1. Búsqueda Táctil</option>
-                        <option value="coord">2. Coordenadas</option>
-                        <option value="pursuit">3. Seguimiento</option>
-                    </select>
-                </div>
-                
+                <!-- El botón de Líneas solo aparecerá para los 3 modos de Cuadrícula -->
                 <label class="toggle-option" id="grid-lines-box" style="display:none;">
                     <input type="checkbox" id="game-lines-toggle" checked> 📐 Líneas
                 </label>
@@ -303,7 +310,6 @@
                     <input type="checkbox" id="game-contrast"> ☯️ Alto Contraste
                 </label>
                 
-                <!-- BOTÓN DE AUDIO RESTAURADO -->
                 <label class="toggle-option">
                     <input type="checkbox" id="game-audio" checked> 🔊 Audio
                 </label>

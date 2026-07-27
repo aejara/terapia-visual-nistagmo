@@ -9,7 +9,7 @@ window.clinicCfg = JSON.parse(localStorage.getItem('nystagmus_clinic_cfg') || '{
 window.activePatientId = localStorage.getItem('nystagmus_active_patient_id') || window.patients[0].id;
 
 window.chartXAxisType = 'index'; 
-window.activeStatsTab = 'grid';
+window.activeStatsTab = 'search'; // Por defecto empezamos en la primera prueba
 
 function initApp() {
     const sel = document.getElementById('global-patient-select'); 
@@ -150,8 +150,8 @@ window.updateRoutineProgress = function() {
     let r = window.routines[window.activePatientId] || []; 
     let updated = false;
     for(let t of r) {
-        let activeModeMatch = (t.mode === window.currentGame || t.mode === window.currentGridMode);
-        if(t.done < t.req && activeModeMatch && t.eye === document.getElementById('game-eye').value) { 
+        // Ahora simplemente coincidir window.currentGame
+        if(t.done < t.req && t.mode === window.currentGame && t.eye === document.getElementById('game-eye').value) { 
             t.done++; updated = true; break; 
         }
     }
@@ -173,9 +173,9 @@ window.renderDashboard = function() {
         document.getElementById('btn-launch-routine').style.display = 'inline-block';
         let tr = 0, tc = 0; 
         const names = {
-            search: 'Búsqueda Grid', coord: 'Coordenadas Grid', pursuit: 'Seguimiento Grid', 
+            search: 'Búsqueda Táctil', coord: 'Coordenadas', pursuit: 'Seguimiento', 
             anticrowding: 'Anti-Crowding', saccadic: 'Sacádicos', marsden: 'Pelota Marsden', 
-            tracing: 'Laberinto Visual', tachisto: 'Taquistoscopio'
+            tracing: 'Laberintos', tachisto: 'Taquistoscopio'
         };
         
         rt.forEach((t, i) => {
@@ -190,6 +190,20 @@ window.renderDashboard = function() {
     }
     renderHistory(false);
 };
+
+document.getElementById('btn-launch-routine').addEventListener('click', () => {
+    let r = window.routines[window.activePatientId] || []; 
+    let next = r.find(t => t.done < t.req);
+    
+    if(!next) { alert("¡Pauta clínica completada por hoy!"); return; }
+    
+    window.openGame(next.mode);
+    if(['search', 'coord', 'pursuit'].includes(next.mode)) { 
+        document.getElementById('game-lines-toggle').checked = (next.lines === 'Sí');
+    }
+    document.getElementById('game-eye').value = next.eye; 
+    setTimeout(startGame, 500); 
+});
 
 function formatDuration(ms) {
     const s = Math.floor(ms/1000);
@@ -208,10 +222,8 @@ function renderHistory(printAll = false) {
     
     let filteredHistory = h;
     if (!printAll) {
-        filteredHistory = h.filter(x => {
-            if (window.activeStatsTab === 'grid') return ['grid', 'search', 'coord', 'pursuit'].includes(x.mode);
-            else return x.mode === window.activeStatsTab;
-        });
+        // Ahora filtramos exactamente por el modo activo, ya no hay agrupaciones
+        filteredHistory = h.filter(x => x.mode === window.activeStatsTab);
     }
     
     const tbody = document.getElementById('history-tbody');
@@ -220,7 +232,7 @@ function renderHistory(printAll = false) {
     document.getElementById('metric-total-time').textContent = formatDuration(totalMs);
 
     if (filteredHistory.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5">Sin datos acumulados.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="5">Sin datos acumulados en esta prueba.</td></tr>';
         document.getElementById('metric-best-time').textContent = '--:--';
         document.getElementById('metric-avg-accuracy').textContent = '--%';
         renderChart([]);
@@ -259,7 +271,6 @@ function renderChart(data) {
     const points = data.map((d, idx) => {
         let x = (window.chartXAxisType === 'index') 
             ? (data.length === 1 ? width / 2 : padding + (idx / (data.length - 1)) * (width - 2 * padding))
-            // FIX: Usamos el ID (Date.now()) como timestamp seguro para el eje X por fechas
             : ((data[data.length-1].id === data[0].id) ? width/2 : padding + ((d.id - data[0].id) / (data[data.length-1].id - data[0].id)) * (width - 2 * padding));
         
         const ySecs = d.timeMs / 1000;
@@ -323,7 +334,7 @@ document.getElementById('btn-print-pdf').addEventListener('click', () => {
 
 document.getElementById('btn-export-json').addEventListener('click', () => {
     const bundle = {
-        version: "5.02",
+        version: "5.04",
         clinic: window.clinicCfg,
         patients: window.patients,
         routines: window.routines,
