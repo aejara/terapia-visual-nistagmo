@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Suite Terapia Visual - v4.04</title>
+    <title>Suite Terapia Visual - v4.05 (Completa)</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -55,13 +55,8 @@
         .container { width: 100%; max-width: 920px; display: flex; flex-direction: column; gap: 0.6rem; }
         
         .panel {
-            background-color: var(--panel-bg);
-            padding: 0.8rem 1rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-            border: 1px solid #cbd5e1;
-            width: 100%;
-            box-sizing: border-box;
+            background-color: var(--panel-bg); padding: 0.8rem 1rem; border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); border: 1px solid #cbd5e1; width: 100%; box-sizing: border-box;
         }
         body.high-contrast .panel { border: 2px solid #000000; }
 
@@ -90,27 +85,21 @@
         .exercise-card:hover { border-color: var(--primary); transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.2); }
         .exercise-card-icon { font-size: 2.8rem; margin-bottom: 0.5rem; }
         .exercise-card-title { font-size: 1.15rem; font-weight: 900; margin-bottom: 0.3rem; color: #0f172a; }
-        .exercise-card-desc { font-size: 0.85rem; color: #475569; line-height: 1.3; }
 
-        /* =========================================
-           CABECERA DE JUEGO (GAME HEADER)
-           ========================================= */
+        /* CABECERA DE JUEGO (GAME HEADER) */
         .controls-row { display: flex; justify-content: space-between; align-items: center; font-size: 1.1rem; font-weight: 700; flex-wrap: wrap; gap: 0.8rem; }
         .target-badge { font-size: clamp(2rem, 4vh, 3rem); font-weight: 900; color: var(--primary); background-color: #eff6ff; padding: 0.1rem 0.8rem; border-radius: 10px; border: 3px solid var(--primary); display: inline-block; vertical-align: middle; margin-left: 0.3rem; line-height: 1.1; }
         body.high-contrast .target-badge { background-color: #000000 !important; color: #ffffff !important; border-color: #000000 !important; }
         .progress-badge { font-size: clamp(1.8rem, 3.5vh, 2.5rem); font-weight: 900; color: #16a34a; }
         body.high-contrast .progress-badge { color: #000000; }
 
-        /* =========================================
-           MÓDULO 1: CUADRÍCULA ESPACIAL
-           ========================================= */
+        /* MÓDULO 1: CUADRÍCULA ESPACIAL */
         .grid-wrapper { display: flex; justify-content: center; width: 100%; }
         #grid-container { display: grid; grid-template-columns: 32px repeat(10, 1fr); gap: 4px; background-color: var(--grid-border); border: 4px solid var(--grid-border); border-radius: 10px; box-sizing: border-box; transition: background-color 0.2s ease; }
         .cell, .label-cell { background-color: white; display: flex; justify-content: center; align-items: center; user-select: none; font-weight: 700; box-sizing: border-box; overflow: hidden; color: #000000; }
         .label-cell { background-color: #e2e8f0; color: #475569; }
         body.high-contrast .label-cell { background-color: #cccccc; color: #000000; border: 1px solid #000000; }
         .mode-search .cell { cursor: pointer; }
-        .mode-search .cell:active { background-color: #f1f5f9; }
         .cell.found { background-color: var(--target-bg); color: var(--target-text); }
         body.high-contrast .cell.found { background-color: #000000 !important; color: #ffffff !important; }
         .cell.wrong { background-color: var(--wrong-bg); animation: shake 0.4s; }
@@ -121,9 +110,7 @@
         #grid-container.hide-lines .cell { border: 1px solid #f8fafc; }
         body.high-contrast #grid-container.hide-lines .cell { border: 1px solid #e2e8f0; }
 
-        /* =========================================
-           ÁREA DE JUEGOS GENERAL (MÓDULOS 2 AL 6)
-           ========================================= */
+        /* ÁREA DE JUEGOS GENERAL (MÓDULOS 2 AL 6) */
         .game-area { display: flex; justify-content: center; align-items: center; width: 100%; height: min(55vh, 500px); background-color: #ffffff; border: 4px solid #cbd5e1; border-radius: 12px; position: relative; overflow: hidden; box-sizing: border-box; }
         body.high-contrast .game-area { border-color: #000000; }
         .game-area.success { background-color: var(--target-bg); }
@@ -188,13 +175,55 @@
         .flashcard-distance-badge { font-size: clamp(1.4rem, 3.5vw, 2.2rem); font-weight: 900; background-color: #fef08a; color: #854d0e; padding: 0.8rem 1.8rem; border-radius: 50px; margin-bottom: 1.8rem; border: 3px solid #eab308; }
         body.high-contrast .flashcard-distance-badge { background-color: #000000; color: #ffffff; border-color: #000000; }
 
-        /* IMPRESIÓN PDF */
+        /* ANALÍTICA Y TABLAS */
+        .tab-buttons { display: flex; gap: 0.4rem; border-bottom: 2px solid #cbd5e1; padding-bottom: 0.4rem; margin-bottom: 1rem; flex-wrap: wrap; }
+        .tab-btn { background: #f1f5f9; border: none; padding: 0.5rem 1rem; border-radius: 6px 6px 0 0; font-family: var(--font-clinical); font-weight: 700; color: #64748b; cursor: pointer; }
+        .tab-btn.active { background: var(--primary); color: white; }
+        .filter-bar { display: flex; gap: 1rem; flex-wrap: wrap; background: #f8fafc; padding: 0.6rem 0.8rem; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 1rem; align-items: center; }
+        .history-table { width: 100%; border-collapse: collapse; margin-top: 0.5rem; font-size: 0.85rem; }
+        .history-table th, .history-table td { border: 1px solid #cbd5e1; padding: 0.4rem 0.6rem; text-align: center; }
+        .history-table th { background-color: #f1f5f9; font-weight: 700; color: #475569; }
+        .metric-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.6rem 0.8rem; text-align: center; flex: 1; min-width: 130px; }
+        .metric-card .val { font-size: 1.2rem; font-weight: 700; color: var(--primary); }
+        .metric-card .lbl { font-size: 0.72rem; color: #64748b; font-weight: 700; }
+        .chart-container { background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; }
+        .chart-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; flex-wrap: wrap; gap: 0.5rem; }
+
+        /* =========================================
+           REGLAS DE IMPRESIÓN (PDF Y PAPEL)
+           ========================================= */
         @media print {
-            @page { size: A4 portrait; margin: 10mm; }
-            body { background: white !important; padding: 0 !important; margin: 0 !important; color: #000000 !important; font-size: 9pt !important; }
-            .btn, button, input, select, textarea, .overlay, .collapsible-toggle, .patient-row, .exercises-grid, .app-view { display: none !important; }
-            .container { max-width: 100% !important; }
-            body.print-report-only #view-dashboard { display: block !important; }
+            @page { size: A4 portrait; margin: 8mm 10mm; }
+            body { background: white !important; color: #000000 !important; font-size: 9pt !important; line-height: 1.15 !important; padding: 0 !important; margin: 0 !important; }
+            
+            /* Ocultar UI interactiva */
+            .btn, button, input, select, textarea, #virtual-keypad, .overlay, .collapsible-toggle, .filter-bar, .tab-buttons, .routine-designer-box, .exercises-grid, .app-view, .patient-row, .controls-row, .config-row { display: none !important; }
+            .container { max-width: 100% !important; gap: 0.3rem !important; }
+            .panel { box-shadow: none !important; border: 1px solid #94a3b8 !important; border-radius: 4px !important; padding: 0.4rem 0.6rem !important; background: #ffffff !important; }
+
+            /* REPORTE CLÍNICO (A4 Formal) */
+            body.print-report-only #view-dashboard { display: flex !important; }
+            body.print-report-only #print-header { display: flex !important; justify-content: space-between !important; align-items: center !important; border-bottom: 2px solid #000000 !important; padding-bottom: 6px !important; margin-bottom: 8px !important; }
+            .print-clinic-logo { max-height: 50px !important; max-width: 180px !important; object-fit: contain !important; }
+            
+            body.print-report-only h1 { display: block !important; text-align: left !important; font-size: 13pt !important; font-weight: 900 !important; margin: 0 0 4px 0 !important; color: #000000 !important; }
+            body.print-report-only #stats-box { display: block !important; padding: 0 !important; border: none !important;}
+            body.print-report-only .metric-card { border: 1px solid #cbd5e1 !important; padding: 3px 5px !important; border-radius: 4px !important; }
+            body.print-report-only .metric-card .val { font-size: 10pt !important; font-weight: 900 !important; }
+            body.print-report-only .metric-card .lbl { font-size: 6.5pt !important; font-weight: 700 !important; }
+            body.print-report-only .chart-container { border: 1px solid #94a3b8 !important; padding: 4px !important; border-radius: 4px !important; margin-bottom: 4px !important; page-break-inside: avoid; height: 130px !important; }
+            body.print-report-only #evolution-chart { height: 110px !important; }
+            body.print-report-only .history-table { width: 100% !important; border-collapse: collapse !important; font-size: 8pt !important; margin-top: 4px !important; }
+            body.print-report-only .history-table th { background-color: #f1f5f9 !important; border: 1px solid #94a3b8 !important; padding: 2px 4px !important; font-weight: 700 !important; }
+            body.print-report-only .history-table td { border: 1px solid #cbd5e1 !important; padding: 2px 4px !important; }
+
+            /* IMPRESIÓN CUADRÍCULA EN PAPEL */
+            body.print-grid-only #game-view-container { display: flex !important; }
+            body.print-grid-only #view-dashboard { display: none !important; }
+            body.print-grid-only .controls-row { display: block !important; border: none !important; text-align: center !important; font-size: 1.4rem !important; margin-bottom: 1rem !important; }
+            body.print-grid-only .grid-wrapper { display: flex !important; }
+            body.print-grid-only #grid-container { width: 100% !important; height: auto !important; aspect-ratio: 1/1 !important; border: 3px solid #000 !important; page-break-inside: avoid; }
+            body.print-grid-only .cell { border: 1px solid #000 !important; }
         }
     </style>
 </head>
@@ -204,7 +233,9 @@
          OVERLAYS GLOBALES
          ========================================== -->
     <div id="flashcard-overlay" class="overlay">
-        <div class="flashcard-distance-badge">📏 DISTANCIA RECOMENDADA: <span id="flashcard-dist-val">--</span> cm</div>
+        <div class="flashcard-distance-badge">
+            📏 DISTANCIA RECOMENDADA: <span id="flashcard-dist-val">--</span> cm
+        </div>
         <div id="flashcard-main" style="font-size: 5rem; font-weight: 900; margin-bottom: 2rem;">Texto</div>
         <div style="font-size: 1.3rem; background-color: #eff6ff; padding: 1rem 2rem; border-radius: 50px; font-weight: 700; color: #3b82f6;">
             TOCA LA PANTALLA O PULSA CUALQUIER TECLA
@@ -229,15 +260,38 @@
         </div>
     </div>
 
+    <div id="card-calib-modal" class="overlay">
+        <div style="background-color: white; padding: 2rem; border-radius: 16px; border: 3px solid #000000;" onclick="event.stopPropagation();">
+            <h2 style="margin-top:0;">💳 Calibración Física</h2>
+            <p style="font-weight: bold; color: #475569;">Coloque una tarjeta sobre la pantalla y ajuste el deslizador.</p>
+            <div style="display:flex; justify-content:center; margin: 1.5rem 0;">
+                <div id="calib-card-box" style="width: 320px; height: 200px; border: 4px dashed #2563eb; background-color: #eff6ff; display:flex; align-items:center; justify-content:center; font-weight:900;">
+                    TARJETA AQUÍ
+                </div>
+            </div>
+            <input type="range" id="calib-slider" min="160" max="600" value="320" style="width: 100%; margin-bottom: 1.5rem;">
+            <button class="btn" id="save-calib-btn" style="background-color: #16a34a;">Guardar Ajuste</button>
+            <button class="btn btn-secondary" onclick="document.getElementById('card-calib-modal').classList.remove('active')">Cancelar</button>
+        </div>
+    </div>
+
     <!-- ESTRUCTURA PRINCIPAL Y HEADER -->
     <div class="container">
         
+        <!-- MEMBRETE PDF -->
         <div id="print-header" style="display:none; justify-content:space-between; align-items:center; border-bottom:2px solid #000000; padding-bottom:10px; margin-bottom:10px;">
-            <div><img id="print-logo" src="" style="max-height:50px; display:none;"><strong id="print-clinic" style="font-size:14pt; display:block;">Centro</strong></div>
-            <div style="text-align:right; font-size:9pt;"><strong id="print-specialist">Especialista</strong><br><span id="print-col"></span><br><span id="print-date"></span></div>
+            <div>
+                <img id="print-logo" src="" style="max-height:50px; display:none;">
+                <strong id="print-clinic" style="font-size:14pt; display:block;">Centro</strong>
+            </div>
+            <div style="text-align:right; font-size:9pt;">
+                <strong id="print-specialist">Especialista</strong><br>
+                <span id="print-col"></span><br>
+                <span id="print-date"></span>
+            </div>
         </div>
 
-        <h1>Suite de Terapia Visual (v4.04)</h1>
+        <h1>Suite de Terapia Visual (v4.05)</h1>
 
         <!-- HEADER GLOBAL (PACIENTE / CLINICA) -->
         <div class="patient-row">
@@ -251,58 +305,167 @@
             </div>
         </div>
 
+        <!-- MODALES DE CONFIGURACIÓN -->
+        <div class="panel" style="padding: 0;">
+            <div id="clinic-modal" class="collapsible-content" style="padding: 1rem; background-color: #f0f9ff; border-radius: 12px;">
+                <h3 style="margin-top:0; color:#0284c7;">🏥 Configurar Membrete Clínico</h3>
+                <div style="display:flex; gap:0.5rem; margin-bottom:0.5rem; flex-wrap: wrap;">
+                    <input type="text" id="cfg-clinic" placeholder="Nombre Clínica" style="flex:1; min-width: 200px;">
+                    <input type="text" id="cfg-specialist" placeholder="Nombre Especialista" style="flex:1; min-width: 200px;">
+                    <input type="text" id="cfg-col" placeholder="Nº Colegiado" style="width:100px;">
+                </div>
+                <div style="display: flex; gap: 1rem; align-items: center; background: white; padding: 0.8rem; border-radius: 8px; border: 1px solid #cbd5e1; margin-bottom: 0.5rem;">
+                    <div>
+                        <label style="font-weight: 700; font-size: 0.85rem;">Logo (PNG/JPG):</label>
+                        <input type="file" id="cfg-logo-input" accept="image/*" style="font-size: 0.85rem; margin-top: 0.3rem;">
+                    </div>
+                    <img id="cfg-logo-preview" src="" style="max-height: 45px; max-width: 150px; display: none;">
+                    <button class="btn btn-secondary" id="clear-logo-btn" style="display: none; background-color: #ef4444;">Quitar Logo</button>
+                </div>
+                <button class="btn" id="save-clinic-btn">💾 Guardar Clínica</button>
+            </div>
+        </div>
+
+        <div class="panel" style="padding: 0;">
+            <div id="patient-modal" class="collapsible-content" style="padding: 1rem; background-color: #f8fafc; border-radius: 12px;">
+                <h3 style="margin-top:0; color: var(--primary);">👤 Registrar Nuevo Paciente</h3>
+                <div style="display:flex; gap:0.5rem; margin-bottom:0.5rem; flex-wrap: wrap;">
+                    <input type="text" id="new-pat-name" placeholder="Nombre completo" style="flex:1; min-width: 200px;">
+                    <button class="btn" id="create-pat-btn">➕ Añadir Paciente</button>
+                </div>
+            </div>
+        </div>
+
         <!-- ==========================================
              VISTA 0: DASHBOARD / MENÚ PRINCIPAL
              ========================================== -->
         <div id="view-dashboard" class="app-view active">
             
-            <h2 style="margin: 0.5rem 0 0 0; color: #334155;">📚 Biblioteca de Ejercicios Terapéuticos</h2>
+            <!-- PAUTAS TERAPÉUTICAS -->
+            <div class="panel" style="background-color: #f0fdf4; border: 1px solid #bbf7d0;">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+                    <div>
+                        <strong style="color: #15803d; font-size:1.1rem;">📋 Plan de Trabajo</strong>
+                        <div id="routine-status" style="font-size:0.85rem; font-weight:700; color: #475569;">Sin pauta</div>
+                    </div>
+                    <div style="display: flex; gap: 0.4rem; margin-top: 0.4rem;">
+                        <button class="btn" id="btn-launch-routine" style="background-color: #16a34a;">▶️ Iniciar Pauta</button>
+                        <button class="btn btn-secondary" onclick="document.getElementById('routine-designer').classList.toggle('active')">🛠️ Diseñar</button>
+                    </div>
+                </div>
+                
+                <div id="routine-list" style="margin-top:0.8rem;"></div>
+                
+                <div id="routine-designer" class="collapsible-content" style="background-color: #ffffff; padding:1rem; border:1px solid #cbd5e1; border-radius:8px; margin-top:0.5rem;">
+                    <strong style="color: var(--primary); display: block; margin-bottom: 0.5rem;">➕ Añadir Ejercicio a la Prescripción</strong>
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        <select id="rout-add-mode">
+                            <option value="search">Cuadrícula: Búsqueda</option>
+                            <option value="coord">Cuadrícula: Coordenadas</option>
+                            <option value="pursuit">Cuadrícula: Seguimiento</option>
+                            <option value="anticrowding">Agudeza: Anti-Crowding</option>
+                            <option value="saccadic">Fijación: Saltos Sacádicos</option>
+                            <option value="marsden">Pursuit: Pelota de Marsden</option>
+                            <option value="tracing">Estabilidad: Visual Tracing</option>
+                            <option value="tachisto">Memoria: Taquistoscopio</option>
+                        </select>
+                        <select id="rout-add-eye">
+                            <option value="BIN">Binocular</option>
+                            <option value="OD">Ojo Derecho</option>
+                            <option value="OI">Ojo Izquierdo</option>
+                        </select>
+                        <select id="rout-add-lines" style="font-size: 0.85rem;">
+                            <option value="Sí">Con Líneas (Grid)</option>
+                            <option value="No">Sin Líneas</option>
+                        </select>
+                        <input type="number" id="rout-add-req" value="2" min="1" style="width:60px;" title="Repeticiones">
+                        <button class="btn" id="btn-add-routine">➕ Añadir</button>
+                        <button class="btn btn-secondary" id="btn-clear-routine" style="background-color: #ef4444;">Vaciar</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TARJETAS DE EJERCICIOS -->
+            <h2 style="margin: 0.5rem 0 0 0; color: #334155;">📚 Biblioteca de Ejercicios</h2>
             <div class="exercises-grid">
                 <div class="exercise-card" onclick="openGame('grid')">
                     <div class="exercise-card-icon">🔠</div>
                     <div class="exercise-card-title">1. Cuadrícula Espacial</div>
-                    <div class="exercise-card-desc">Búsqueda, coordenadas y seguimiento en matriz 10x10.</div>
+                    <div class="exercise-card-desc">Búsqueda, coordenadas y seguimiento foveal en matriz 10x10.</div>
                 </div>
                 <div class="exercise-card" onclick="openGame('anticrowding')">
                     <div class="exercise-card-icon">🎯</div>
                     <div class="exercise-card-title">2. Anti-Crowding</div>
-                    <div class="exercise-card-desc">Discriminación de agudeza visual central contra amontonamiento.</div>
+                    <div class="exercise-card-desc">Discriminación de agudeza visual central contra el amontonamiento.</div>
                 </div>
                 <div class="exercise-card" onclick="openGame('saccadic')">
                     <div class="exercise-card-icon">⚡</div>
                     <div class="exercise-card-title">3. Saltos Sacádicos</div>
-                    <div class="exercise-card-desc">Entrenamiento de reflejo y fijación periférica rápida.</div>
+                    <div class="exercise-card-desc">Entrenamiento de reflejo y salto periférico rápido.</div>
                 </div>
                 <div class="exercise-card" onclick="openGame('marsden')">
                     <div class="exercise-card-icon">🎾</div>
                     <div class="exercise-card-title">4. Pelota de Marsden</div>
-                    <div class="exercise-card-desc">Simulador pendular para persecución y seguimiento suave.</div>
+                    <div class="exercise-card-desc">Simulador pendular para seguimiento dinámico suave (Pursuit).</div>
                 </div>
                 <div class="exercise-card" onclick="openGame('tracing')">
                     <div class="exercise-card-icon">🔀</div>
                     <div class="exercise-card-title">5. Visual Tracing</div>
-                    <div class="exercise-card-desc">Rastreo de laberintos entrelazados.</div>
+                    <div class="exercise-card-desc">Rastreo de laberintos entrelazados con la mirada.</div>
                 </div>
                 <div class="exercise-card" onclick="openGame('tachisto')">
                     <div class="exercise-card-icon">📸</div>
                     <div class="exercise-card-title">6. Taquistoscopio</div>
-                    <div class="exercise-card-desc">Entrenamiento de memoria visual flash y fijación (250ms).</div>
+                    <div class="exercise-card-desc">Entrenamiento de memoria visual flash (250ms).</div>
                 </div>
             </div>
 
-            <!-- ANALÍTICA -->
+            <!-- ANALÍTICA Y REPORTES -->
             <div class="panel" style="padding: 0; margin-top: 0.5rem;">
                 <button class="collapsible-toggle" onclick="document.getElementById('stats-box').classList.toggle('active')">
                     <span>📊 Estadísticas y Reportes</span><span>▼</span>
                 </button>
                 <div id="stats-box" class="collapsible-content active" style="padding: 1rem;">
+                    
+                    <div class="tab-buttons">
+                        <button class="tab-btn active" onclick="switchStatsTab('grid')">Cuadrícula</button>
+                        <button class="tab-btn" onclick="switchStatsTab('anticrowding')">Anti-Crowding</button>
+                        <button class="tab-btn" onclick="switchStatsTab('saccadic')">Sacádicos</button>
+                        <button class="tab-btn" onclick="switchStatsTab('marsden')">Marsden</button>
+                        <button class="tab-btn" onclick="switchStatsTab('tracing')">Tracing</button>
+                        <button class="tab-btn" onclick="switchStatsTab('tachisto')">Taquistoscopio</button>
+                    </div>
+
                     <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:1rem;">
                         <button class="btn btn-secondary" id="btn-print-pdf" style="background-color: #0d9488;">🖨️ Imprimir Reporte PDF</button>
-                        <button class="btn btn-secondary" id="btn-delete-hist" style="background-color: #ef4444;">Borrar Historial</button>
+                        <button class="btn btn-secondary" id="btn-export-json">📥 Exportar JSON</button>
+                        <button class="btn btn-secondary" id="btn-import-json">📤 Importar</button>
+                        <input type="file" id="import-file-input" accept=".json" style="display: none;">
+                        <button class="btn btn-secondary" id="btn-delete-hist" style="background-color: #ef4444;">Borrar Historial de este Paciente</button>
                     </div>
+
+                    <!-- Métricas -->
+                    <div style="display: flex; gap: 0.6rem; flex-wrap: wrap; margin-bottom: 1rem;">
+                        <div class="metric-card"><div class="val" id="metric-total-sessions">0</div><div class="lbl">SESIONES</div></div>
+                        <div class="metric-card"><div class="val" id="metric-total-time">00:00:00</div><div class="lbl">TIEMPO JUGADO</div></div>
+                        <div class="metric-card"><div class="val" id="metric-best-time">--:--</div><div class="lbl">MEJOR TIEMPO</div></div>
+                        <div class="metric-card"><div class="val" id="metric-avg-accuracy" style="color: #16a34a;">--%</div><div class="lbl">PRECISIÓN MEDIA</div></div>
+                    </div>
+
+                    <!-- Gráfica SVG de Evolución -->
+                    <div class="chart-container">
+                        <div class="chart-controls">
+                            <strong style="font-size: 0.95rem; color: #334155;">📈 Evolución del Tiempo de Resolución</strong>
+                            <button class="btn btn-secondary" id="chart-axis-btn" style="padding: 0.3rem 0.6rem;">🔢 Eje X: Por Pruebas</button>
+                        </div>
+                        <div style="width: 100%; height: 200px; position: relative;">
+                            <svg id="evolution-chart" width="100%" height="100%" style="overflow: visible;"></svg>
+                        </div>
+                    </div>
+
                     <table class="history-table" style="width:100%;">
                         <thead>
-                            <tr><th>Fecha</th><th>Juego</th><th>Ojo</th><th>Tiempo</th><th>Aciertos</th></tr>
+                            <tr><th>Fecha</th><th>Juego</th><th>Ojo</th><th>Tiempo</th><th>Precisión</th></tr>
                         </thead>
                         <tbody id="history-tbody"></tbody>
                     </table>
@@ -314,9 +477,8 @@
              VISTA 1: CONTENEDOR MAESTRO DE JUEGOS
              ========================================== -->
         <div id="game-view-container" class="app-view">
-            <button class="btn btn-secondary" style="align-self:flex-start;" onclick="closeGame()">⬅️ Volver a la Biblioteca de Ejercicios</button>
+            <button class="btn btn-secondary" style="align-self:flex-start;" onclick="closeGame()">⬅️ Volver al Menú Principal</button>
             
-            <!-- MARCADOR COMÚN -->
             <div class="panel controls-row">
                 <div>Objetivo: <span id="game-target" class="target-badge">-</span></div>
                 <div>Progreso: <span class="progress-badge"><span id="game-score">0</span>/<span id="game-total">10</span></span></div>
@@ -324,39 +486,47 @@
                 <div style="font-family:monospace; font-size:1.4rem;" id="game-timer">00:00.0</div>
             </div>
 
-            <!-- INYECCIÓN DINÁMICA DEL JUEGO -->
+            <!-- INYECCIÓN DINÁMICA DEL JUEGO SELECCIONADO -->
             <div id="game-canvas-area" style="width:100%; display:flex; justify-content:center;"></div>
 
-            <!-- CONTROLES Y CONFIGURACIÓN COMÚN -->
             <div class="panel config-row">
                 <div class="config-item">
                     <label>Ojo Entrenado:</label>
                     <select id="game-eye" style="background-color: #f0fdf4;">
-                        <option value="BIN">Binocular</option><option value="OD">Ojo Derecho (OD)</option><option value="OI">Ojo Izquierdo (OI)</option>
+                        <option value="BIN">Binocular</option>
+                        <option value="OD">Ojo Derecho (OD)</option>
+                        <option value="OI">Ojo Izquierdo (OI)</option>
                     </select>
                 </div>
+                <div class="config-item">
+                    <label>Pulgadas Monitor:</label>
+                    <div style="display:flex; gap:0.2rem;">
+                        <input type="number" id="game-inches" style="width:60px;" value="34">
+                        <button class="btn btn-secondary" onclick="document.getElementById('card-calib-modal').classList.add('active')">💳</button>
+                    </div>
+                </div>
                 
-                <!-- SELECTOR EXCLUSIVO PARA CUADRÍCULA -->
                 <div class="config-item" id="grid-mode-box" style="display:none;">
                     <label>Modo de Cuadrícula:</label>
                     <select id="game-grid-mode">
-                        <option value="search">Búsqueda Táctil</option>
-                        <option value="coord">Lectura Coordenadas</option>
-                        <option value="pursuit">Seguimiento</option>
+                        <option value="search">1. Búsqueda Táctil</option>
+                        <option value="coord">2. Coordenadas</option>
+                        <option value="pursuit">3. Seguimiento</option>
                     </select>
                 </div>
                 
-                <!-- BOTÓN EXCLUSIVO DE LÍNEAS PARA CUADRÍCULA -->
                 <label class="toggle-option" id="grid-lines-box" style="display:none;">
                     <input type="checkbox" id="game-lines-toggle" checked> 📐 Líneas
                 </label>
 
-                <!-- BOTÓN DE ALTO CONTRASTE UNIFICADO -->
                 <label class="toggle-option">
                     <input type="checkbox" id="game-contrast"> ☯️ Alto Contraste
                 </label>
                 
-                <button class="btn" id="btn-game-start" style="padding:0.8rem 2rem;">Iniciar Ejercicio</button>
+                <div style="display: flex; gap: 0.4rem;">
+                    <button class="btn" id="btn-game-start" style="padding:0.8rem 2rem;">Iniciar Ejercicio</button>
+                    <button class="btn btn-secondary" id="btn-print-grid" style="display:none;">📄 Papel</button>
+                </div>
             </div>
             
             <div id="game-distance-info" class="info-badge" style="background-color: #ffffff; border: 1px solid #cbd5e1;">
@@ -381,7 +551,9 @@
 
         // ESTADO GLOBAL
         let patients = JSON.parse(localStorage.getItem('nystagmus_patients') || '[{"id":"p_default","name":"Paciente General"}]');
+        let routines = JSON.parse(localStorage.getItem('nystagmus_routines') || '{}');
         let historyLog = JSON.parse(localStorage.getItem('nystagmus_history') || '[]');
+        let clinicCfg = JSON.parse(localStorage.getItem('nystagmus_clinic_cfg') || '{}');
         let activePatientId = localStorage.getItem('nystagmus_active_patient_id') || patients[0].id;
         
         let currentGame = null; 
@@ -394,6 +566,8 @@
         let currentSuggestedDistanceCm = 75;
         
         let gameTimerInt = null, customInt1 = null, flashcardTimeout = null;
+        let chartXAxisType = 'index'; // Para la gráfica SVG
+        let activeStatsTab = 'grid';
 
         // DOM ELEMENTS
         const viewDash = document.getElementById('view-dashboard');
@@ -413,8 +587,81 @@
                 localStorage.setItem('nystagmus_active_patient_id', activePatientId); 
                 renderDashboard(); 
             });
-            updateDistance();
+            
+            // Configuración de la Clínica
+            document.getElementById('cfg-clinic').value = clinicCfg.clinicName || '';
+            document.getElementById('cfg-specialist').value = clinicCfg.specialistName || '';
+            document.getElementById('cfg-col').value = clinicCfg.colNum || '';
+
+            if (clinicCfg.logoBase64) {
+                document.getElementById('cfg-logo-preview').src = clinicCfg.logoBase64;
+                document.getElementById('cfg-logo-preview').style.display = 'block';
+                document.getElementById('clear-logo-btn').style.display = 'inline-block';
+            }
+
+            document.getElementById('game-inches').value = initMonitorSize();
+            updateDistanceCalibration();
             renderDashboard();
+        }
+
+        // GESTIÓN DEL LOGO DE LA CLÍNICA
+        document.getElementById('cfg-logo-input').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                clinicCfg.logoBase64 = event.target.result;
+                document.getElementById('cfg-logo-preview').src = clinicCfg.logoBase64;
+                document.getElementById('cfg-logo-preview').style.display = 'block';
+                document.getElementById('clear-logo-btn').style.display = 'inline-block';
+            };
+            reader.readAsDataURL(file);
+        });
+
+        document.getElementById('clear-logo-btn').addEventListener('click', () => {
+            clinicCfg.logoBase64 = '';
+            document.getElementById('cfg-logo-input').value = '';
+            document.getElementById('cfg-logo-preview').style.display = 'none';
+            document.getElementById('clear-logo-btn').style.display = 'none';
+        });
+
+        document.getElementById('save-clinic-btn').addEventListener('click', () => {
+            clinicCfg.clinicName = document.getElementById('cfg-clinic').value.trim();
+            clinicCfg.specialistName = document.getElementById('cfg-specialist').value.trim();
+            clinicCfg.colNum = document.getElementById('cfg-col').value.trim();
+            localStorage.setItem('nystagmus_clinic_cfg', JSON.stringify(clinicCfg));
+            alert('¡Configuración de clínica guardada con éxito!');
+        });
+
+        // NUEVO PACIENTE
+        document.getElementById('create-pat-btn').addEventListener('click', () => {
+            const name = document.getElementById('new-pat-name').value.trim();
+            if (!name) { alert('Introduzca un nombre.'); return; }
+            const newP = { id: 'p_' + Date.now(), name: name };
+            patients.push(newP);
+            localStorage.setItem('nystagmus_patients', JSON.stringify(patients));
+            document.getElementById('new-pat-name').value = '';
+            initApp();
+            document.getElementById('global-patient-select').value = newP.id;
+            document.getElementById('global-patient-select').dispatchEvent(new Event('change'));
+            alert(`Paciente añadido.`);
+        });
+
+        function initMonitorSize() {
+            const saved = localStorage.getItem('nystagmus_monitor_size');
+            const ua = navigator.userAgent || '';
+            
+            if (/Kindle|Silk|Book/.test(ua)) {
+                const contrastCheckbox = document.getElementById('game-contrast');
+                if(contrastCheckbox) contrastCheckbox.checked = true;
+                document.body.classList.add('high-contrast');
+            }
+
+            if (saved) return parseFloat(saved);
+            const maxD = Math.max(window.screen.width, window.screen.height);
+            if (/Kindle/.test(ua)) return 10.2;
+            if (/iPad/.test(ua)) return maxD >= 1366 ? 12.9 : 10.9;
+            return maxD >= 2500 ? 34 : 24;
         }
 
         // SISTEMA DE RUTAS (SPA)
@@ -426,19 +673,19 @@
             virtualKeypad.style.display = 'none';
             document.getElementById('btn-game-start').textContent = "Iniciar Ejercicio";
             
-            // Toggles exclusivos de Cuadrícula
             if (gameId === 'grid') {
                 document.getElementById('grid-mode-box').style.display = 'flex';
                 document.getElementById('grid-lines-box').style.display = 'flex';
+                document.getElementById('btn-print-grid').style.display = 'inline-block';
                 canvasArea.innerHTML = `<div class="grid-wrapper"><div id="grid-container" class="mode-${currentGridMode}"></div></div>`;
                 reqTargets = (currentGridMode === 'search') ? 0 : (currentGridMode === 'coord' ? 10 : 15);
                 drawGrid();
             } else {
                 document.getElementById('grid-mode-box').style.display = 'none';
                 document.getElementById('grid-lines-box').style.display = 'none';
+                document.getElementById('btn-print-grid').style.display = 'none';
             }
 
-            // Inyección HTML del resto de Módulos
             if (gameId === 'anticrowding') {
                 canvasArea.innerHTML = `<div class="game-area" id="ac-wrapper"><div id="ac-display" style="font-size:120px; letter-spacing:30px;">A <span style="color:var(--primary)">B</span> C</div></div>`;
                 reqTargets = 10;
@@ -522,12 +769,21 @@
             stopGame();
             const acc = (foundTargets + sessionErrors) > 0 ? Math.round((foundTargets / (foundTargets + sessionErrors)) * 100) : 100;
             const logName = currentGame === 'grid' ? `Cuadrícula: ${currentGridMode}` : currentGame;
+            
+            // Usar lines y screenInches en el log
+            let linesInfo = "N/A";
+            if (currentGame === 'grid') {
+                linesInfo = document.getElementById('game-lines-toggle').checked ? 'Sí' : 'No';
+            }
+
             const log = { 
                 id: Date.now(), patientId: activePatientId, date: new Date().toLocaleString('es-ES',{dateStyle:'short',timeStyle:'short'}), 
                 mode: currentGame, modeName: logName, eye: document.getElementById('game-eye').value, 
-                timeMs: timeMs, timeFormatted: document.getElementById('game-timer').textContent, accuracy: acc, errors: sessionErrors 
+                timeMs: timeMs, timeFormatted: document.getElementById('game-timer').textContent, accuracy: acc, errors: sessionErrors,
+                lines: linesInfo, screenInches: parseFloat(document.getElementById('game-inches').value) || 34
             };
             historyLog.push(log); localStorage.setItem('nystagmus_history', JSON.stringify(historyLog));
+            updateRoutineProgress();
             
             document.getElementById('res-time').textContent = log.timeFormatted; 
             document.getElementById('res-errors').textContent = sessionErrors; 
@@ -563,7 +819,6 @@
         });
 
         // FLASHCARDS
-        let overlayCallback = null;
         function showFlash(htmlText, callback) {
             isPausedByOverlay = true;
             document.getElementById('flashcard-main').innerHTML = htmlText; 
@@ -583,7 +838,7 @@
 
 
         // ==========================================
-        // TECLADO VIRTUAL Y NAVEGACIÓN POR FLECHAS (BUG FIX #1 Y #2)
+        // TECLADO VIRTUAL Y NAVEGACIÓN POR FLECHAS
         // ==========================================
         function renderKeypad(correct) {
             virtualKeypad.innerHTML = ''; 
@@ -594,7 +849,7 @@
                 if(!opts.includes(r)) opts.push(r); 
             }
             opts.sort(() => Math.random() - 0.5);
-            selectedKeypadIndex = 0; // Reiniciar selección para flechas
+            selectedKeypadIndex = 0; 
             
             opts.forEach((c, i) => {
                 let b = document.createElement('button'); 
@@ -617,9 +872,8 @@
         function handleKey(char) {
             if (!isPlaying || isPausedByOverlay) return;
             
-            // Acción para Cuadrícula Espacial (Coordenadas y Pursuit)
             if (currentGame === 'grid') {
-                if (currentGridMode === 'search') return; // En búsqueda se pulsa con el ratón/dedo
+                if (currentGridMode === 'search') return; 
                 
                 if (char === targetValue) {
                     let c = document.querySelector('.pursuit-active'); 
@@ -627,8 +881,8 @@
                         c.classList.remove('pursuit-active'); c.classList.add('found'); 
                         setTimeout(() => c.classList.remove('found'), 400);
                     }
-                    registerHit(); // Suma el punto. Internamente llama a endGame si es el último.
-                    if (isPlaying) { // Si el juego sigue activo tras el punto
+                    registerHit(); 
+                    if (isPlaying) { 
                         if (currentGridMode === 'coord') pickNewCoordinate();
                         else { clearInterval(customInt1); gridNextPursuit(); customInt1 = setInterval(gridNextPursuit, 3000); }
                     }
@@ -636,7 +890,6 @@
                     triggerError(document.querySelector('.pursuit-active'));
                 }
             } 
-            // Acción para Anti-Crowding
             else if (currentGame === 'anticrowding') {
                 if (char === targetValue) {
                     document.getElementById('ac-wrapper').classList.add('success'); 
@@ -644,7 +897,7 @@
                     
                     acLevel.font = Math.max(30, acLevel.font * 0.85); 
                     acLevel.space = Math.max(0, acLevel.space - 4); 
-                    if (foundTargets === 4) acLevel.fl = 2; // Añadir dificultad a mitad
+                    if (foundTargets === 4) acLevel.fl = 2; 
                     
                     registerHit();
                     if (isPlaying) nextACRound();
@@ -654,38 +907,20 @@
             }
         }
 
-        // Evento Global de Teclado Físico
         document.addEventListener('keydown', e => {
             if (document.getElementById('flashcard-overlay').classList.contains('active')) { hideFlash(); return; }
             if (document.getElementById('result-overlay').classList.contains('active')) { document.getElementById('result-overlay').classList.remove('active'); return; }
             if (!isPlaying || isPausedByOverlay) return;
 
-            // Barra espaciadora exclusiva para Marsden
             if (e.key === ' ' && currentGame === 'marsden') { e.preventDefault(); checkMarsden(); return; }
 
-            // Lógica de Teclado Virtual con Flechas
             const buttons = virtualKeypad.querySelectorAll('.keypad-btn');
             if (buttons.length === 4 && virtualKeypad.style.display !== 'none') {
-                if (e.key === 'ArrowLeft') {
-                    e.preventDefault();
-                    selectedKeypadIndex = (selectedKeypadIndex - 1 + 4) % 4;
-                    updateKeypadFocus();
-                    return;
-                }
-                if (e.key === 'ArrowRight') {
-                    e.preventDefault();
-                    selectedKeypadIndex = (selectedKeypadIndex + 1) % 4;
-                    updateKeypadFocus();
-                    return;
-                }
-                if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'Enter') {
-                    e.preventDefault();
-                    handleKey(buttons[selectedKeypadIndex].textContent);
-                    return;
-                }
+                if (e.key === 'ArrowLeft') { e.preventDefault(); selectedKeypadIndex = (selectedKeypadIndex - 1 + 4) % 4; updateKeypadFocus(); return; }
+                if (e.key === 'ArrowRight') { e.preventDefault(); selectedKeypadIndex = (selectedKeypadIndex + 1) % 4; updateKeypadFocus(); return; }
+                if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'Enter') { e.preventDefault(); handleKey(buttons[selectedKeypadIndex].textContent); return; }
             }
 
-            // Atajo: Tocar la letra directamente en el teclado físico
             if (/^[a-zA-ZñÑ]$/.test(e.key)) {
                 handleKey(e.key.toUpperCase());
             }
@@ -720,7 +955,10 @@
             }, 50);
         }
         
-        window.addEventListener('resize', () => { if(currentGame === 'grid') updateLayoutAndGridSize(); });
+        window.addEventListener('resize', () => { 
+            updateDistanceCalibration(); 
+            if(currentGame === 'grid') updateLayoutAndGridSize(); 
+        });
 
         function drawGrid() {
             const cont = document.getElementById('grid-container'); 
@@ -852,14 +1090,14 @@
             if(isPausedByOverlay || !isPlaying) return;
             if(document.getElementById('marsden-ball').textContent === 'A') {
                 document.getElementById('mars-area').style.background = '#dcfce7'; 
-                setTimeout(() => document.getElementById('mars-area').style.background = 'transparent', 200);
+                setTimeout(() => document.getElementById('mars-area').style.background = '#ffffff', 200);
                 document.getElementById('marsden-ball').textContent = '-';
                 registerHit(); 
             } else { triggerError(document.getElementById('mars-area')); }
         }
 
         // ==========================================
-        // MÓDULO 5: VISUAL TRACING (BUG FIX #3)
+        // MÓDULO 5: VISUAL TRACING 
         // ==========================================
         function startTracing() {
             document.getElementById('game-target').textContent = "Sigue la línea Azul";
@@ -876,7 +1114,7 @@
             
             const startX = [w*0.2, w*0.5, w*0.8]; const endX = [...startX].sort(() => Math.random() - 0.5);
             const cols = ['#3b82f6', '#ef4444', '#10b981']; 
-            targetValue = ['A','B','C'][endX.indexOf(endX[0])]; // La línea azul es el índice 0
+            targetValue = ['A','B','C'][endX.indexOf(endX[0])]; // Azul es 0
 
             for(let i=0; i<3; i++) {
                 ctx.beginPath(); ctx.moveTo(startX[i], 40); 
@@ -892,12 +1130,11 @@
             document.getElementById('tracing-controls').style.display = 'flex';
         }
         
-        // Esta función está bloqueada para que no sume si el juego ha terminado
         window.checkTrace = function(ans) { 
-            if(!isPlaying || isPausedByOverlay) return; // FIX DEL BUG: Bloqueo de puntos fantasma
+            if(!isPlaying || isPausedByOverlay) return; 
             if(ans === targetValue) { 
                 registerHit(); 
-                if(isPlaying) nextTracing(); // Solo dibujar el siguiente si no se ha acabado el juego
+                if(isPlaying) nextTracing(); 
             } else { triggerError(null); } 
         }
 
@@ -921,7 +1158,7 @@
                     document.getElementById('tach-display').style.display = 'none';
                     document.getElementById('tach-input-area').style.display = 'flex';
                     document.getElementById('tach-input').focus();
-                }, 250); // Flash
+                }, 250); 
             }, 1500);
         }
         window.checkTach = function() {
@@ -932,31 +1169,355 @@
         }
 
         // ==========================================
-        // DASHBOARD HISTORY Y DISTANCIA
+        // DASHBOARD HISTORY, RUTINAS Y GRÁFICAS
         // ==========================================
         function renderDashboard() {
-            const h = historyLog.filter(x => x.patientId === activePatientId);
-            const tbody = document.getElementById('history-tbody');
-            if (h.length > 0) {
-                tbody.innerHTML = [...h].reverse().map(s => `<tr><td>${s.date}</td><td>${s.modeName}</td><td>${s.eye}</td><td>${s.timeFormatted}</td><td>${s.accuracy}%</td></tr>`).join('');
+            const rt = routines[activePatientId] || []; 
+            const rl = document.getElementById('routine-list'); 
+            rl.innerHTML = '';
+            
+            if(rt.length === 0) { 
+                document.getElementById('routine-status').textContent = "Sin pauta activa"; 
+                document.getElementById('btn-launch-routine').style.display = 'none'; 
             } else {
-                tbody.innerHTML = '<tr><td colspan="5">Sin datos para este paciente.</td></tr>';
+                document.getElementById('btn-launch-routine').style.display = 'inline-block';
+                let tr = 0, tc = 0; 
+                const names = {
+                    search: 'Búsqueda Grid', coord: 'Coordenadas Grid', pursuit: 'Seguimiento Grid', 
+                    anticrowding: 'Anti-Crowding', saccadic: 'Sacádicos', marsden: 'Pelota Marsden', 
+                    tracing: 'Laberinto Visual', tachisto: 'Taquistoscopio'
+                };
+                
+                rt.forEach((t, i) => {
+                    tr += t.req; tc += Math.min(t.done, t.req);
+                    rl.innerHTML += `
+                        <div class="task-item ${t.done >= t.req ? 'completed' : ''}">
+                            <div><strong>#${i+1} ${names[t.mode]}</strong> (${t.eye})</div>
+                            <div><strong>${t.done}/${t.req}</strong> series ${t.done >= t.req ? '✅' : ''}</div>
+                        </div>`;
+                });
+                document.getElementById('routine-status').textContent = `Completado: ${tc} de ${tr} ejercicios.`;
+            }
+            renderHistory();
+        }
+
+        document.getElementById('btn-add-routine').onclick = () => {
+            let r = routines[activePatientId] || []; 
+            r.push({
+                mode: document.getElementById('rout-add-mode').value, 
+                eye: document.getElementById('rout-add-eye').value, 
+                lines: document.getElementById('rout-add-lines').value,
+                req: parseInt(document.getElementById('rout-add-req').value), 
+                done: 0
+            });
+            routines[activePatientId] = r; 
+            localStorage.setItem('nystagmus_routines', JSON.stringify(routines)); 
+            renderDashboard();
+        };
+
+        document.getElementById('btn-clear-routine').onclick = () => { 
+            routines[activePatientId] = []; 
+            localStorage.setItem('nystagmus_routines', JSON.stringify(routines)); 
+            renderDashboard(); 
+        };
+
+        document.getElementById('btn-launch-routine').onclick = () => {
+            let r = routines[activePatientId] || []; 
+            let next = r.find(t => t.done < t.req);
+            
+            if(!next) {
+                alert("¡Pauta clínica completada por hoy!"); return;
+            }
+            
+            openGame(['search','coord','pursuit'].includes(next.mode) ? 'grid' : next.mode);
+            if(['search','coord','pursuit'].includes(next.mode)) { 
+                document.getElementById('game-grid-mode').value = next.mode; 
+                currentGridMode = next.mode; 
+                document.getElementById('game-lines-toggle').checked = (next.lines === 'Sí');
+            }
+            document.getElementById('game-eye').value = next.eye; 
+            
+            setTimeout(startGame, 500); 
+        };
+
+        function updateRoutineProgress() {
+            let r = routines[activePatientId] || []; 
+            let updated = false;
+            for(let t of r) {
+                if(t.done < t.req && (t.mode === currentGame || t.mode === currentGridMode) && t.eye === document.getElementById('game-eye').value) { 
+                    t.done++; updated = true; break; 
+                }
+            }
+            if(updated) { 
+                routines[activePatientId] = r; 
+                localStorage.setItem('nystagmus_routines', JSON.stringify(routines)); 
             }
         }
 
-        function updateDistance() {
+        // ==========================================
+        // ANALÍTICA Y GRÁFICAS SVG
+        // ==========================================
+        function formatDuration(ms) {
+            const s = Math.floor(ms/1000);
+            return `${Math.floor(s/3600).toString().padStart(2,'0')}:${Math.floor((s%3600)/60).toString().padStart(2,'0')}:${(s%60).toString().padStart(2,'0')}`;
+        }
+
+        function switchStatsTab(mode) {
+            activeStatsTab = mode;
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            renderHistory();
+        }
+
+        function renderHistory() {
+            const history = JSON.parse(localStorage.getItem('nystagmus_history') || '[]');
+            
+            let filteredMode = activeStatsTab;
+            // Para el modo Grid agrupa Search, Coord y Pursuit o lo filtramos
+            // Simplificaremos filtrando por la variable global current mode si es necesario
+            
+            const filteredHistory = history.filter(s => {
+                const matchPatient = (s.patientId === activePatientId) || (!s.patientId && activePatientId === 'p_default');
+                // En el dashboard grid agrupaba todo, vamos a mostrar el activeStatsTab
+                // Ajuste para que coincida con los modos reales
+                let m = s.mode;
+                if (activeStatsTab === 'grid') {
+                    // Mostrar search, coord, pursuit
+                    return matchPatient && ['grid', 'search', 'coord', 'pursuit'].includes(m);
+                } else {
+                    return matchPatient && m === activeStatsTab;
+                }
+            });
+            
+            const tbody = document.getElementById('history-tbody');
+            
+            document.getElementById('metric-total-sessions').textContent = filteredHistory.length;
+            const totalMs = filteredHistory.reduce((acc, curr) => acc + (curr.timeMs || 0), 0);
+            document.getElementById('metric-total-time').textContent = formatDuration(totalMs);
+
+            if (filteredHistory.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5">Sin datos acumulados para este paciente en este modo.</td></tr>';
+                document.getElementById('metric-best-time').textContent = '--:--';
+                document.getElementById('metric-avg-accuracy').textContent = '--%';
+                renderChart([]);
+                return;
+            }
+
+            const sumAccuracy = filteredHistory.reduce((acc, curr) => acc + (curr.accuracy !== undefined ? curr.accuracy : 100), 0);
+            const avgAccuracy = Math.round(sumAccuracy / filteredHistory.length);
+            document.getElementById('metric-avg-accuracy').textContent = `${avgAccuracy}%`;
+
+            const bestMs = Math.min(...filteredHistory.map(s => s.timeMs));
+            const bestSession = filteredHistory.find(s => s.timeMs === bestMs);
+            document.getElementById('metric-best-time').textContent = bestSession ? bestSession.timeFormatted : '--:--';
+
+            const reversed = [...filteredHistory].reverse();
+            tbody.innerHTML = reversed.map((s, idx) => {
+                return `
+                    <tr>
+                        <td>${s.date}</td>
+                        <td>${s.modeName || s.mode}</td>
+                        <td><strong>${s.eye}</strong></td>
+                        <td><strong>${s.timeFormatted}</strong></td>
+                        <td>${s.accuracy}% (${s.errors} err)</td>
+                    </tr>
+                `;
+            }).join('');
+
+            renderChart(filteredHistory);
+        }
+
+        function renderChart(data) {
+            const svg = document.getElementById('evolution-chart');
+            svg.innerHTML = '';
+            if (!data || data.length === 0) return;
+
+            const width = svg.clientWidth || 700;
+            const height = 200;
+            const padding = 35;
+
+            const maxTime = Math.max(...data.map(d => d.timeMs / 1000));
+            const minTime = Math.min(...data.map(d => d.timeMs / 1000));
+
+            const points = data.map((d, idx) => {
+                let x;
+                if (chartXAxisType === 'index') {
+                    x = data.length === 1 ? width / 2 : padding + (idx / (data.length - 1)) * (width - 2 * padding);
+                } else {
+                    const minTs = data[0].timestamp || 0;
+                    const maxTs = data[data.length - 1].timestamp || 1;
+                    x = (maxTs === minTs) ? width / 2 : padding + ((d.timestamp - minTs) / (maxTs - minTs)) * (width - 2 * padding);
+                }
+                
+                const ySecs = d.timeMs / 1000;
+                const range = (maxTime - minTime) || 1;
+                const y = height - padding - ((ySecs - minTime) / range) * (height - 2 * padding);
+                return { x, y, secs: ySecs.toFixed(1), eye: d.eye || 'BIN' };
+            });
+
+            for(let i = 0; i <= 3; i++) {
+                const yVal = padding + i * (height - 2 * padding) / 3;
+                const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                line.setAttribute("x1", padding);
+                line.setAttribute("x2", width - padding);
+                line.setAttribute("y1", yVal);
+                line.setAttribute("y2", yVal);
+                line.setAttribute("stroke", "#e2e8f0");
+                line.setAttribute("stroke-dasharray", "4");
+                svg.appendChild(line);
+            }
+
+            if (points.length > 1) {
+                const pathD = points.reduce((acc, p, i) => i === 0 ? `M ${p.x} ${p.y}` : `${acc} L ${p.x} ${p.y}`, '');
+                const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                path.setAttribute("d", pathD);
+                path.setAttribute("fill", "none");
+                path.setAttribute("stroke", "#3b82f6");
+                path.setAttribute("stroke-width", "3");
+                svg.appendChild(path);
+            }
+
+            points.forEach(p => {
+                const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                circle.setAttribute("cx", p.x);
+                circle.setAttribute("cy", p.y);
+                circle.setAttribute("r", "5");
+                circle.setAttribute("fill", p.eye === 'OD' ? '#ef4444' : (p.eye === 'OI' ? '#3b82f6' : '#10b981'));
+                svg.appendChild(circle);
+            });
+        }
+
+        document.getElementById('chart-axis-btn').addEventListener('click', () => {
+            chartXAxisType = chartXAxisType === 'index' ? 'date' : 'index';
+            document.getElementById('chart-axis-btn').textContent = chartXAxisType === 'index' ? '🔢 Eje X: Por Pruebas' : '📅 Eje X: Por Fecha';
+            renderHistory();
+        });
+
+        // ==========================================
+        // IMPRESIÓN, EXPORTACIÓN Y CALIBRACIÓN
+        // ==========================================
+        document.getElementById('btn-print-pdf').addEventListener('click', () => {
+            // Actualizar membrete
+            document.getElementById('print-clinic').textContent = clinicCfg.clinicName || 'Centro Clínico';
+            document.getElementById('print-specialist').textContent = clinicCfg.specialistName || 'Especialista';
+            document.getElementById('print-col').textContent = clinicCfg.colNum ? "Nº Col: " + clinicCfg.colNum : '';
+            document.getElementById('print-date').textContent = "Fecha Emisión: " + new Date().toLocaleDateString('es-ES');
+            if(clinicCfg.logoBase64) { 
+                document.getElementById('print-logo').src = clinicCfg.logoBase64; 
+                document.getElementById('print-logo').style.display = 'block'; 
+            }
+            
+            document.body.classList.remove('print-grid-only');
+            document.body.classList.add('print-report-only');
+            renderHistory();
+            setTimeout(() => {
+                window.print();
+                document.body.classList.remove('print-report-only');
+            }, 150);
+        });
+
+        document.getElementById('btn-print-grid').addEventListener('click', () => {
+            document.body.classList.remove('print-report-only');
+            document.body.classList.add('print-grid-only');
+            window.print();
+            document.body.classList.remove('print-grid-only');
+        });
+
+        document.getElementById('btn-export-json').addEventListener('click', () => {
+            const bundle = {
+                version: "4.05",
+                clinic: clinicCfg,
+                patients: patients,
+                routines: routines,
+                history: historyLog,
+                exportDate: new Date().toISOString()
+            };
+            const blob = new Blob([JSON.stringify(bundle, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `respaldo_terapia_v405_${new Date().toISOString().slice(0, 10)}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        });
+
+        document.getElementById('btn-import-json').addEventListener('click', () => document.getElementById('import-file-input').click());
+        document.getElementById('import-file-input').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                try {
+                    const d = JSON.parse(event.target.result);
+                    if (d.patients && d.history) {
+                        localStorage.setItem('nystagmus_patients', JSON.stringify(d.patients));
+                        localStorage.setItem('nystagmus_history', JSON.stringify(d.history));
+                        if (d.routines) localStorage.setItem('nystagmus_routines', JSON.stringify(d.routines));
+                        if (d.clinic) localStorage.setItem('nystagmus_clinic_cfg', JSON.stringify(d.clinic));
+                        alert('¡Base de datos completa importada con éxito!');
+                        location.reload();
+                    } else if (Array.isArray(d)) {
+                        localStorage.setItem('nystagmus_history', JSON.stringify(d));
+                        alert('¡Historial importado!');
+                        location.reload();
+                    } else alert('Formato no válido.');
+                } catch (err) { alert('Error al leer el archivo.'); }
+            };
+            reader.readAsText(file);
+        });
+
+        document.getElementById('btn-delete-hist').addEventListener('click', () => {
+            if (confirm('¿Desea borrar el historial de este paciente?')) {
+                historyLog = historyLog.filter(s => s.patientId !== activePatientId);
+                localStorage.setItem('nystagmus_history', JSON.stringify(historyLog));
+                renderHistory();
+            }
+        });
+
+        function updateDistanceCalibration() {
             const inches = parseFloat(document.getElementById('game-inches').value) || 34;
             const ppi = Math.hypot(window.screen.width, window.screen.height) / inches;
             const fontMm = ((window.innerHeight * 0.04) / ppi) * 25.4; 
             currentSuggestedDistanceCm = Math.max(40, Math.round(fontMm * 8));
-            const msg = `Densidad: ~${fontMm.toFixed(1)} mm. <strong style="color:#2563eb; margin-left: 0.5rem;">Distancia sugerida: ~${currentSuggestedDistanceCm} cm</strong>`;
             
-            const inf = document.getElementById('game-distance-info');
-            if(inf) inf.innerHTML = msg;
+            const infoEl = document.getElementById('game-distance-info');
+            if(infoEl) {
+                infoEl.innerHTML = `Tamaño de letra: ~${fontMm.toFixed(1)} mm. <strong style="color:#2563eb; font-size:1.1rem; margin-left: 0.5rem;">Distancia recomendada: ~${currentSuggestedDistanceCm} cm</strong>`;
+            }
         }
+        
+        document.getElementById('game-inches').addEventListener('input', e => { 
+            localStorage.setItem('nystagmus_monitor_size', e.target.value); 
+            updateDistanceCalibration(); 
+        });
 
-        // INIT
+        // CALIBRACIÓN POR TARJETA FÍSICA
+        document.getElementById('save-calib-btn').addEventListener('click', () => {
+            const cardWidthPx = parseInt(document.getElementById('calib-slider').value);
+            const ppi = cardWidthPx / 3.3700787; // 85.6mm = 3.37 pulgadas
+            const calculatedInches = Math.hypot(window.screen.width, window.screen.height) / ppi;
+            const roundedInches = Math.round(calculatedInches * 10) / 10;
+            
+            document.getElementById('game-inches').value = roundedInches;
+            localStorage.setItem('nystagmus_monitor_size', roundedInches);
+            updateDistanceCalibration();
+            document.getElementById('card-calib-modal').classList.remove('active');
+            alert(`¡Pantalla calibrada con éxito! Diagonal ajustada a ${roundedInches}"`);
+        });
+
+        document.getElementById('calib-slider').addEventListener('input', (e) => {
+            const w = parseInt(e.target.value);
+            const h = Math.round(w * (53.98 / 85.6));
+            const box = document.getElementById('calib-card-box');
+            box.style.width = w + 'px';
+            box.style.height = h + 'px';
+        });
+
+        // BOOTSTRAP DE LA APLICACIÓN
         initApp();
+        
     </script>
 </body>
 </html>
