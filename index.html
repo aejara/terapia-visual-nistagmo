@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Suite Terapia Visual - v4.05 (Completa)</title>
+    <title>Suite Terapia Visual - v4.06 (Bugs Corregidos)</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -80,7 +80,7 @@
         .patient-row { display: flex; justify-content: space-between; align-items: center; background-color: #eff6ff; border-left: 4px solid var(--primary); padding: 0.6rem 1rem; border-radius: 8px; flex-wrap: wrap; gap: 0.6rem; }
         body.high-contrast .patient-row { background-color: #f1f5f9; border-color: #000000; }
         .exercises-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin-top: 0.5rem; }
-        .exercise-card { background-color: white; border: 2px solid #cbd5e1; border-radius: 12px; padding: 1.2rem; cursor: pointer; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .exercise-card { background-color: white; border: 2px solid #cbd5e1; border-radius: 12px; padding: 1.2rem; cursor: pointer; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: all 0.2s; }
         body.high-contrast .exercise-card { border: 3px solid #000000; }
         .exercise-card:hover { border-color: var(--primary); transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.2); }
         .exercise-card-icon { font-size: 2.8rem; margin-bottom: 0.5rem; }
@@ -116,12 +116,12 @@
         .game-area.success { background-color: var(--target-bg); }
         .game-area.error { background-color: var(--wrong-bg); animation: shake 0.4s; }
 
-        /* MÓDULO 2: ANTI-CROWDING */
+        /* MÓDULO 2: ANTI-CROWDING (BUG 6: Color corregido) */
         #ac-display { font-weight: 900; white-space: nowrap; user-select: none; color: #0f172a; transition: all 0.3s ease; }
         body.high-contrast #ac-display { color: #000000; }
-        .ac-flanker { color: #64748b; opacity: 0.8; }
-        body.high-contrast .ac-flanker { color: #444444; }
-        .ac-target { color: var(--primary); }
+        .ac-flanker { color: #0f172a; opacity: 1; }
+        body.high-contrast .ac-flanker { color: #000000; }
+        .ac-target { color: #0f172a; }
         body.high-contrast .ac-target { color: #000000; }
 
         /* MÓDULO 3: SALTOS SACÁDICOS */
@@ -129,9 +129,9 @@
         #saccadic-target:active { transform: scale(0.8); }
         body.high-contrast #saccadic-target { background-color: #000000; border-color: #ffffff; }
 
-        /* MÓDULO 4: PELOTA DE MARSDEN */
+        /* MÓDULO 4: PELOTA DE MARSDEN (BUG 4: Péndulo más largo) */
         #marsden-pendulum { position: absolute; top: 0; transform-origin: top center; display: flex; flex-direction: column; align-items: center; }
-        .marsden-string { width: 4px; height: 150px; background-color: #94a3b8; }
+        .marsden-string { width: 4px; height: 280px; background-color: #94a3b8; }
         #marsden-ball { width: 80px; height: 80px; background-color: var(--primary); border-radius: 50%; display: flex; justify-content: center; align-items: center; color: white; font-size: 2.5rem; font-weight: 900; box-shadow: 0 10px 20px rgba(0,0,0,0.2); user-select: none; }
         body.high-contrast #marsden-ball { background-color: #000000; }
         @keyframes swing { 0% { transform: rotate(35deg); } 100% { transform: rotate(-35deg); } }
@@ -139,7 +139,6 @@
         /* MÓDULO 5: VISUAL TRACING (LABERINTO) */
         #tracing-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
         .tracing-label { position: absolute; font-weight: 900; font-size: 1.5rem; background-color: white; padding: 0.2rem 0.8rem; border-radius: 8px; border: 2px solid #cbd5e1; z-index: 10; }
-        #tracing-controls { position: absolute; bottom: 10px; display: flex; gap: 1rem; z-index: 20; display: none; }
 
         /* MÓDULO 6: TAQUISTOSCOPIO */
         #tach-display { font-size: 5rem; font-weight: 900; letter-spacing: 15px; display: none; color: #0f172a; }
@@ -150,9 +149,9 @@
         @keyframes shake { 0%, 100% { transform: translateX(0); } 25%, 75% { transform: translateX(-5px); } 50% { transform: translateX(5px); } }
 
         /* =========================================
-           TECLADO VIRTUAL COMPARTIDO
+           TECLADO VIRTUAL COMPARTIDO (BUG 7: UBICACIÓN REVISADA)
            ========================================= */
-        #virtual-keypad { display: none; grid-template-columns: repeat(4, 1fr); gap: 10px; width: 100%; margin-top: 0.2rem; }
+        #virtual-keypad { display: none; grid-template-columns: repeat(4, 1fr); gap: 10px; width: 100%; margin-bottom: 0.6rem; }
         .keypad-btn { font-family: var(--font-clinical); background-color: white; border: 3px solid var(--grid-border); border-radius: 12px; font-size: 2.2rem; font-weight: 700; padding: 0.8rem 0; cursor: pointer; box-shadow: 0 4px 0 var(--grid-border); touch-action: manipulation; }
         .keypad-btn:active { transform: translateY(4px); box-shadow: none; }
         .keypad-btn.focused { border-color: #2563eb; background-color: #eff6ff; box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.4), 0 4px 0 #2563eb; transform: translateY(-2px); }
@@ -177,16 +176,15 @@
 
         /* ANALÍTICA Y TABLAS */
         .tab-buttons { display: flex; gap: 0.4rem; border-bottom: 2px solid #cbd5e1; padding-bottom: 0.4rem; margin-bottom: 1rem; flex-wrap: wrap; }
-        .tab-btn { background: #f1f5f9; border: none; padding: 0.5rem 1rem; border-radius: 6px 6px 0 0; font-family: var(--font-clinical); font-weight: 700; color: #64748b; cursor: pointer; }
-        .tab-btn.active { background: var(--primary); color: white; }
-        .filter-bar { display: flex; gap: 1rem; flex-wrap: wrap; background: #f8fafc; padding: 0.6rem 0.8rem; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 1rem; align-items: center; }
+        .tab-btn { background-color: #f1f5f9; border: none; padding: 0.5rem 1rem; border-radius: 6px 6px 0 0; font-family: var(--font-clinical); font-weight: 700; color: #64748b; cursor: pointer; }
+        .tab-btn.active { background-color: var(--primary); color: white; }
         .history-table { width: 100%; border-collapse: collapse; margin-top: 0.5rem; font-size: 0.85rem; }
         .history-table th, .history-table td { border: 1px solid #cbd5e1; padding: 0.4rem 0.6rem; text-align: center; }
         .history-table th { background-color: #f1f5f9; font-weight: 700; color: #475569; }
-        .metric-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.6rem 0.8rem; text-align: center; flex: 1; min-width: 130px; }
+        .metric-card { background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.6rem 0.8rem; text-align: center; flex: 1; min-width: 130px; }
         .metric-card .val { font-size: 1.2rem; font-weight: 700; color: var(--primary); }
         .metric-card .lbl { font-size: 0.72rem; color: #64748b; font-weight: 700; }
-        .chart-container { background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; }
+        .chart-container { background-color: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; }
         .chart-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; flex-wrap: wrap; gap: 0.5rem; }
 
         /* =========================================
@@ -223,7 +221,7 @@
             body.print-grid-only .controls-row { display: block !important; border: none !important; text-align: center !important; font-size: 1.4rem !important; margin-bottom: 1rem !important; }
             body.print-grid-only .grid-wrapper { display: flex !important; }
             body.print-grid-only #grid-container { width: 100% !important; height: auto !important; aspect-ratio: 1/1 !important; border: 3px solid #000 !important; page-break-inside: avoid; }
-            body.print-grid-only .cell { border: 1px solid #000 !important; }
+            body.print-grid-only .cell { border: 1px solid #000000 !important; }
         }
     </style>
 </head>
@@ -246,8 +244,8 @@
         <div style="font-size: 3rem; font-weight: 900; color: #16a34a; margin-bottom: 2rem;">🎉 ¡Sesión Completada!</div>
         <div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
             <div style="background-color: #f8fafc; border: 3px solid #cbd5e1; padding: 1.5rem; border-radius: 16px;">
-                <div id="res-time" style="font-size: 3rem; font-weight: 900; color: var(--primary);">00:00</div>
-                <div style="font-weight: 700; color: #64748b;">TIEMPO</div>
+                <div id="res-time" style="font-size: 3rem; font-weight: 900; color: var(--primary);">00:00.0</div>
+                <div style="font-weight: 700; color: #64748b;">TIEMPO ACTIVO</div>
             </div>
             <div style="background-color: #f8fafc; border: 3px solid #cbd5e1; padding: 1.5rem; border-radius: 16px;">
                 <div id="res-errors" style="font-size: 3rem; font-weight: 900; color: #dc2626;">0</div>
@@ -291,7 +289,7 @@
             </div>
         </div>
 
-        <h1>Suite de Terapia Visual (v4.05)</h1>
+        <h1>Suite de Terapia Visual (v4.06)</h1>
 
         <!-- HEADER GLOBAL (PACIENTE / CLINICA) -->
         <div class="patient-row">
@@ -314,7 +312,7 @@
                     <input type="text" id="cfg-specialist" placeholder="Nombre Especialista" style="flex:1; min-width: 200px;">
                     <input type="text" id="cfg-col" placeholder="Nº Colegiado" style="width:100px;">
                 </div>
-                <div style="display: flex; gap: 1rem; align-items: center; background: white; padding: 0.8rem; border-radius: 8px; border: 1px solid #cbd5e1; margin-bottom: 0.5rem;">
+                <div style="display: flex; gap: 1rem; align-items: center; background-color: white; padding: 0.8rem; border-radius: 8px; border: 1px solid #cbd5e1; margin-bottom: 0.5rem;">
                     <div>
                         <label style="font-weight: 700; font-size: 0.85rem;">Logo (PNG/JPG):</label>
                         <input type="file" id="cfg-logo-input" accept="image/*" style="font-size: 0.85rem; margin-top: 0.3rem;">
@@ -366,7 +364,7 @@
                             <option value="anticrowding">Agudeza: Anti-Crowding</option>
                             <option value="saccadic">Fijación: Saltos Sacádicos</option>
                             <option value="marsden">Pursuit: Pelota de Marsden</option>
-                            <option value="tracing">Estabilidad: Visual Tracing</option>
+                            <option value="tracing">Estabilidad: Laberintos</option>
                             <option value="tachisto">Memoria: Taquistoscopio</option>
                         </select>
                         <select id="rout-add-eye">
@@ -432,7 +430,7 @@
                         <button class="tab-btn" onclick="switchStatsTab('anticrowding')">Anti-Crowding</button>
                         <button class="tab-btn" onclick="switchStatsTab('saccadic')">Sacádicos</button>
                         <button class="tab-btn" onclick="switchStatsTab('marsden')">Marsden</button>
-                        <button class="tab-btn" onclick="switchStatsTab('tracing')">Tracing</button>
+                        <button class="tab-btn" onclick="switchStatsTab('tracing')">Laberintos</button>
                         <button class="tab-btn" onclick="switchStatsTab('tachisto')">Taquistoscopio</button>
                     </div>
 
@@ -447,7 +445,7 @@
                     <!-- Métricas -->
                     <div style="display: flex; gap: 0.6rem; flex-wrap: wrap; margin-bottom: 1rem;">
                         <div class="metric-card"><div class="val" id="metric-total-sessions">0</div><div class="lbl">SESIONES</div></div>
-                        <div class="metric-card"><div class="val" id="metric-total-time">00:00:00</div><div class="lbl">TIEMPO JUGADO</div></div>
+                        <div class="metric-card"><div class="val" id="metric-total-time">00:00.0</div><div class="lbl">TIEMPO ACTIVO</div></div>
                         <div class="metric-card"><div class="val" id="metric-best-time">--:--</div><div class="lbl">MEJOR TIEMPO</div></div>
                         <div class="metric-card"><div class="val" id="metric-avg-accuracy" style="color: #16a34a;">--%</div><div class="lbl">PRECISIÓN MEDIA</div></div>
                     </div>
@@ -455,7 +453,7 @@
                     <!-- Gráfica SVG de Evolución -->
                     <div class="chart-container">
                         <div class="chart-controls">
-                            <strong style="font-size: 0.95rem; color: #334155;">📈 Evolución del Tiempo de Resolución</strong>
+                            <strong style="font-size: 0.95rem; color: #334155;">📈 Evolución de Tiempo de Reacción Activo</strong>
                             <button class="btn btn-secondary" id="chart-axis-btn" style="padding: 0.3rem 0.6rem;">🔢 Eje X: Por Pruebas</button>
                         </div>
                         <div style="width: 100%; height: 200px; position: relative;">
@@ -465,7 +463,7 @@
 
                     <table class="history-table" style="width:100%;">
                         <thead>
-                            <tr><th>Fecha</th><th>Juego</th><th>Ojo</th><th>Tiempo</th><th>Precisión</th></tr>
+                            <tr><th>Fecha</th><th>Juego</th><th>Ojo</th><th>Tiempo Activo</th><th>Precisión</th></tr>
                         </thead>
                         <tbody id="history-tbody"></tbody>
                     </table>
@@ -485,6 +483,9 @@
                 <div style="color:#dc2626;">Fallos: <strong id="game-errors">0</strong></div>
                 <div style="font-family:monospace; font-size:1.4rem;" id="game-timer">00:00.0</div>
             </div>
+
+            <!-- TECLADO VIRTUAL COMPARTIDO (BUG FIX 7: Movido justo aquí arriba) -->
+            <div id="virtual-keypad"></div>
 
             <!-- INYECCIÓN DINÁMICA DEL JUEGO SELECCIONADO -->
             <div id="game-canvas-area" style="width:100%; display:flex; justify-content:center;"></div>
@@ -533,10 +534,6 @@
                 Calculando distancia recomendada...
             </div>
         </div>
-
-        <!-- TECLADO VIRTUAL COMPARTIDO -->
-        <div id="virtual-keypad"></div>
-
     </div>
 
     <!-- ==========================================
@@ -546,7 +543,12 @@
         const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         const confusionMatrix = {
             'A': ['V','X','Y','R'], 'B': ['P','R','E','D'], 'C': ['O','G','Q','D'], 'D': ['O','B','C','Q'],
-            'E': ['F','B','P','L'], 'F': ['E','P','T','R'], 'G': ['C','O','Q','D'], 'H': ['N','M','K','R']
+            'E': ['F','B','P','L'], 'F': ['E','P','T','R'], 'G': ['C','O','Q','D'], 'H': ['N','M','K','R'],
+            'I': ['L','T','J','F'], 'J': ['I','L','T','U'], 'K': ['X','H','R','Y'], 'L': ['I','T','J','E'],
+            'M': ['N','W','H','A'], 'N': ['M','H','Z','W'], 'O': ['Q','C','G','D'], 'P': ['F','B','R','E'],
+            'Q': ['O','C','G','D'], 'R': ['B','P','K','F'], 'S': ['Z','C','G','J'], 'T': ['I','L','J','F'],
+            'U': ['V','W','J','O'], 'V': ['U','W','Y','A'], 'W': ['M','V','U','N'], 'X': ['K','Y','Z','A'],
+            'Y': ['V','X','T','U'], 'Z': ['S','X','N','E']
         };
 
         // ESTADO GLOBAL
@@ -565,8 +567,11 @@
         let targetValue = ''; 
         let currentSuggestedDistanceCm = 75;
         
+        // BUG 2: Variables de motor de tiempo
+        let isTimerActive = true; 
         let gameTimerInt = null, customInt1 = null, flashcardTimeout = null;
-        let chartXAxisType = 'index'; // Para la gráfica SVG
+        
+        let chartXAxisType = 'index'; 
         let activeStatsTab = 'grid';
 
         // DOM ELEMENTS
@@ -687,7 +692,7 @@
             }
 
             if (gameId === 'anticrowding') {
-                canvasArea.innerHTML = `<div class="game-area" id="ac-wrapper"><div id="ac-display" style="font-size:120px; letter-spacing:30px;">A <span style="color:var(--primary)">B</span> C</div></div>`;
+                canvasArea.innerHTML = `<div class="game-area" id="ac-wrapper"><div id="ac-display" style="font-size:120px; letter-spacing:30px;">A <span class="ac-target">B</span> C</div></div>`;
                 reqTargets = 10;
             }
             if (gameId === 'saccadic') {
@@ -699,7 +704,7 @@
                 reqTargets = 10;
             }
             if (gameId === 'tracing') {
-                canvasArea.innerHTML = `<div class="game-area" style="position:relative;"><canvas id="tracing-canvas"></canvas><div id="tracing-controls"><button class="btn" onclick="checkTrace('A')">Letra A</button><button class="btn" onclick="checkTrace('B')">Letra B</button><button class="btn" onclick="checkTrace('C')">Letra C</button></div></div>`;
+                canvasArea.innerHTML = `<div class="game-area" style="position:relative;"><canvas id="tracing-canvas"></canvas></div>`;
                 reqTargets = 5;
             }
             if (gameId === 'tachisto') {
@@ -732,12 +737,15 @@
         });
 
         function startGame() {
-            isPlaying = true; resetScoreboard();
+            isPlaying = true; 
+            isTimerActive = true; // BUG 2: Por defecto corre
+            resetScoreboard();
             document.getElementById('btn-game-start').textContent = "Detener Ejercicio"; 
             document.getElementById('btn-game-start').style.background = "#ef4444";
             
             gameTimerInt = setInterval(() => {
-                if(isPausedByOverlay) return; 
+                // BUG 2 FIX: Solo sumar tiempo si está activo y no hay pausa
+                if(isPausedByOverlay || !isTimerActive) return; 
                 timeMs += 100;
                 let m = Math.floor(timeMs/60000).toString().padStart(2,'0');
                 let s = Math.floor((timeMs%60000)/1000).toString().padStart(2,'0');
@@ -755,6 +763,7 @@
 
         function stopGame() {
             isPlaying = false; 
+            isTimerActive = false;
             clearInterval(gameTimerInt); clearInterval(customInt1); 
             document.getElementById('btn-game-start').textContent = "Iniciar Ejercicio"; 
             document.getElementById('btn-game-start').style.background = "var(--primary)";
@@ -770,11 +779,8 @@
             const acc = (foundTargets + sessionErrors) > 0 ? Math.round((foundTargets / (foundTargets + sessionErrors)) * 100) : 100;
             const logName = currentGame === 'grid' ? `Cuadrícula: ${currentGridMode}` : currentGame;
             
-            // Usar lines y screenInches en el log
             let linesInfo = "N/A";
-            if (currentGame === 'grid') {
-                linesInfo = document.getElementById('game-lines-toggle').checked ? 'Sí' : 'No';
-            }
+            if (currentGame === 'grid') linesInfo = document.getElementById('game-lines-toggle').checked ? 'Sí' : 'No';
 
             const log = { 
                 id: Date.now(), patientId: activePatientId, date: new Date().toLocaleString('es-ES',{dateStyle:'short',timeStyle:'short'}), 
@@ -819,6 +825,7 @@
         });
 
         // FLASHCARDS
+        let overlayCallback = null;
         function showFlash(htmlText, callback) {
             isPausedByOverlay = true;
             document.getElementById('flashcard-main').innerHTML = htmlText; 
@@ -838,10 +845,27 @@
 
 
         // ==========================================
-        // TECLADO VIRTUAL Y NAVEGACIÓN POR FLECHAS
+        // TECLADO VIRTUAL Y NAVEGACIÓN (BUGS 5, 7 Y 8)
         // ==========================================
-        function renderKeypad(correct) {
+        
+        // Función base para inyectar botones según array
+        function renderKeypadCustom(options, correct) {
             virtualKeypad.innerHTML = ''; 
+            selectedKeypadIndex = 0; 
+            
+            options.forEach((c, i) => {
+                let b = document.createElement('button'); 
+                b.className = 'keypad-btn' + (i === 0 ? ' focused' : ''); 
+                b.textContent = c;
+                b.onclick = (e) => { e.preventDefault(); handleKey(c); }; 
+                virtualKeypad.appendChild(b);
+            });
+            virtualKeypad.style.gridTemplateColumns = `repeat(${options.length}, 1fr)`;
+            virtualKeypad.style.display = 'grid';
+        }
+
+        // Generador de Opciones Letras (Cuadrícula / AntiCrowding)
+        function renderKeypad(correct) {
             let opts = confusionMatrix[correct] ? [...confusionMatrix[correct]] : [];
             opts.push(correct); 
             while(opts.length < 4) { 
@@ -849,16 +873,7 @@
                 if(!opts.includes(r)) opts.push(r); 
             }
             opts.sort(() => Math.random() - 0.5);
-            selectedKeypadIndex = 0; 
-            
-            opts.forEach((c, i) => {
-                let b = document.createElement('button'); 
-                b.className = 'keypad-btn' + (i === 0 ? ' focused' : ''); 
-                b.textContent = c;
-                b.onclick = (e) => { e.preventDefault(); handleKey(c); }; 
-                virtualKeypad.appendChild(b);
-            });
-            virtualKeypad.style.display = 'grid';
+            renderKeypadCustom(opts, correct);
         }
 
         function updateKeypadFocus() {
@@ -874,21 +889,15 @@
             
             if (currentGame === 'grid') {
                 if (currentGridMode === 'search') return; 
-                
                 if (char === targetValue) {
                     let c = document.querySelector('.pursuit-active'); 
-                    if(c) {
-                        c.classList.remove('pursuit-active'); c.classList.add('found'); 
-                        setTimeout(() => c.classList.remove('found'), 400);
-                    }
+                    if(c) { c.classList.remove('pursuit-active'); c.classList.add('found'); setTimeout(() => c.classList.remove('found'), 400); }
                     registerHit(); 
                     if (isPlaying) { 
                         if (currentGridMode === 'coord') pickNewCoordinate();
                         else { clearInterval(customInt1); gridNextPursuit(); customInt1 = setInterval(gridNextPursuit, 3000); }
                     }
-                } else {
-                    triggerError(document.querySelector('.pursuit-active'));
-                }
+                } else { triggerError(document.querySelector('.pursuit-active')); }
             } 
             else if (currentGame === 'anticrowding') {
                 if (char === targetValue) {
@@ -901,12 +910,18 @@
                     
                     registerHit();
                     if (isPlaying) nextACRound();
-                } else {
-                    triggerError(document.getElementById('ac-wrapper'));
-                }
+                } else { triggerError(document.getElementById('ac-wrapper')); }
+            }
+            else if (currentGame === 'tracing') {
+                // BUG FIX 3: Teclado para Laberintos
+                if (char === targetValue) {
+                    registerHit();
+                    if (isPlaying) nextTracing(); // Genera nuevo laberinto solo si no ha acabado
+                } else { triggerError(null); }
             }
         }
 
+        // BUGS 5 y 8 FIX: Listener Global Teclado
         document.addEventListener('keydown', e => {
             if (document.getElementById('flashcard-overlay').classList.contains('active')) { hideFlash(); return; }
             if (document.getElementById('result-overlay').classList.contains('active')) { document.getElementById('result-overlay').classList.remove('active'); return; }
@@ -915,12 +930,28 @@
             if (e.key === ' ' && currentGame === 'marsden') { e.preventDefault(); checkMarsden(); return; }
 
             const buttons = virtualKeypad.querySelectorAll('.keypad-btn');
-            if (buttons.length === 4 && virtualKeypad.style.display !== 'none') {
-                if (e.key === 'ArrowLeft') { e.preventDefault(); selectedKeypadIndex = (selectedKeypadIndex - 1 + 4) % 4; updateKeypadFocus(); return; }
-                if (e.key === 'ArrowRight') { e.preventDefault(); selectedKeypadIndex = (selectedKeypadIndex + 1) % 4; updateKeypadFocus(); return; }
-                if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'Enter') { e.preventDefault(); handleKey(buttons[selectedKeypadIndex].textContent); return; }
+            // BUG FIX: Evaluar buttons.length > 0 en lugar de estrictamente 4
+            if (buttons.length > 0 && virtualKeypad.style.display !== 'none') {
+                if (e.key === 'ArrowLeft') { 
+                    e.preventDefault(); 
+                    selectedKeypadIndex = (selectedKeypadIndex - 1 + buttons.length) % buttons.length; 
+                    updateKeypadFocus(); 
+                    return; 
+                }
+                if (e.key === 'ArrowRight') { 
+                    e.preventDefault(); 
+                    selectedKeypadIndex = (selectedKeypadIndex + 1) % buttons.length; 
+                    updateKeypadFocus(); 
+                    return; 
+                }
+                if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'Enter') { 
+                    e.preventDefault(); 
+                    handleKey(buttons[selectedKeypadIndex].textContent); 
+                    return; 
+                }
             }
 
+            // Teclas de letras directas
             if (/^[a-zA-ZñÑ]$/.test(e.key)) {
                 handleKey(e.key.toUpperCase());
             }
@@ -994,6 +1025,7 @@
         });
 
         function startGrid() {
+            isTimerActive = true;
             if (currentGridMode === 'search') {
                 reqTargets = 0; targetValue = alphabet[Math.floor(Math.random() * 26)];
                 document.querySelectorAll('.cell').forEach(c => { 
@@ -1037,6 +1069,7 @@
         // ==========================================
         let acLevel = { font:120, space:30, fl:1 };
         function startAntiCrowding() {
+            isTimerActive = true;
             acLevel = { font:120, space:30, fl:1 };
             showFlash(`Identifica la central`, () => { nextACRound(); });
         }
@@ -1056,15 +1089,18 @@
         // MÓDULO 3: SALTOS SACÁDICOS
         // ==========================================
         function startSaccadic() {
+            isTimerActive = false; // Solo suma tiempo al saltar la bola
             document.getElementById('game-target').textContent = "Atrapar Diana";
             showFlash(`Pulsa la diana roja rápidamente`, () => { nextSaccadic(); });
         }
         function nextSaccadic() {
+            isTimerActive = true; // BUG 2 FIX: Arranca timer activo
             const t = document.getElementById('saccadic-target');
             if(!t) return;
             t.style.display = 'block';
             t.style.top = Math.floor(Math.random()*80 + 10) + '%'; t.style.left = Math.floor(Math.random()*80 + 10) + '%';
             t.onclick = () => { 
+                isTimerActive = false; // Pausar timer
                 t.style.display = 'none'; 
                 registerHit(); 
                 if(isPlaying) setTimeout(nextSaccadic, Math.random()*1000 + 200); 
@@ -1075,13 +1111,17 @@
         // MÓDULO 4: PELOTA DE MARSDEN
         // ==========================================
         function startMarsden() {
+            isTimerActive = false; // Empieza inactivo hasta que salga A
             targetValue = 'A'; document.getElementById('game-target').textContent = `Pulsar la letra A`;
-            document.getElementById('marsden-pendulum').style.animation = 'swing 2s infinite ease-in-out alternate';
+            document.getElementById('marsden-pendulum').style.animation = 'swing 2.5s infinite ease-in-out alternate';
             
             showFlash(`Pulsa la pantalla SÓLO al ver la letra <span style="color:#e11d48">A</span>`, () => {
                 customInt1 = setInterval(() => {
                     let char = Math.random() < 0.3 ? 'A' : alphabet[Math.floor(Math.random()*26)];
                     document.getElementById('marsden-ball').textContent = char;
+                    
+                    // BUG 2 FIX: Tiempo activo solo con 'A' visible
+                    isTimerActive = (char === 'A');
                 }, 1500);
             });
             document.getElementById('mars-area').onclick = () => checkMarsden();
@@ -1089,6 +1129,7 @@
         function checkMarsden() {
             if(isPausedByOverlay || !isPlaying) return;
             if(document.getElementById('marsden-ball').textContent === 'A') {
+                isTimerActive = false; // Pausamos al acierto
                 document.getElementById('mars-area').style.background = '#dcfce7'; 
                 setTimeout(() => document.getElementById('mars-area').style.background = '#ffffff', 200);
                 document.getElementById('marsden-ball').textContent = '-';
@@ -1097,11 +1138,12 @@
         }
 
         // ==========================================
-        // MÓDULO 5: VISUAL TRACING 
+        // MÓDULO 5: VISUAL TRACING (BUG 3: AZAR Y TECLADO)
         // ==========================================
         function startTracing() {
-            document.getElementById('game-target').textContent = "Sigue la línea Azul";
-            showFlash(`Sigue la línea <span style="color:#3b82f6">AZUL</span> con la mirada`, () => { nextTracing(); });
+            isTimerActive = true;
+            document.getElementById('game-target').textContent = "Laberinto Visual";
+            showFlash(`Sigue la línea que te indicaremos`, () => { nextTracing(); });
         }
         function nextTracing() {
             const cvs = document.getElementById('tracing-canvas'); 
@@ -1112,9 +1154,20 @@
             
             document.querySelectorAll('.tracing-label').forEach(e => e.remove());
             
-            const startX = [w*0.2, w*0.5, w*0.8]; const endX = [...startX].sort(() => Math.random() - 0.5);
+            const startX = [w*0.2, w*0.5, w*0.8]; 
+            const endX = [...startX].sort(() => Math.random() - 0.5); // Nudos aleatorios
+            
             const cols = ['#3b82f6', '#ef4444', '#10b981']; 
-            targetValue = ['A','B','C'][endX.indexOf(endX[0])]; // Azul es 0
+            const colNames = ['AZUL', 'ROJA', 'VERDE'];
+            
+            // Mezclar etiquetas meta abajo
+            const labels = ['A', 'B', 'C'].sort(() => Math.random() - 0.5);
+            
+            // Seleccionar línea objetivo (0, 1 o 2)
+            const targetLineIdx = Math.floor(Math.random() * 3);
+            
+            // Meta = la Etiqueta ubicada en el X final de la linea Target
+            targetValue = labels[endX.indexOf(endX[targetLineIdx])]; 
 
             for(let i=0; i<3; i++) {
                 ctx.beginPath(); ctx.moveTo(startX[i], 40); 
@@ -1124,29 +1177,28 @@
                 ctx.strokeStyle = cols[i]; ctx.lineWidth = 6; ctx.stroke();
                 
                 let ls = document.createElement('div'); ls.className = 'tracing-label'; ls.style.left = (startX[i]-15) + 'px'; ls.style.top = '10px'; ls.textContent = i+1;
-                let le = document.createElement('div'); le.className = 'tracing-label'; le.style.left = (endX[i]-15) + 'px'; le.style.top = (h-45) + 'px'; le.textContent = ['A','B','C'][i];
+                let le = document.createElement('div'); le.className = 'tracing-label'; le.style.left = (endX[i]-15) + 'px'; le.style.top = (h-45) + 'px'; le.textContent = labels[i];
                 cvs.parentElement.appendChild(ls); cvs.parentElement.appendChild(le);
             }
-            document.getElementById('tracing-controls').style.display = 'flex';
+            
+            showFlash(`Sigue la línea <span style="color:${cols[targetLineIdx]}">${colNames[targetLineIdx]}</span>`, () => {
+                document.getElementById('game-target').innerHTML = `<span style="color:${cols[targetLineIdx]}">Línea ${colNames[targetLineIdx]}</span>`;
+                // Desplegamos el Teclado Virtual con opciones A, B y C (Habilitando Flechas)
+                renderKeypadCustom(['A', 'B', 'C'].sort(), targetValue);
+            });
         }
         
-        window.checkTrace = function(ans) { 
-            if(!isPlaying || isPausedByOverlay) return; 
-            if(ans === targetValue) { 
-                registerHit(); 
-                if(isPlaying) nextTracing(); 
-            } else { triggerError(null); } 
-        }
-
         // ==========================================
-        // MÓDULO 6: TAQUISTOSCOPIO
+        // MÓDULO 6: TAQUISTOSCOPIO (BUGS 1 Y 2: CONTINUAR TRAS FALLO Y TIEMPO ACTIVO)
         // ==========================================
         let tachVal = "";
         function startTachisto() { 
+            isTimerActive = false; // No hay tiempo en cruz
             document.getElementById('game-target').textContent = "Memorizar Flash"; 
             showFlash("Fija la vista en la cruz", () => { setTimeout(nextTachisto, 1000); }); 
         }
         function nextTachisto() {
+            isTimerActive = false; // Pausa tiempo
             document.getElementById('tach-input-area').style.display = 'none'; document.getElementById('tach-input').value = '';
             document.getElementById('tach-fixation').style.display = 'block';
             setTimeout(() => {
@@ -1158,15 +1210,28 @@
                     document.getElementById('tach-display').style.display = 'none';
                     document.getElementById('tach-input-area').style.display = 'flex';
                     document.getElementById('tach-input').focus();
+                    isTimerActive = true; // Empieza tiempo activo de respuesta
                 }, 250); 
             }, 1500);
         }
         window.checkTach = function() {
             if(!isPlaying) return;
-            if(document.getElementById('tach-input').value === tachVal) { 
-                registerHit(); if(isPlaying) nextTachisto(); 
-            } else { triggerError(null); document.getElementById('tach-input').value = ''; }
+            isTimerActive = false; // Pausamos al enviar
+            if(document.getElementById('tach-input').value.trim() === tachVal) { 
+                registerHit(); 
+                if(isPlaying) nextTachisto(); 
+            } else { 
+                triggerError(null); 
+                document.getElementById('tach-input').value = ''; 
+                if(isPlaying) nextTachisto(); // BUG 1 FIX: Pasa de ronda al fallar
+            }
         }
+        
+        // Tecla ENTER para enviar en caja de texto Taquistoscopio
+        document.getElementById('tach-input').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') { e.preventDefault(); checkTach(); }
+        });
+
 
         // ==========================================
         // DASHBOARD HISTORY, RUTINAS Y GRÁFICAS
@@ -1274,17 +1339,10 @@
         function renderHistory() {
             const history = JSON.parse(localStorage.getItem('nystagmus_history') || '[]');
             
-            let filteredMode = activeStatsTab;
-            // Para el modo Grid agrupa Search, Coord y Pursuit o lo filtramos
-            // Simplificaremos filtrando por la variable global current mode si es necesario
-            
             const filteredHistory = history.filter(s => {
                 const matchPatient = (s.patientId === activePatientId) || (!s.patientId && activePatientId === 'p_default');
-                // En el dashboard grid agrupaba todo, vamos a mostrar el activeStatsTab
-                // Ajuste para que coincida con los modos reales
                 let m = s.mode;
                 if (activeStatsTab === 'grid') {
-                    // Mostrar search, coord, pursuit
                     return matchPatient && ['grid', 'search', 'coord', 'pursuit'].includes(m);
                 } else {
                     return matchPatient && m === activeStatsTab;
@@ -1298,7 +1356,7 @@
             document.getElementById('metric-total-time').textContent = formatDuration(totalMs);
 
             if (filteredHistory.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5">Sin datos acumulados para este paciente en este modo.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5">Sin datos acumulados.</td></tr>';
                 document.getElementById('metric-best-time').textContent = '--:--';
                 document.getElementById('metric-avg-accuracy').textContent = '--%';
                 renderChart([]);
@@ -1399,7 +1457,6 @@
         // IMPRESIÓN, EXPORTACIÓN Y CALIBRACIÓN
         // ==========================================
         document.getElementById('btn-print-pdf').addEventListener('click', () => {
-            // Actualizar membrete
             document.getElementById('print-clinic').textContent = clinicCfg.clinicName || 'Centro Clínico';
             document.getElementById('print-specialist').textContent = clinicCfg.specialistName || 'Especialista';
             document.getElementById('print-col').textContent = clinicCfg.colNum ? "Nº Col: " + clinicCfg.colNum : '';
@@ -1427,7 +1484,7 @@
 
         document.getElementById('btn-export-json').addEventListener('click', () => {
             const bundle = {
-                version: "4.05",
+                version: "4.06",
                 clinic: clinicCfg,
                 patients: patients,
                 routines: routines,
@@ -1438,7 +1495,7 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `respaldo_terapia_v405_${new Date().toISOString().slice(0, 10)}.json`;
+            a.download = `respaldo_terapia_v406_${new Date().toISOString().slice(0, 10)}.json`;
             a.click();
             URL.revokeObjectURL(url);
         });
@@ -1487,11 +1544,6 @@
                 infoEl.innerHTML = `Tamaño de letra: ~${fontMm.toFixed(1)} mm. <strong style="color:#2563eb; font-size:1.1rem; margin-left: 0.5rem;">Distancia recomendada: ~${currentSuggestedDistanceCm} cm</strong>`;
             }
         }
-        
-        document.getElementById('game-inches').addEventListener('input', e => { 
-            localStorage.setItem('nystagmus_monitor_size', e.target.value); 
-            updateDistanceCalibration(); 
-        });
 
         // CALIBRACIÓN POR TARJETA FÍSICA
         document.getElementById('save-calib-btn').addEventListener('click', () => {
@@ -1515,7 +1567,7 @@
             box.style.height = h + 'px';
         });
 
-        // BOOTSTRAP DE LA APLICACIÓN
+        // BOOTSTRAP
         initApp();
         
     </script>
