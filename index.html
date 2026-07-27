@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Terapia Visual - v3.06 (Reporte PDF Limpio)</title>
+    <title>Terapia Visual - v3.07 (Reporte PDF Documental)</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -319,45 +319,143 @@
         body.high-contrast .overlay-sub-banner { background: #000000; color: #ffffff; border-color: #000000; }
 
         /* =========================================================
-           REGLAS DE IMPRESIÓN Y REPORTE PDF CLINICO (v3.06 CORREGIDO)
+           DISEÑO IMPRESO CLÍNICO RESTRUCTURADO (v3.07 DEFINITIVO)
            ========================================================= */
         @media print {
-            body { background: white !important; color: black !important; padding: 0 !important; margin: 0 !important; }
-            .container { max-width: 100% !important; gap: 0.8rem !important; }
+            @page {
+                size: A4 portrait;
+                margin: 10mm 12mm;
+            }
 
-            /* Ocultar elementos genéricos e interactivos */
+            body {
+                background: white !important;
+                color: #000000 !important;
+                font-size: 9.5pt !important;
+                line-height: 1.18 !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+
+            /* Ocultar elementos de interfaz web */
             .btn, button, input, select, textarea,
             #virtual-keypad, #flashcard-overlay, #result-overlay, #card-calib-modal,
             .collapsible-toggle, .filter-bar, .tab-buttons, #detection-badge,
-            .routine-designer-box, #patient-modal-content h3, #patient-modal-content > div:first-child {
+            .routine-designer-box, #patient-modal-content h3, #patient-modal-content > div:first-child,
+            .patient-row, .controls-row, .grid-wrapper, .config-row, #inst-content, .chart-controls {
                 display: none !important;
             }
 
-            /* MODO 1: REPORTE PDF DE RESULTADOS (body.print-report-only) */
-            body.print-report-only h1 { display: block !important; text-align: left; font-size: 1.6rem; border-bottom: 2px solid #000; padding-bottom: 0.4rem; margin-bottom: 0.8rem; }
-            body.print-report-only .patient-row { display: none !important; }
-            body.print-report-only #patient-modal-content { display: block !important; padding: 0 !important; background: transparent !important; }
-            body.print-report-only #patient-details-card { display: block !important; border: 2px solid #000 !important; margin-bottom: 0.8rem; }
-            body.print-report-only #routine-panel { display: block !important; border: 2px solid #000 !important; margin-bottom: 0.8rem; }
-            body.print-report-only #routine-tasks-list { display: block !important; }
-            
-            /* Ocultar tablero de juego e instrucciones durante el reporte */
-            body.print-report-only .controls-row,
-            body.print-report-only .grid-wrapper,
-            body.print-report-only .config-row,
-            body.print-report-only #inst-content {
-                display: none !important;
+            .container {
+                max-width: 100% !important;
+                gap: 0.4rem !important;
             }
 
-            /* Forzar visualización limpia de estadísticas y gráficas */
-            body.print-report-only #stats-content { display: block !important; padding: 0 !important; }
-            body.print-report-only .chart-container { page-break-inside: avoid; border: 2px solid #000 !important; margin-bottom: 0.8rem; }
-            body.print-report-only .history-table { width: 100% !important; border-collapse: collapse !important; }
-            body.print-report-only .history-table th, 
-            body.print-report-only .history-table td { border: 1px solid #000 !important; padding: 0.3rem !important; }
-            body.print-report-only .metric-card { border: 1px solid #000 !important; }
+            .panel {
+                box-shadow: none !important;
+                border: 1px solid #94a3b8 !important;
+                border-radius: 4px !important;
+                padding: 0.5rem 0.8rem !important;
+                background: #ffffff !important;
+            }
 
-            /* MODO 2: IMPRIMIR CUADRÍCULA EN PAPEL (body.print-grid-only) */
+            /* MODO 1: REPORTE CLÍNICO DOCUMENTAL (body.print-report-only) */
+            body.print-report-only h1 {
+                display: block !important;
+                text-align: left !important;
+                font-size: 15pt !important;
+                font-weight: 900 !important;
+                border-bottom: 2px solid #000000 !important;
+                padding-bottom: 4px !important;
+                margin: 0 0 6px 0 !important;
+                color: #000000 !important;
+            }
+
+            body.print-report-only #patient-modal-content {
+                display: block !important;
+                padding: 0 !important;
+                background: transparent !important;
+            }
+
+            body.print-report-only #patient-details-card {
+                display: block !important;
+                border: 1px solid #94a3b8 !important;
+                background: #f8fafc !important;
+                padding: 6px 10px !important;
+                border-radius: 4px !important;
+                font-size: 9pt !important;
+                margin-bottom: 6px !important;
+            }
+
+            body.print-report-only #routine-panel {
+                display: block !important;
+                border: 1px solid #94a3b8 !important;
+                background: #ffffff !important;
+                padding: 6px 10px !important;
+                border-radius: 4px !important;
+                margin-bottom: 6px !important;
+            }
+
+            body.print-report-only .task-item {
+                border: 1px solid #cbd5e1 !important;
+                padding: 2px 6px !important;
+                margin-top: 3px !important;
+                font-size: 8.5pt !important;
+                background: #ffffff !important;
+            }
+
+            body.print-report-only #stats-content {
+                display: block !important;
+                padding: 0 !important;
+            }
+
+            body.print-report-only .metric-card {
+                border: 1px solid #cbd5e1 !important;
+                padding: 4px 6px !important;
+                border-radius: 4px !important;
+                background: #ffffff !important;
+            }
+            body.print-report-only .metric-card .val {
+                font-size: 11pt !important;
+                font-weight: 900 !important;
+            }
+            body.print-report-only .metric-card .lbl {
+                font-size: 7pt !important;
+                font-weight: 700 !important;
+            }
+
+            body.print-report-only .chart-container {
+                border: 1px solid #94a3b8 !important;
+                padding: 6px !important;
+                border-radius: 4px !important;
+                margin-bottom: 6px !important;
+                page-break-inside: avoid;
+                height: 150px !important;
+            }
+
+            body.print-report-only #evolution-chart {
+                height: 130px !important;
+            }
+
+            body.print-report-only .history-table {
+                width: 100% !important;
+                border-collapse: collapse !important;
+                font-size: 8.5pt !important;
+                margin-top: 4px !important;
+            }
+
+            body.print-report-only .history-table th {
+                background-color: #f1f5f9 !important;
+                border: 1px solid #94a3b8 !important;
+                padding: 3px 5px !important;
+                font-weight: 700 !important;
+            }
+
+            body.print-report-only .history-table td {
+                border: 1px solid #cbd5e1 !important;
+                padding: 3px 5px !important;
+            }
+
+            /* MODO 2: HOJA DE TRABAJO CUADRÍCULA EN PAPEL (body.print-grid-only) */
             body.print-grid-only h1,
             body.print-grid-only .patient-row,
             body.print-grid-only #patient-modal-content,
@@ -367,9 +465,22 @@
             body.print-grid-only #stats-content {
                 display: none !important;
             }
-            body.print-grid-only .controls-row { display: block !important; border: none; text-align: center; font-size: 1.5rem; }
+            body.print-grid-only .controls-row {
+                display: block !important;
+                border: none !important;
+                text-align: center !important;
+                font-size: 1.4rem !important;
+                margin-bottom: 1rem !important;
+            }
             body.print-grid-only .grid-wrapper { display: flex !important; }
-            body.print-grid-only #grid-container { width: 100% !important; height: auto !important; aspect-ratio: 1/1; page-break-inside: avoid; }
+            body.print-grid-only #grid-container {
+                width: 100% !important;
+                height: auto !important;
+                aspect-ratio: 1/1 !important;
+                border: 3px solid #000 !important;
+                page-break-inside: avoid;
+            }
+            body.print-grid-only .cell { border: 1px solid #000 !important; }
         }
 
     </style>
@@ -432,7 +543,7 @@
     </div>
 
     <div class="container">
-        <h1>Informe de Evolución - Terapia Visual (v3.06)</h1>
+        <h1>Informe Clinico de Evolución - Terapia Visual (v3.07)</h1>
 
         <!-- 0. SELECCIÓN DE PACIENTE ACTIVO -->
         <div class="patient-row">
@@ -1313,13 +1424,19 @@
             renderHistory();
         });
 
-        // MANEJO DE BOTONES DE IMPRESIÓN Y REPORTE PDF (v3.06 CORREGIDO)
+        // MANEJO DE BOTONES DE IMPRESIÓN Y REPORTE PDF DOCUMENTAL (v3.07 REFINADO)
         document.getElementById('print-report-btn').addEventListener('click', () => {
             document.body.classList.remove('print-grid-only');
             document.body.classList.add('print-report-only');
             document.getElementById('stats-content').classList.add('active');
-            window.print();
-            document.body.classList.remove('print-report-only');
+            
+            // Renderizar la historia y recalcular gráfica para el PDF
+            renderHistory();
+            
+            setTimeout(() => {
+                window.print();
+                document.body.classList.remove('print-report-only');
+            }, 150);
         });
 
         document.getElementById('print-grid-btn').addEventListener('click', () => {
@@ -1335,7 +1452,7 @@
             const routines = getRoutines();
             
             const bundle = {
-                version: "3.06",
+                version: "3.07",
                 patients: patients,
                 routines: routines,
                 history: history,
@@ -1346,7 +1463,7 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `respaldo_terapia_v3.06_${new Date().toISOString().slice(0, 10)}.json`;
+            a.download = `respaldo_terapia_v3.07_${new Date().toISOString().slice(0, 10)}.json`;
             a.click();
             URL.revokeObjectURL(url);
         });
