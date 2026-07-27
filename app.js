@@ -2,7 +2,6 @@
 // app.js - SUITE TERAPIA VISUAL (Motor Clínico, Pacientes y Reportes)
 // ============================================================================
 
-// 1. VARIABLES DE ESTADO GLOBAL (Accesibles desde juegos.js)
 window.patients = JSON.parse(localStorage.getItem('nystagmus_patients') || '[{"id":"p_default","name":"Paciente General", "dob": "", "notes": ""}]');
 window.routines = JSON.parse(localStorage.getItem('nystagmus_routines') || '{}');
 window.historyLog = JSON.parse(localStorage.getItem('nystagmus_history') || '[]');
@@ -12,12 +11,10 @@ window.activePatientId = localStorage.getItem('nystagmus_active_patient_id') || 
 window.chartXAxisType = 'index'; 
 window.activeStatsTab = 'grid';
 
-// 2. INICIALIZACIÓN BÁSICA DE LA APLICACIÓN
 function initApp() {
     const sel = document.getElementById('global-patient-select'); 
     sel.innerHTML = '';
     
-    // Verificación de seguridad del ID activo
     if(!window.patients.find(p => p.id === window.activePatientId)) {
         window.activePatientId = window.patients[0].id;
         localStorage.setItem('nystagmus_active_patient_id', window.activePatientId);
@@ -35,7 +32,6 @@ function initApp() {
     
     updatePatientCardDisplay();
 
-    // Configuración de la Clínica
     document.getElementById('cfg-clinic').value = window.clinicCfg.clinicName || '';
     document.getElementById('cfg-specialist').value = window.clinicCfg.specialistName || '';
     document.getElementById('cfg-col').value = window.clinicCfg.colNum || '';
@@ -46,7 +42,6 @@ function initApp() {
         document.getElementById('clear-logo-btn').style.display = 'inline-block';
     }
 
-    // El tamaño del monitor se delega a juegos.js, que tiene la lógica de calibración
     if(typeof initMonitorSize === 'function') {
         document.getElementById('game-inches').value = initMonitorSize();
         updateDistanceCalibration();
@@ -55,7 +50,6 @@ function initApp() {
     renderDashboard();
 }
 
-// 3. GESTIÓN DEL MEMBRETE Y LOGO DE LA CLÍNICA
 document.getElementById('cfg-logo-input').addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -84,7 +78,6 @@ document.getElementById('save-clinic-btn').addEventListener('click', () => {
     alert('¡Configuración de clínica guardada con éxito!');
 });
 
-// 4. GESTIÓN DE PACIENTES (AÑADIR Y BORRAR)
 function updatePatientCardDisplay() {
     const activeP = window.patients.find(p => p.id === window.activePatientId) || window.patients[0];
     const dobText = activeP.dob ? ` | Nacimiento: ${activeP.dob}` : '';
@@ -133,7 +126,6 @@ document.getElementById('delete-pat-btn').addEventListener('click', () => {
     }
 });
 
-// 5. RUTINAS (PAUTAS TERAPÉUTICAS)
 document.getElementById('btn-add-routine').onclick = () => {
     let r = window.routines[window.activePatientId] || []; 
     r.push({
@@ -158,7 +150,6 @@ window.updateRoutineProgress = function() {
     let r = window.routines[window.activePatientId] || []; 
     let updated = false;
     for(let t of r) {
-        // Validación entre el modo global del juego y el gridMode interno si aplica
         let activeModeMatch = (t.mode === window.currentGame || t.mode === window.currentGridMode);
         if(t.done < t.req && activeModeMatch && t.eye === document.getElementById('game-eye').value) { 
             t.done++; updated = true; break; 
@@ -170,7 +161,6 @@ window.updateRoutineProgress = function() {
     }
 };
 
-// 6. ANALÍTICA, DASHBOARD Y GRÁFICAS SVG
 window.renderDashboard = function() {
     const rt = window.routines[window.activePatientId] || []; 
     const rl = document.getElementById('routine-list'); 
@@ -269,7 +259,8 @@ function renderChart(data) {
     const points = data.map((d, idx) => {
         let x = (window.chartXAxisType === 'index') 
             ? (data.length === 1 ? width / 2 : padding + (idx / (data.length - 1)) * (width - 2 * padding))
-            : ((data[data.length-1].timestamp === data[0].timestamp) ? width/2 : padding + ((d.timestamp - data[0].timestamp) / (data[data.length-1].timestamp - data[0].timestamp)) * (width - 2 * padding));
+            // FIX: Usamos el ID (Date.now()) como timestamp seguro para el eje X por fechas
+            : ((data[data.length-1].id === data[0].id) ? width/2 : padding + ((d.id - data[0].id) / (data[data.length-1].id - data[0].id)) * (width - 2 * padding));
         
         const ySecs = d.timeMs / 1000;
         const range = (maxTime - minTime) || 1;
@@ -277,7 +268,6 @@ function renderChart(data) {
         return { x, y, eye: d.eye || 'BIN' };
     });
 
-    // Líneas guía
     for(let i = 0; i <= 3; i++) {
         const yVal = padding + i * (height - 2 * padding) / 3;
         const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
@@ -287,7 +277,6 @@ function renderChart(data) {
         svg.appendChild(line);
     }
 
-    // Trazo de unión
     if (points.length > 1) {
         const pathD = points.reduce((acc, p, i) => i === 0 ? `M ${p.x} ${p.y}` : `${acc} L ${p.x} ${p.y}`, '');
         const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
@@ -296,7 +285,6 @@ function renderChart(data) {
         svg.appendChild(path);
     }
 
-    // Puntos (Rojo = OD, Azul = OI, Verde = BIN)
     points.forEach(p => {
         const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
         circle.setAttribute("cx", p.x); circle.setAttribute("cy", p.y); circle.setAttribute("r", "5");
@@ -311,7 +299,6 @@ document.getElementById('chart-axis-btn').addEventListener('click', () => {
     renderHistory(false);
 });
 
-// 7. EXPORTAR, IMPORTAR, IMPRIMIR Y BORRAR (Funciones Globales Corregidas)
 document.getElementById('btn-print-pdf').addEventListener('click', () => {
     document.getElementById('print-clinic').textContent = window.clinicCfg.clinicName || 'Centro Clínico';
     document.getElementById('print-specialist').textContent = window.clinicCfg.specialistName || 'Especialista';
@@ -323,22 +310,20 @@ document.getElementById('btn-print-pdf').addEventListener('click', () => {
         document.getElementById('print-logo').style.display = 'block'; 
     }
     
-    // Fuerza el renderizado completo de todos los juegos del paciente en la tabla
     renderHistory(true); 
-    
     document.body.classList.remove('print-grid-only');
     document.body.classList.add('print-report-only');
     
     setTimeout(() => {
         window.print();
         document.body.classList.remove('print-report-only');
-        renderHistory(false); // Restaura el filtro de la pestaña actual
+        renderHistory(false); 
     }, 200);
 });
 
 document.getElementById('btn-export-json').addEventListener('click', () => {
     const bundle = {
-        version: "5.00",
+        version: "5.02",
         clinic: window.clinicCfg,
         patients: window.patients,
         routines: window.routines,
@@ -388,5 +373,4 @@ document.getElementById('btn-delete-hist').addEventListener('click', () => {
     }
 });
 
-// Arrancar App cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', initApp);

@@ -3,20 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Suite Terapia Visual - v5.01 (Correcion juegos.js)</title>
+    <title>Suite Terapia Visual - v5.02</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700;900&display=swap" rel="stylesheet">
     
-    <!-- Enlace a la hoja de estilos externa -->
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-    <!-- ==========================================
-         OVERLAYS GLOBALES
-         ========================================== -->
+    <!-- OVERLAYS GLOBALES -->
     <div id="flashcard-overlay" class="overlay">
         <div class="flashcard-distance-badge">
             📏 DISTANCIA RECOMENDADA: <span id="flashcard-dist-val">--</span> cm
@@ -60,11 +57,7 @@
         </div>
     </div>
 
-    <!-- ==========================================
-         ESTRUCTURA PRINCIPAL Y HEADER
-         ========================================== -->
     <div class="container">
-        
         <!-- MEMBRETE PDF -->
         <div id="print-header" style="display:none; justify-content:space-between; align-items:center; border-bottom:2px solid #000000; padding-bottom:10px; margin-bottom:10px;">
             <div>
@@ -78,7 +71,7 @@
             </div>
         </div>
 
-        <h1>Suite de Terapia Visual (v5.00)</h1>
+        <h1>Suite de Terapia Visual (v5.02)</h1>
 
         <!-- HEADER GLOBAL (PACIENTE / CLINICA) -->
         <div class="patient-row">
@@ -116,7 +109,6 @@
         <div class="panel" style="padding: 0;">
             <div id="patient-modal" class="collapsible-content" style="padding: 1rem; background-color: #f8fafc; border-radius: 12px;">
                 <h3 style="margin-top:0; color: var(--primary);">👤 Registrar Nuevo Paciente</h3>
-                
                 <div style="display:flex; gap:0.5rem; margin-bottom:0.5rem; flex-wrap: wrap;">
                     <input type="text" id="new-pat-name" placeholder="Nombre completo" style="flex:1; min-width: 200px;">
                     <input type="date" id="new-pat-dob" title="Fecha de nacimiento">
@@ -132,12 +124,9 @@
             </div>
         </div>
 
-        <!-- ==========================================
-             VISTA 0: DASHBOARD / MENÚ PRINCIPAL
-             ========================================== -->
+        <!-- VISTA 0: DASHBOARD / MENÚ PRINCIPAL -->
         <div id="view-dashboard" class="app-view active">
             
-            <!-- PAUTAS TERAPÉUTICAS -->
             <div class="panel" style="background-color: #f0fdf4; border: 1px solid #bbf7d0;">
                 <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
                     <div>
@@ -181,7 +170,6 @@
                 </div>
             </div>
 
-            <!-- TARJETAS DE EJERCICIOS -->
             <h2 style="margin: 0.5rem 0 0 0; color: #334155;">📚 Biblioteca de Ejercicios</h2>
             <div class="exercises-grid">
                 <div class="exercise-card" onclick="openGame('grid')">
@@ -216,7 +204,6 @@
                 </div>
             </div>
 
-            <!-- ANALÍTICA Y REPORTES -->
             <div class="panel" style="padding: 0; margin-top: 0.5rem;">
                 <button class="collapsible-toggle" onclick="document.getElementById('stats-box').classList.toggle('active')">
                     <span>📊 Estadísticas y Reportes</span><span>▼</span>
@@ -240,7 +227,6 @@
                         <button class="btn btn-secondary" id="btn-delete-hist" style="background-color: #ef4444;">Borrar Historial Paciente</button>
                     </div>
 
-                    <!-- Métricas -->
                     <div style="display: flex; gap: 0.6rem; flex-wrap: wrap; margin-bottom: 1rem;">
                         <div class="metric-card"><div class="val" id="metric-total-sessions">0</div><div class="lbl">SESIONES</div></div>
                         <div class="metric-card"><div class="val" id="metric-total-time">00:00:00</div><div class="lbl">TIEMPO ACTIVO</div></div>
@@ -248,7 +234,6 @@
                         <div class="metric-card"><div class="val" id="metric-avg-accuracy" style="color: #16a34a;">--%</div><div class="lbl">PRECISIÓN MEDIA</div></div>
                     </div>
 
-                    <!-- Gráfica SVG de Evolución -->
                     <div class="chart-container">
                         <div class="chart-controls">
                             <strong style="font-size: 0.95rem; color: #334155;">📈 Evolución del Tiempo de Resolución</strong>
@@ -269,9 +254,7 @@
             </div>
         </div>
 
-        <!-- ==========================================
-             VISTA 1: CONTENEDOR MAESTRO DE JUEGOS
-             ========================================== -->
+        <!-- VISTA 1: CONTENEDOR MAESTRO DE JUEGOS -->
         <div id="game-view-container" class="app-view">
             <button class="btn btn-secondary" style="align-self:flex-start;" onclick="closeGame()">⬅️ Volver al Menú Principal</button>
             
@@ -285,7 +268,6 @@
             <!-- TECLADO VIRTUAL COMPARTIDO -->
             <div id="virtual-keypad"></div>
 
-            <!-- INYECCIÓN DINÁMICA DEL JUEGO SELECCIONADO -->
             <div id="game-canvas-area" style="width:100%; display:flex; justify-content:center;"></div>
 
             <div class="panel config-row">
@@ -334,7 +316,7 @@
         </div>
     </div>
 
-    <!-- Enlaces a los scripts modulares -->
+    <!-- Carga de la arquitectura modular -->
     <script src="app.js" defer></script>
     <script src="juegos.js" defer></script>
 </body>
