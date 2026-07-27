@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Terapia Visual - v3.05 (Calibrado por Tarjeta y Distancia Gigante)</title>
+    <title>Terapia Visual - v3.06 (Reporte PDF Limpio)</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -281,7 +281,6 @@
         #flashcard-main { font-size: clamp(3rem, 10vw, 7rem); font-weight: 700; color: #0f172a; margin-bottom: 1.5rem; line-height: 1.2; }
         body.high-contrast #flashcard-main { color: #000000; }
 
-        /* CARTEL DE DISTANCIA GIGANTE EN FLASHCARD (NUEVO V3.05) */
         .flashcard-distance-badge {
             font-size: clamp(1.4rem, 3.5vw, 2.2rem);
             font-weight: 900;
@@ -319,26 +318,65 @@
         }
         body.high-contrast .overlay-sub-banner { background: #000000; color: #ffffff; border-color: #000000; }
 
-        /* ESTILOS DE IMPRESIÓN */
+        /* =========================================================
+           REGLAS DE IMPRESIÓN Y REPORTE PDF CLINICO (v3.06 CORREGIDO)
+           ========================================================= */
         @media print {
-            body { background: white !important; color: black !important; padding: 0; }
-            .container { max-width: 100%; gap: 1rem; }
-            .patient-row, .panel.config-row, #virtual-keypad, .btn, .collapsible-toggle, .filter-bar, .tab-buttons, #flashcard-overlay, #result-overlay, #card-calib-modal, #detection-badge, .routine-designer-box { display: none !important; }
-            .collapsible-content { display: block !important; }
-            #grid-container { width: 100% !important; height: auto !important; aspect-ratio: 1/1; page-break-inside: avoid; }
-            .history-table th, .history-table td { border: 1px solid #000; }
-            body.print-grid-only .panel:not(.controls-row), 
-            body.print-grid-only #stats-content, 
+            body { background: white !important; color: black !important; padding: 0 !important; margin: 0 !important; }
+            .container { max-width: 100% !important; gap: 0.8rem !important; }
+
+            /* Ocultar elementos genéricos e interactivos */
+            .btn, button, input, select, textarea,
+            #virtual-keypad, #flashcard-overlay, #result-overlay, #card-calib-modal,
+            .collapsible-toggle, .filter-bar, .tab-buttons, #detection-badge,
+            .routine-designer-box, #patient-modal-content h3, #patient-modal-content > div:first-child {
+                display: none !important;
+            }
+
+            /* MODO 1: REPORTE PDF DE RESULTADOS (body.print-report-only) */
+            body.print-report-only h1 { display: block !important; text-align: left; font-size: 1.6rem; border-bottom: 2px solid #000; padding-bottom: 0.4rem; margin-bottom: 0.8rem; }
+            body.print-report-only .patient-row { display: none !important; }
+            body.print-report-only #patient-modal-content { display: block !important; padding: 0 !important; background: transparent !important; }
+            body.print-report-only #patient-details-card { display: block !important; border: 2px solid #000 !important; margin-bottom: 0.8rem; }
+            body.print-report-only #routine-panel { display: block !important; border: 2px solid #000 !important; margin-bottom: 0.8rem; }
+            body.print-report-only #routine-tasks-list { display: block !important; }
+            
+            /* Ocultar tablero de juego e instrucciones durante el reporte */
+            body.print-report-only .controls-row,
+            body.print-report-only .grid-wrapper,
+            body.print-report-only .config-row,
+            body.print-report-only #inst-content {
+                display: none !important;
+            }
+
+            /* Forzar visualización limpia de estadísticas y gráficas */
+            body.print-report-only #stats-content { display: block !important; padding: 0 !important; }
+            body.print-report-only .chart-container { page-break-inside: avoid; border: 2px solid #000 !important; margin-bottom: 0.8rem; }
+            body.print-report-only .history-table { width: 100% !important; border-collapse: collapse !important; }
+            body.print-report-only .history-table th, 
+            body.print-report-only .history-table td { border: 1px solid #000 !important; padding: 0.3rem !important; }
+            body.print-report-only .metric-card { border: 1px solid #000 !important; }
+
+            /* MODO 2: IMPRIMIR CUADRÍCULA EN PAPEL (body.print-grid-only) */
+            body.print-grid-only h1,
+            body.print-grid-only .patient-row,
+            body.print-grid-only #patient-modal-content,
+            body.print-grid-only #routine-panel,
+            body.print-grid-only .config-row,
             body.print-grid-only #inst-content,
-            body.print-grid-only #routine-panel { display: none !important; }
-            body.print-grid-only .controls-row { border: none; box-shadow: none; font-size: 1.5rem; text-align: center; }
+            body.print-grid-only #stats-content {
+                display: none !important;
+            }
+            body.print-grid-only .controls-row { display: block !important; border: none; text-align: center; font-size: 1.5rem; }
+            body.print-grid-only .grid-wrapper { display: flex !important; }
+            body.print-grid-only #grid-container { width: 100% !important; height: auto !important; aspect-ratio: 1/1; page-break-inside: avoid; }
         }
 
     </style>
 </head>
 <body>
 
-    <!-- OVERLAY 1: FLASHCARD CON AVISO GIGANTE DE DISTANCIA (V3.05) -->
+    <!-- OVERLAY 1: FLASHCARD CON AVISO GIGANTE DE DISTANCIA -->
     <div id="flashcard-overlay">
         <div class="flashcard-distance-badge" id="flashcard-distance-badge">
             📏 DISTANCIA RECOMENDADA: <span id="flashcard-dist-val">--</span> cm
@@ -367,7 +405,7 @@
         <div class="overlay-sub-banner">TOCA EN CUALQUIER PARTE O PULSA UNA TECLA PARA CONTINUAR</div>
     </div>
 
-    <!-- MODAL DE CALIBRACIÓN POR TARJETA CRÉDITO / CARNÉ (RECUPERADO V3.05) -->
+    <!-- MODAL DE CALIBRACIÓN POR TARJETA -->
     <div id="card-calib-modal">
         <div style="background: white; color: #0f172a; padding: 1.5rem; border-radius: 16px; max-width: 520px; width: 90%; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.2); border: 3px solid #000; cursor: default;" onclick="event.stopPropagation();">
             <h2 style="margin-top:0; color: var(--primary);">💳 Calibración Física de Pantalla</h2>
@@ -394,7 +432,7 @@
     </div>
 
     <div class="container">
-        <h1>Terapia Visual: Estabilización Táctil (v3.05)</h1>
+        <h1>Informe de Evolución - Terapia Visual (v3.06)</h1>
 
         <!-- 0. SELECCIÓN DE PACIENTE ACTIVO -->
         <div class="patient-row">
@@ -467,7 +505,7 @@
             </div>
         </div>
 
-        <!-- 1. BARRA DE ESTADO Y OBJETIVO REFORZADO -->
+        <!-- 1. BARRA DE ESTADO Y OBJETIVO -->
         <div class="panel controls-row" id="game-controls-anchor">
             <div id="instruction-text">
                 Objetivo: <span id="target-display" class="target-badge">-</span>
@@ -718,7 +756,7 @@
         const resErrors = document.getElementById('res-errors');
         const resAccuracy = document.getElementById('res-accuracy');
 
-        // CALIBRACIÓN POR TARJETA (NUEVO V3.05)
+        // CALIBRACIÓN POR TARJETA
         const cardCalibModal = document.getElementById('card-calib-modal');
         const calibCardBox = document.getElementById('calib-card-box');
         const calibSlider = document.getElementById('calib-slider');
@@ -729,7 +767,7 @@
         openCalibBtn.addEventListener('click', () => {
             const inches = parseFloat(monitorInput.value) || 24;
             const ppi = Math.hypot(window.screen.width, window.screen.height) / inches;
-            const cardWidthPx = Math.round(ppi * 3.3700787); // Ancho estándar de tarjeta de crédito (85.6 mm)
+            const cardWidthPx = Math.round(ppi * 3.3700787);
             calibSlider.value = Math.min(Math.max(cardWidthPx, 160), 600);
             updateCalibBox();
             cardCalibModal.style.display = 'flex';
@@ -739,7 +777,7 @@
 
         function updateCalibBox() {
             const w = parseInt(calibSlider.value);
-            const h = Math.round(w * (53.98 / 85.6)); // Proporción física tarjeta
+            const h = Math.round(w * (53.98 / 85.6));
             calibCardBox.style.width = w + 'px';
             calibCardBox.style.height = h + 'px';
         }
@@ -778,7 +816,6 @@
 
         resultOverlay.addEventListener('click', dismissResultOverlay);
 
-        // DESPLAZAMIENTO INTELIGENTE A LA ZONA DE JUEGO
         function scrollToGameFocus() {
             setTimeout(() => {
                 const anchor = document.getElementById('game-controls-anchor');
@@ -1276,14 +1313,17 @@
             renderHistory();
         });
 
-        // IMPRESIÓN Y EXPORTACIÓN COMPLETA
+        // MANEJO DE BOTONES DE IMPRESIÓN Y REPORTE PDF (v3.06 CORREGIDO)
         document.getElementById('print-report-btn').addEventListener('click', () => {
             document.body.classList.remove('print-grid-only');
+            document.body.classList.add('print-report-only');
             document.getElementById('stats-content').classList.add('active');
             window.print();
+            document.body.classList.remove('print-report-only');
         });
 
         document.getElementById('print-grid-btn').addEventListener('click', () => {
+            document.body.classList.remove('print-report-only');
             document.body.classList.add('print-grid-only');
             window.print();
             document.body.classList.remove('print-grid-only');
@@ -1295,7 +1335,7 @@
             const routines = getRoutines();
             
             const bundle = {
-                version: "3.05",
+                version: "3.06",
                 patients: patients,
                 routines: routines,
                 history: history,
@@ -1306,7 +1346,7 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `respaldo_terapia_v3.05_${new Date().toISOString().slice(0, 10)}.json`;
+            a.download = `respaldo_terapia_v3.06_${new Date().toISOString().slice(0, 10)}.json`;
             a.click();
             URL.revokeObjectURL(url);
         });
@@ -1349,7 +1389,7 @@
             }
         });
 
-        // CALIBRACIÓN DE DISTANCIA DE TRABAJO (V3.05 REFORZADO)
+        // CALIBRACIÓN DE DISTANCIA DE TRABAJO
         function updateDistanceCalibration() {
             const diagonalInches = parseFloat(monitorInput.value) || 34;
             const screenW = window.screen.width, screenH = window.screen.height;
@@ -1388,8 +1428,6 @@
         function showFlashcard(visualText, spokenText, callback) {
             isPausedByOverlay = true;
             flashcardMain.innerHTML = visualText;
-            
-            // Actualizar aviso gigante de distancia en la flashcard (V3.05)
             flashcardDistVal.textContent = currentSuggestedDistanceCm;
 
             flashcardOverlay.classList.add('active');
