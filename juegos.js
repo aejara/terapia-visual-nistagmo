@@ -1,5 +1,5 @@
 // ============================================================================
-// juegos.js - SUITE TERAPIA VISUAL (Motor Gráfico y 6 Juegos)
+// juegos.js - SUITE TERAPIA VISUAL (Motor Gráfico, 6 Juegos y Audio TTS)
 // ============================================================================
 
 // 1. ESTADO DE LOS JUEGOS
@@ -21,7 +21,6 @@ let currentSuggestedDistanceCm = 75;
 
 let gameTimerInt = null, customInt1 = null, flashcardTimeout = null;
 
-// Elementos del DOM
 const viewDash = document.getElementById('view-dashboard');
 const viewGame = document.getElementById('game-view-container');
 const canvasArea = document.getElementById('game-canvas-area');
@@ -60,10 +59,9 @@ document.getElementById('game-inches').addEventListener('input', e => {
     updateDistanceCalibration(); 
 });
 
-// CALIBRACIÓN POR TARJETA
 document.getElementById('save-calib-btn').addEventListener('click', () => {
     const cardWidthPx = parseInt(document.getElementById('calib-slider').value);
-    const ppi = cardWidthPx / 3.3700787; // 85.6mm = 3.37"
+    const ppi = cardWidthPx / 3.3700787; 
     const calculatedInches = Math.hypot(window.screen.width, window.screen.height) / ppi;
     const roundedInches = Math.round(calculatedInches * 10) / 10;
     
@@ -82,7 +80,7 @@ document.getElementById('calib-slider').addEventListener('input', (e) => {
     box.style.height = h + 'px';
 });
 
-// ROUTER (Abrir y Cerrar Juegos)
+// ROUTER 
 window.openGame = function(gameId) {
     viewDash.classList.remove('active'); 
     viewGame.style.display = 'flex';
@@ -91,7 +89,6 @@ window.openGame = function(gameId) {
     virtualKeypad.style.display = 'none';
     document.getElementById('btn-game-start').textContent = "Iniciar Ejercicio";
     
-    // Toggles exclusivos
     if (gameId === 'grid') {
         document.getElementById('grid-mode-box').style.display = 'flex';
         document.getElementById('grid-lines-box').style.display = 'flex';
@@ -136,7 +133,20 @@ window.closeGame = function() {
     window.renderDashboard(); 
 }
 
-// 3. MOTOR CENTRAL
+// 3. MOTOR CENTRAL Y SÍNTESIS DE VOZ
+function speakText(text) {
+    const audioToggle = document.getElementById('game-audio');
+    if (!audioToggle || !audioToggle.checked) return;
+    try {
+        if (!window.speechSynthesis) return;
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'es-ES'; 
+        utterance.rate = 0.9; 
+        window.speechSynthesis.speak(utterance);
+    } catch(e) {}
+}
+
 function resetScoreboard() {
     timeMs = 0; sessionErrors = 0; foundTargets = 0;
     document.getElementById('game-timer').textContent = "00:00.0";
@@ -204,6 +214,8 @@ function stopGame() {
 
 function endGame() {
     stopGame();
+    speakText("¡Sesión completada!"); // Voz al terminar
+    
     const acc = (foundTargets + sessionErrors) > 0 ? Math.round((foundTargets / (foundTargets + sessionErrors)) * 100) : 100;
     const logName = window.currentGame === 'grid' ? `Cuadrícula: ${window.currentGridMode}` : window.currentGame;
     
@@ -241,7 +253,7 @@ function registerHit() {
     if (foundTargets >= reqTargets) endGame();
 }
 
-// 4. INTERFAZ: TOGGLES Y FLASHCARDS
+// 4. INTERFAZ: TOGGLES Y FLASHCARDS CON AUDIO
 document.getElementById('game-contrast').addEventListener('change', (e) => {
     if(e.target.checked) document.body.classList.add('high-contrast');
     else document.body.classList.remove('high-contrast');
@@ -256,15 +268,21 @@ document.getElementById('game-lines-toggle').addEventListener('change', (e) => {
 });
 
 let overlayCallback = null;
-function showFlash(htmlText, callback) {
+
+// Lógica de Flashcards adaptada para recibir y reproducir texto
+function showFlash(htmlText, spokenText, callback) {
     isPausedByOverlay = true;
     document.getElementById('flashcard-main').innerHTML = htmlText; 
     document.getElementById('flashcard-dist-val').textContent = currentSuggestedDistanceCm;
     document.getElementById('flashcard-overlay').classList.add('active');
     overlayCallback = callback;
+    
+    speakText(spokenText);
+
     clearTimeout(flashcardTimeout);
     flashcardTimeout = setTimeout(() => { if(document.getElementById('flashcard-overlay').classList.contains('active')) hideFlash(); }, 2500);
 }
+
 function hideFlash() { 
     document.getElementById('flashcard-overlay').classList.remove('active'); 
     isPausedByOverlay = false; 
@@ -453,11 +471,11 @@ function startGrid() {
             else { while(c.textContent === targetValue) c.textContent = alphabet[Math.floor(Math.random()*26)]; } 
         });
         document.getElementById('game-total').textContent = reqTargets;
-        showFlash(`Busca: <span style="color:#e11d48">${targetValue}</span>`, () => { document.getElementById('game-target').textContent = targetValue; });
+        showFlash(`Busca: <span style="color:#e11d48">${targetValue}</span>`, `Busca la letra ${targetValue}`, () => { document.getElementById('game-target').textContent = targetValue; });
     } else if (window.currentGridMode === 'coord') {
         pickNewCoordinate();
     } else if (window.currentGridMode === 'pursuit') {
-        showFlash(`Sigue la celda <span style="color:#3b82f6">AZUL</span>`, () => { 
+        showFlash(`Sigue la celda <span style="color:#3b82f6">AZUL</span>`, `Sigue la celda azul`, () => { 
             document.getElementById('game-target').textContent = "Celdas AZULES"; gridNextPursuit(); customInt1 = setInterval(gridNextPursuit, 3000); 
         });
     }
@@ -465,7 +483,7 @@ function startGrid() {
 
 function pickNewCoordinate() {
     gridTR = Math.floor(Math.random()*10)+1; gridTC = Math.floor(Math.random()*10)+1;
-    showFlash(`Fila ${gridTR}<br>Columna ${gridTC}`, () => {
+    showFlash(`Fila ${gridTR}<br>Columna ${gridTC}`, `Fila ${gridTR}, Columna ${gridTC}`, () => {
         document.getElementById('game-target').textContent = `F${gridTR}, C${gridTC}`;
         targetValue = document.querySelector(`.cell[data-r="${gridTR}"][data-c="${gridTC}"]`).textContent;
         renderKeypad(targetValue);
@@ -492,7 +510,7 @@ let acLevel = { font:120, space:30, fl:1 };
 function startAntiCrowding() {
     isTimerActive = true;
     acLevel = { font:120, space:30, fl:1 };
-    showFlash(`Identifica la central`, () => { nextACRound(); });
+    showFlash(`Identifica la central`, `Identifica la letra central`, () => { nextACRound(); });
 }
 
 function nextACRound() {
@@ -513,7 +531,7 @@ function nextACRound() {
 function startSaccadic() {
     isTimerActive = false; 
     document.getElementById('game-target').textContent = "Atrapar Diana";
-    showFlash(`Pulsa la diana roja rápidamente`, () => { nextSaccadic(); });
+    showFlash(`Pulsa la diana roja rápidamente`, `Pulsa la diana roja rápidamente`, () => { nextSaccadic(); });
 }
 
 function nextSaccadic() {
@@ -538,7 +556,7 @@ function startMarsden() {
     targetValue = 'A'; document.getElementById('game-target').textContent = `Pulsar la letra A`;
     document.getElementById('marsden-pendulum').style.animation = 'swing 2.5s infinite ease-in-out alternate';
     
-    showFlash(`Pulsa SÓLO al ver la letra <span style="color:#e11d48">A</span>`, () => {
+    showFlash(`Pulsa SÓLO al ver la letra <span style="color:#e11d48">A</span>`, `Pulsa solo al ver la letra A`, () => {
         customInt1 = setInterval(() => {
             let char = Math.random() < 0.3 ? 'A' : alphabet[Math.floor(Math.random()*26)];
             document.getElementById('marsden-ball').textContent = char;
@@ -565,7 +583,7 @@ function checkMarsden() {
 function startTracing() {
     isTimerActive = true;
     document.getElementById('game-target').textContent = "Laberinto Visual";
-    showFlash(`Sigue la línea que te indicaremos`, () => { nextTracing(); });
+    showFlash(`Sigue la línea que te indicaremos`, `Sigue la línea que te indicaremos`, () => { nextTracing(); });
 }
 
 function nextTracing() {
@@ -599,21 +617,21 @@ function nextTracing() {
         cvs.parentElement.appendChild(ls); cvs.parentElement.appendChild(le);
     }
     
-    showFlash(`Sigue la línea <span style="color:${cols[targetLineIdx]}">${colNames[targetLineIdx]}</span>`, () => {
+    showFlash(`Sigue la línea <span style="color:${cols[targetLineIdx]}">${colNames[targetLineIdx]}</span>`, `Sigue la línea ${colNames[targetLineIdx]}`, () => {
         document.getElementById('game-target').innerHTML = `<span style="color:${cols[targetLineIdx]}">Línea ${colNames[targetLineIdx]}</span>`;
         renderKeypadCustom(['A', 'B', 'C'].sort(), targetValue);
     });
 }
 
 // ==========================================
-// MÓDULO 6: TAQUISTOSCOPIO (BUG 1 FIX: CONFIRMACIÓN GLOBAL)
+// MÓDULO 6: TAQUISTOSCOPIO
 // ==========================================
 let tachVal = "";
 
 function startTachisto() { 
     isTimerActive = false; 
     document.getElementById('game-target').textContent = "Memorizar Flash"; 
-    showFlash("Fija la vista en la cruz", () => { setTimeout(nextTachisto, 1000); }); 
+    showFlash("Fija la vista en la cruz", "Fija la vista en la cruz", () => { setTimeout(nextTachisto, 1000); }); 
 }
 
 function nextTachisto() {
@@ -636,7 +654,6 @@ function nextTachisto() {
     }, 1500);
 }
 
-// Expuesto globalmente para el botón Verificar
 window.checkTach = function() {
     if(!isPlaying) return;
     isTimerActive = false; 
@@ -650,7 +667,6 @@ window.checkTach = function() {
     }
 }
 
-// Expuesto globalmente para interceptar evento Input en HTML
 window.handleTachInput = function(e) {
     if(e.key === 'Backspace' || e.key === 'Delete') return;
     if(/^[0-9]$/.test(e.key)) return;

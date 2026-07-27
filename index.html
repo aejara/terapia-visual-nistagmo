@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Suite Terapia Visual - v5.02</title>
+    <title>Suite Terapia Visual - v5.03</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -71,7 +71,7 @@
             </div>
         </div>
 
-        <h1>Suite de Terapia Visual (v5.02)</h1>
+        <h1>Suite de Terapia Visual (v5.03)</h1>
 
         <!-- HEADER GLOBAL (PACIENTE / CLINICA) -->
         <div class="patient-row">
@@ -265,7 +265,6 @@
                 <div style="font-family:monospace; font-size:1.4rem;" id="game-timer">00:00.0</div>
             </div>
 
-            <!-- TECLADO VIRTUAL COMPARTIDO -->
             <div id="virtual-keypad"></div>
 
             <div id="game-canvas-area" style="width:100%; display:flex; justify-content:center;"></div>
@@ -304,6 +303,11 @@
                     <input type="checkbox" id="game-contrast"> ☯️ Alto Contraste
                 </label>
                 
+                <!-- BOTÓN DE AUDIO RESTAURADO -->
+                <label class="toggle-option">
+                    <input type="checkbox" id="game-audio" checked> 🔊 Audio
+                </label>
+                
                 <div style="display: flex; gap: 0.4rem;">
                     <button class="btn" id="btn-game-start" style="padding:0.8rem 2rem;">Iniciar Ejercicio</button>
                     <button class="btn btn-secondary" id="btn-print-grid" style="display:none;">📄 Papel</button>
@@ -316,7 +320,6 @@
         </div>
     </div>
 
-    <!-- Carga de la arquitectura modular -->
     <script src="app.js" defer></script>
     <script src="juegos.js" defer></script>
 </body>
