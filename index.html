@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Suite Terapia Visual - v5.04</title>
+    <title>Suite Terapia Visual - v5.05</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,7 +18,7 @@
         <div class="flashcard-distance-badge">
             📏 DISTANCIA RECOMENDADA: <span id="flashcard-dist-val">--</span> cm
         </div>
-        <div id="flashcard-main" style="font-size: 5rem; font-weight: 900; margin-bottom: 2rem;">Texto</div>
+        <div id="flashcard-main">Texto</div>
         <div style="font-size: 1.3rem; background-color: #eff6ff; padding: 1rem 2rem; border-radius: 50px; font-weight: 700; color: #3b82f6;">
             TOCA LA PANTALLA O PULSA CUALQUIER TECLA
         </div>
@@ -71,7 +71,10 @@
             </div>
         </div>
 
-        <h1>Suite de Terapia Visual (v5.04)</h1>
+        <!-- CONTENEDOR EXCLUSIVO PARA REPORTE PDF MULTIJUEGO -->
+        <div id="print-report-container" style="display: none; width: 100%;"></div>
+
+        <h1>Suite de Terapia Visual (v5.05)</h1>
 
         <!-- HEADER GLOBAL (PACIENTE / CLINICA) -->
         <div class="patient-row">
@@ -145,7 +148,6 @@
                     <strong style="color: var(--primary); display: block; margin-bottom: 0.5rem;">➕ Añadir Ejercicio a la Prescripción</strong>
                     <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
                         <select id="rout-add-mode">
-                            <!-- 8 Juegos Independientes -->
                             <option value="search">1. Búsqueda Táctil</option>
                             <option value="coord">2. Coordenadas</option>
                             <option value="pursuit">3. Seguimiento Cuadrícula</option>
@@ -173,7 +175,6 @@
 
             <h2 style="margin: 0.5rem 0 0 0; color: #334155;">📚 Biblioteca de Ejercicios</h2>
             <div class="exercises-grid">
-                <!-- Tarjetas Independientes para los 8 Juegos -->
                 <div class="exercise-card" onclick="openGame('search')">
                     <div class="exercise-card-icon">🔠</div>
                     <div class="exercise-card-title">1. Búsqueda Táctil</div>
@@ -222,7 +223,6 @@
                 </button>
                 <div id="stats-box" class="collapsible-content active" style="padding: 1rem;">
                     
-                    <!-- 8 Pestañas de Estadísticas Independientes -->
                     <div class="tab-buttons">
                         <button class="tab-btn active" onclick="switchStatsTab('search', event)">Búsqueda</button>
                         <button class="tab-btn" onclick="switchStatsTab('coord', event)">Coordenadas</button>
@@ -301,7 +301,6 @@
                     </div>
                 </div>
                 
-                <!-- El botón de Líneas solo aparecerá para los 3 modos de Cuadrícula -->
                 <label class="toggle-option" id="grid-lines-box" style="display:none;">
                     <input type="checkbox" id="game-lines-toggle" checked> 📐 Líneas
                 </label>

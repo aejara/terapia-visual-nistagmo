@@ -87,7 +87,6 @@ window.openGame = function(gameId) {
     virtualKeypad.style.display = 'none';
     document.getElementById('btn-game-start').textContent = "Iniciar Ejercicio";
     
-    // Toggles exclusivos de las versiones de Cuadrícula (Ahora comprobando los 3 modos sueltos)
     if (['search', 'coord', 'pursuit'].includes(gameId)) {
         document.getElementById('grid-lines-box').style.display = 'flex';
         document.getElementById('btn-print-grid').style.display = 'inline-block';
@@ -100,7 +99,7 @@ window.openGame = function(gameId) {
     }
 
     if (gameId === 'anticrowding') {
-        canvasArea.innerHTML = `<div class="game-area" id="ac-wrapper"><div id="ac-display" style="font-size:120px; letter-spacing:30px;">A <span class="ac-target">B</span> C</div></div>`;
+        canvasArea.innerHTML = `<div class="game-area" id="ac-wrapper"><div id="ac-display">A <span class="ac-target">B</span> C</div></div>`;
         reqTargets = 10;
     }
     if (gameId === 'saccadic') {
@@ -241,7 +240,7 @@ function registerHit() {
     if (foundTargets >= reqTargets) endGame();
 }
 
-// INTERFAZ: TOGGLES Y FLASHCARDS CON AUDIO
+// INTERFAZ Y FLASHCARDS
 document.getElementById('game-contrast').addEventListener('change', (e) => {
     if(e.target.checked) document.body.classList.add('high-contrast');
     else document.body.classList.remove('high-contrast');
@@ -278,7 +277,7 @@ function hideFlash() {
 document.getElementById('flashcard-overlay').addEventListener('click', hideFlash);
 document.getElementById('result-overlay').addEventListener('click', () => { document.getElementById('result-overlay').classList.remove('active'); });
 
-// TECLADO VIRTUAL Y NAVEGACIÓN UNIVERSAL
+// TECLADO VIRTUAL Y NAVEGACIÓN
 function renderKeypadCustom(options, correct) {
     virtualKeypad.innerHTML = ''; 
     selectedKeypadIndex = 0; 
@@ -484,13 +483,18 @@ function gridNextPursuit() {
 }
 
 // ==========================================
-// MÓDULO 2: ANTI-CROWDING
+// MÓDULO 2: ANTI-CROWDING (OPTIMIZACIÓN TEXTO MÓVIL)
 // ==========================================
 let acLevel = { font:120, space:30, fl:1 };
 
 function startAntiCrowding() {
     isTimerActive = true;
-    acLevel = { font:120, space:30, fl:1 };
+    
+    // OPTIMIZACIÓN 2: Tamaño de fuente dinámico y responsivo
+    let baseFont = Math.min(120, window.innerWidth * 0.15);
+    let baseSpace = Math.min(30, window.innerWidth * 0.04);
+    
+    acLevel = { font: baseFont, space: baseSpace, fl: 1 };
     showFlash(`Identifica la central`, `Identifica la letra central`, () => { nextACRound(); });
 }
 

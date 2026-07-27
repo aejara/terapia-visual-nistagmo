@@ -9,7 +9,7 @@ window.clinicCfg = JSON.parse(localStorage.getItem('nystagmus_clinic_cfg') || '{
 window.activePatientId = localStorage.getItem('nystagmus_active_patient_id') || window.patients[0].id;
 
 window.chartXAxisType = 'index'; 
-window.activeStatsTab = 'search'; // Por defecto empezamos en la primera prueba
+window.activeStatsTab = 'search'; 
 
 function initApp() {
     const sel = document.getElementById('global-patient-select'); 
@@ -88,7 +88,6 @@ document.getElementById('create-pat-btn').addEventListener('click', () => {
     const name = document.getElementById('new-pat-name').value.trim();
     const dob = document.getElementById('new-pat-dob').value;
     const notes = document.getElementById('new-pat-notes').value.trim();
-    
     if (!name) { alert('Introduzca un nombre para el paciente.'); return; }
     
     const newP = { id: 'p_' + Date.now(), name: name, dob: dob, notes: notes };
@@ -106,10 +105,7 @@ document.getElementById('create-pat-btn').addEventListener('click', () => {
 });
 
 document.getElementById('delete-pat-btn').addEventListener('click', () => {
-    if(window.patients.length <= 1) {
-        alert("Debe haber al menos un paciente registrado en el sistema.");
-        return;
-    }
+    if(window.patients.length <= 1) { alert("Debe haber al menos un paciente registrado en el sistema."); return; }
     if(confirm('¿Desea ELIMINAR COMPLETAMENTE a este paciente, su historial y sus pautas? Esta acción es irreversible.')) {
         window.patients = window.patients.filter(p => p.id !== window.activePatientId);
         window.historyLog = window.historyLog.filter(h => h.patientId !== window.activePatientId);
@@ -150,7 +146,6 @@ window.updateRoutineProgress = function() {
     let r = window.routines[window.activePatientId] || []; 
     let updated = false;
     for(let t of r) {
-        // Ahora simplemente coincidir window.currentGame
         if(t.done < t.req && t.mode === window.currentGame && t.eye === document.getElementById('game-eye').value) { 
             t.done++; updated = true; break; 
         }
@@ -188,7 +183,7 @@ window.renderDashboard = function() {
         });
         document.getElementById('routine-status').textContent = `Completado: ${tc} de ${tr} ejercicios.`;
     }
-    renderHistory(false);
+    renderHistory();
 };
 
 document.getElementById('btn-launch-routine').addEventListener('click', () => {
@@ -214,17 +209,13 @@ window.switchStatsTab = function(mode, event) {
     window.activeStatsTab = mode;
     document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
     if(event) event.target.classList.add('active');
-    renderHistory(false);
+    renderHistory();
 }
 
-function renderHistory(printAll = false) {
+// Renderiza en la pantalla principal
+function renderHistory() {
     const h = window.historyLog.filter(x => x.patientId === window.activePatientId);
-    
-    let filteredHistory = h;
-    if (!printAll) {
-        // Ahora filtramos exactamente por el modo activo, ya no hay agrupaciones
-        filteredHistory = h.filter(x => x.mode === window.activeStatsTab);
-    }
+    const filteredHistory = h.filter(x => x.mode === window.activeStatsTab);
     
     const tbody = document.getElementById('history-tbody');
     document.getElementById('metric-total-sessions').textContent = filteredHistory.length;
@@ -235,7 +226,7 @@ function renderHistory(printAll = false) {
         tbody.innerHTML = '<tr><td colspan="5">Sin datos acumulados en esta prueba.</td></tr>';
         document.getElementById('metric-best-time').textContent = '--:--';
         document.getElementById('metric-avg-accuracy').textContent = '--%';
-        renderChart([]);
+        renderChart([], document.getElementById('evolution-chart'));
         return;
     }
 
@@ -253,16 +244,16 @@ function renderHistory(printAll = false) {
         </tr>`;
     }).join('');
 
-    renderChart(filteredHistory);
+    renderChart(filteredHistory, document.getElementById('evolution-chart'));
 }
 
-function renderChart(data) {
-    const svg = document.getElementById('evolution-chart');
-    svg.innerHTML = '';
+// Función SVG que acepta cualquier contenedor destino
+function renderChart(data, targetSvg) {
+    targetSvg.innerHTML = '';
     if (!data || data.length === 0) return;
 
-    const width = svg.clientWidth || 700;
-    const height = 200;
+    const width = targetSvg.clientWidth || 700;
+    const height = targetSvg.clientHeight || 200;
     const padding = 35;
 
     const maxTime = Math.max(...data.map(d => d.timeMs / 1000));
@@ -285,7 +276,7 @@ function renderChart(data) {
         line.setAttribute("x1", padding); line.setAttribute("x2", width - padding);
         line.setAttribute("y1", yVal); line.setAttribute("y2", yVal);
         line.setAttribute("stroke", "#e2e8f0"); line.setAttribute("stroke-dasharray", "4");
-        svg.appendChild(line);
+        targetSvg.appendChild(line);
     }
 
     if (points.length > 1) {
@@ -293,23 +284,24 @@ function renderChart(data) {
         const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
         path.setAttribute("d", pathD); path.setAttribute("fill", "none");
         path.setAttribute("stroke", "#3b82f6"); path.setAttribute("stroke-width", "3");
-        svg.appendChild(path);
+        targetSvg.appendChild(path);
     }
 
     points.forEach(p => {
         const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
         circle.setAttribute("cx", p.x); circle.setAttribute("cy", p.y); circle.setAttribute("r", "5");
         circle.setAttribute("fill", p.eye === 'OD' ? '#ef4444' : (p.eye === 'OI' ? '#3b82f6' : '#10b981'));
-        svg.appendChild(circle);
+        targetSvg.appendChild(circle);
     });
 }
 
 document.getElementById('chart-axis-btn').addEventListener('click', () => {
     window.chartXAxisType = window.chartXAxisType === 'index' ? 'date' : 'index';
     document.getElementById('chart-axis-btn').textContent = window.chartXAxisType === 'index' ? '🔢 Eje X: Por Pruebas' : '📅 Eje X: Por Fecha';
-    renderHistory(false);
+    renderHistory();
 });
 
+// OPTIMIZACIÓN 1: PDF REPORT POR JUEGO INDIVIDUAL
 document.getElementById('btn-print-pdf').addEventListener('click', () => {
     document.getElementById('print-clinic').textContent = window.clinicCfg.clinicName || 'Centro Clínico';
     document.getElementById('print-specialist').textContent = window.clinicCfg.specialistName || 'Especialista';
@@ -321,24 +313,83 @@ document.getElementById('btn-print-pdf').addEventListener('click', () => {
         document.getElementById('print-logo').style.display = 'block'; 
     }
     
-    renderHistory(true); 
+    const printContainer = document.getElementById('print-report-container');
+    printContainer.innerHTML = ''; // Limpiamos contenedor
+    const patHistory = window.historyLog.filter(x => x.patientId === window.activePatientId);
+    
+    const modes = [
+        { id: 'search', name: '1. Búsqueda Táctil' }, { id: 'coord', name: '2. Coordenadas' },
+        { id: 'pursuit', name: '3. Seguimiento' }, { id: 'anticrowding', name: '4. Anti-Crowding' },
+        { id: 'saccadic', name: '5. Saltos Sacádicos' }, { id: 'marsden', name: '6. Pelota de Marsden' },
+        { id: 'tracing', name: '7. Laberinto Visual' }, { id: 'tachisto', name: '8. Taquistoscopio' }
+    ];
+
+    let hasData = false;
+    
+    modes.forEach(m => {
+        const modeData = patHistory.filter(h => h.mode === m.id);
+        if(modeData.length === 0) return;
+        hasData = true;
+
+        const sumAccuracy = modeData.reduce((acc, curr) => acc + (curr.accuracy !== undefined ? curr.accuracy : 100), 0);
+        const avgAcc = Math.round(sumAccuracy / modeData.length);
+        const totalMs = modeData.reduce((acc, curr) => acc + (curr.timeMs || 0), 0);
+        const bestMs = Math.min(...modeData.map(s => s.timeMs));
+        const bestS = modeData.find(s => s.timeMs === bestMs);
+
+        const section = document.createElement('div');
+        section.className = 'print-section';
+        section.innerHTML = `
+            <h3 style="border-bottom: 2px solid #cbd5e1; padding-bottom: 4px; margin-bottom: 10px; color: #1e293b;">${m.name}</h3>
+            <div style="display:flex; gap: 10px; margin-bottom: 10px; font-size: 10pt;">
+                <div class="metric-card" style="flex:1;"><strong>Sesiones:</strong> ${modeData.length}</div>
+                <div class="metric-card" style="flex:1;"><strong>Tiempo Total:</strong> ${formatDuration(totalMs)}</div>
+                <div class="metric-card" style="flex:1;"><strong>Mejor Tiempo:</strong> ${bestS ? bestS.timeFormatted : '--:--'}</div>
+                <div class="metric-card" style="flex:1; color:#16a34a;"><strong>Precisión Media:</strong> ${avgAcc}%</div>
+            </div>
+            <div class="chart-container" style="height: 150px; margin-bottom: 10px; border: 1px solid #94a3b8; padding: 4px;">
+                <svg id="print-svg-${m.id}" width="100%" height="100%" style="overflow: visible;"></svg>
+            </div>
+            <table class="history-table" style="font-size: 8pt;">
+                <thead><tr><th>Fecha</th><th>Ojo</th><th>Tiempo</th><th>Precisión</th></tr></thead>
+                <tbody>
+                    ${[...modeData].reverse().map(s => `<tr><td>${s.date}</td><td><strong>${s.eye}</strong></td><td><strong>${s.timeFormatted}</strong></td><td>${s.accuracy}% (${s.errors} err)</td></tr>`).join('')}
+                </tbody>
+            </table>
+        `;
+        printContainer.appendChild(section);
+        
+        // Renderizamos SVG en el elemento inyectado dinámicamente
+        renderChart(modeData, document.getElementById(`print-svg-${m.id}`));
+    });
+
+    if(!hasData) printContainer.innerHTML = '<p style="text-align:center; padding: 2rem;">No hay datos registrados para este paciente.</p>';
+
     document.body.classList.remove('print-grid-only');
     document.body.classList.add('print-report-only');
     
     setTimeout(() => {
         window.print();
         document.body.classList.remove('print-report-only');
-        renderHistory(false); 
-    }, 200);
+    }, 300);
 });
 
+// BUG 1 FIX: Botón "Papel" de Cuadrícula
+document.getElementById('btn-print-grid').addEventListener('click', () => {
+    document.body.classList.remove('print-report-only');
+    document.body.classList.add('print-grid-only');
+    window.print();
+    document.body.classList.remove('print-grid-only');
+});
+
+// OPTIMIZACIÓN 2: EXPORTAR TODOS LOS JUEGOS GLOBALES
 document.getElementById('btn-export-json').addEventListener('click', () => {
     const bundle = {
-        version: "5.04",
+        version: "5.05",
         clinic: window.clinicCfg,
         patients: window.patients,
         routines: window.routines,
-        history: window.historyLog,
+        history: window.historyLog, // historyLog mantiene TODOS los juegos registrados
         exportDate: new Date().toISOString()
     };
     const blob = new Blob([JSON.stringify(bundle, null, 2)], { type: 'application/json' });
@@ -380,7 +431,7 @@ document.getElementById('btn-delete-hist').addEventListener('click', () => {
     if (confirm('¿Desea borrar TODO el historial de pruebas (de todos los juegos) de este paciente?')) {
         window.historyLog = window.historyLog.filter(s => s.patientId !== window.activePatientId);
         localStorage.setItem('nystagmus_history', JSON.stringify(window.historyLog));
-        renderHistory(false);
+        renderHistory();
     }
 });
 
