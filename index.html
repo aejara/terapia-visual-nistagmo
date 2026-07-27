@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Terapia Visual - v3.07 (Reporte PDF Documental)</title>
+    <title>Terapia Visual - v3.08 (Personalización de Clínica)</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -59,7 +59,7 @@
         }
         body.high-contrast .panel { border: 2px solid #000000; }
 
-        /* SECCIÓN DE PACIENTE ACTIVO */
+        /* SECCIÓN DE PACIENTE ACTIVO Y BARRA SUPERIOR */
         .patient-row {
             display: flex; justify-content: space-between; align-items: center;
             background: #eff6ff; border-left: 4px solid var(--primary); padding: 0.6rem 1rem;
@@ -318,20 +318,25 @@
         }
         body.high-contrast .overlay-sub-banner { background: #000000; color: #ffffff; border-color: #000000; }
 
+        /* ENCABEZADO DE MEMBRETE CLÍNICO PARA IMPRESIÓN (NUEVO V3.08) */
+        .print-clinic-header {
+            display: none;
+        }
+
         /* =========================================================
-           DISEÑO IMPRESO CLÍNICO RESTRUCTURADO (v3.07 DEFINITIVO)
+           DISEÑO IMPRESO CLÍNICO CON MEMBRETE DE CENTRO (v3.08)
            ========================================================= */
         @media print {
             @page {
                 size: A4 portrait;
-                margin: 10mm 12mm;
+                margin: 8mm 10mm;
             }
 
             body {
                 background: white !important;
                 color: #000000 !important;
-                font-size: 9.5pt !important;
-                line-height: 1.18 !important;
+                font-size: 9pt !important;
+                line-height: 1.15 !important;
                 padding: 0 !important;
                 margin: 0 !important;
             }
@@ -341,32 +346,50 @@
             #virtual-keypad, #flashcard-overlay, #result-overlay, #card-calib-modal,
             .collapsible-toggle, .filter-bar, .tab-buttons, #detection-badge,
             .routine-designer-box, #patient-modal-content h3, #patient-modal-content > div:first-child,
-            .patient-row, .controls-row, .grid-wrapper, .config-row, #inst-content, .chart-controls {
+            .patient-row, .controls-row, .grid-wrapper, .config-row, #inst-content, .chart-controls, #clinic-config-content {
                 display: none !important;
             }
 
             .container {
                 max-width: 100% !important;
-                gap: 0.4rem !important;
+                gap: 0.3rem !important;
             }
 
             .panel {
                 box-shadow: none !important;
                 border: 1px solid #94a3b8 !important;
                 border-radius: 4px !important;
-                padding: 0.5rem 0.8rem !important;
+                padding: 0.4rem 0.6rem !important;
                 background: #ffffff !important;
+            }
+
+            /* MEMBRETE IMPRESO DE LA CLÍNICA */
+            body.print-report-only .print-clinic-header {
+                display: flex !important;
+                justify-content: space-between !important;
+                align-items: center !important;
+                border-bottom: 2px solid #000000 !important;
+                padding-bottom: 6px !important;
+                margin-bottom: 8px !important;
+            }
+            .print-clinic-logo {
+                max-height: 50px !important;
+                max-width: 180px !important;
+                object-fit: contain !important;
+            }
+            .print-clinic-info {
+                text-align: right !important;
+                font-size: 8pt !important;
+                line-height: 1.2 !important;
             }
 
             /* MODO 1: REPORTE CLÍNICO DOCUMENTAL (body.print-report-only) */
             body.print-report-only h1 {
                 display: block !important;
                 text-align: left !important;
-                font-size: 15pt !important;
+                font-size: 13pt !important;
                 font-weight: 900 !important;
-                border-bottom: 2px solid #000000 !important;
-                padding-bottom: 4px !important;
-                margin: 0 0 6px 0 !important;
+                margin: 0 0 4px 0 !important;
                 color: #000000 !important;
             }
 
@@ -380,26 +403,26 @@
                 display: block !important;
                 border: 1px solid #94a3b8 !important;
                 background: #f8fafc !important;
-                padding: 6px 10px !important;
+                padding: 5px 8px !important;
                 border-radius: 4px !important;
-                font-size: 9pt !important;
-                margin-bottom: 6px !important;
+                font-size: 8.5pt !important;
+                margin-bottom: 4px !important;
             }
 
             body.print-report-only #routine-panel {
                 display: block !important;
                 border: 1px solid #94a3b8 !important;
                 background: #ffffff !important;
-                padding: 6px 10px !important;
+                padding: 5px 8px !important;
                 border-radius: 4px !important;
-                margin-bottom: 6px !important;
+                margin-bottom: 4px !important;
             }
 
             body.print-report-only .task-item {
                 border: 1px solid #cbd5e1 !important;
-                padding: 2px 6px !important;
-                margin-top: 3px !important;
-                font-size: 8.5pt !important;
+                padding: 2px 5px !important;
+                margin-top: 2px !important;
+                font-size: 8pt !important;
                 background: #ffffff !important;
             }
 
@@ -410,52 +433,53 @@
 
             body.print-report-only .metric-card {
                 border: 1px solid #cbd5e1 !important;
-                padding: 4px 6px !important;
+                padding: 3px 5px !important;
                 border-radius: 4px !important;
                 background: #ffffff !important;
             }
             body.print-report-only .metric-card .val {
-                font-size: 11pt !important;
+                font-size: 10pt !important;
                 font-weight: 900 !important;
             }
             body.print-report-only .metric-card .lbl {
-                font-size: 7pt !important;
+                font-size: 6.5pt !important;
                 font-weight: 700 !important;
             }
 
             body.print-report-only .chart-container {
                 border: 1px solid #94a3b8 !important;
-                padding: 6px !important;
+                padding: 4px !important;
                 border-radius: 4px !important;
-                margin-bottom: 6px !important;
+                margin-bottom: 4px !important;
                 page-break-inside: avoid;
-                height: 150px !important;
+                height: 130px !important;
             }
 
             body.print-report-only #evolution-chart {
-                height: 130px !important;
+                height: 110px !important;
             }
 
             body.print-report-only .history-table {
                 width: 100% !important;
                 border-collapse: collapse !important;
-                font-size: 8.5pt !important;
+                font-size: 8pt !important;
                 margin-top: 4px !important;
             }
 
             body.print-report-only .history-table th {
                 background-color: #f1f5f9 !important;
                 border: 1px solid #94a3b8 !important;
-                padding: 3px 5px !important;
+                padding: 2px 4px !important;
                 font-weight: 700 !important;
             }
 
             body.print-report-only .history-table td {
                 border: 1px solid #cbd5e1 !important;
-                padding: 3px 5px !important;
+                padding: 2px 4px !important;
             }
 
-            /* MODO 2: HOJA DE TRABAJO CUADRÍCULA EN PAPEL (body.print-grid-only) */
+            /* MODO 2: HOJA DE TRABAJO EN PAPEL (body.print-grid-only) */
+            body.print-grid-only .print-clinic-header,
             body.print-grid-only h1,
             body.print-grid-only .patient-row,
             body.print-grid-only #patient-modal-content,
@@ -543,20 +567,69 @@
     </div>
 
     <div class="container">
-        <h1>Informe Clinico de Evolución - Terapia Visual (v3.07)</h1>
+        <!-- MEMBRETE OFICIAL DE IMPRESIÓN (NUEVO V3.08) -->
+        <div class="print-clinic-header">
+            <div>
+                <img id="print-logo-img" class="print-clinic-logo" src="" alt="Logo Centro" style="display:none;">
+                <strong id="print-clinic-name" style="font-size: 13pt; display: block; color: #000;">Centro de Terapia Visual</strong>
+            </div>
+            <div class="print-clinic-info">
+                <strong id="print-specialist-name" style="font-size: 10pt; color: #000;">Especialista: Optometrista</strong><br>
+                <span id="print-col-num">Nº Col: --</span><br>
+                <span id="print-clinic-contact">Tel / Dirección</span><br>
+                <span id="print-date-stamp" style="font-size: 7.5pt; color: #475569;">Fecha Informe: --</span>
+            </div>
+        </div>
 
-        <!-- 0. SELECCIÓN DE PACIENTE ACTIVO -->
+        <h1>Informe Clínico de Evolución - Terapia Visual</h1>
+
+        <!-- 0. SELECCIÓN DE PACIENTE ACTIVO Y CONFIGURACIÓN DE CENTRO -->
         <div class="patient-row">
             <div class="patient-select-group">
                 <label for="active-patient-select" style="font-weight: 700; font-size: 0.95rem;">👤 Paciente Activo:</label>
-                <select id="active-patient-select" style="flex-grow: 1; max-width: 300px; font-weight: 700;"></select>
+                <select id="active-patient-select" style="flex-grow: 1; max-width: 280px; font-weight: 700;"></select>
             </div>
-            <button class="btn btn-secondary" onclick="document.getElementById('patient-modal-content').classList.toggle('active')">
-                ⚙️ Gestor de Perfiles
-            </button>
+            <div style="display: flex; gap: 0.4rem; flex-wrap: wrap;">
+                <button class="btn btn-secondary" onclick="document.getElementById('patient-modal-content').classList.toggle('active')">
+                    ⚙️ Pacientes
+                </button>
+                <button class="btn btn-secondary" style="background-color: #0284c7; color: white;" onclick="document.getElementById('clinic-config-content').classList.toggle('active')">
+                    🏥 Configurar Clínica
+                </button>
+            </div>
         </div>
 
-        <!-- PANEL GESTOR DE PERFILES -->
+        <!-- PANEL CONFIGURACIÓN DE CLÍNICA Y ESPECIALISTA (NUEVO V3.08) -->
+        <div class="panel" style="padding: 0;">
+            <div id="clinic-config-content" class="collapsible-content" style="padding: 1rem; background: #f0f9ff; border-radius: 12px;">
+                <h3 style="margin-top: 0; color: #0284c7;">🏥 Datos del Centro y Especialista (Membrete PDF)</h3>
+                
+                <div style="display: flex; gap: 0.8rem; flex-wrap: wrap; margin-bottom: 0.8rem;">
+                    <input type="text" id="cfg-clinic-name" placeholder="Nombre de la Clínica u Óptica" style="flex: 2; min-width: 220px;">
+                    <input type="text" id="cfg-specialist-name" placeholder="Nombre del Especialista / Optometrista" style="flex: 2; min-width: 220px;">
+                    <input type="text" id="cfg-col-num" placeholder="Nº de Colegiado" style="flex: 1; min-width: 130px;">
+                </div>
+                
+                <div style="display: flex; gap: 0.8rem; flex-wrap: wrap; margin-bottom: 0.8rem;">
+                    <input type="text" id="cfg-clinic-contact" placeholder="Dirección, Teléfono o Email de contacto" style="flex-grow: 1;">
+                </div>
+
+                <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; background: white; padding: 0.8rem; border-radius: 8px; border: 1px solid #cbd5e1;">
+                    <div>
+                        <label style="font-weight: 700; font-size: 0.85rem; display: block;">Logo del Centro (PNG/JPG):</label>
+                        <input type="file" id="cfg-logo-input" accept="image/*" style="font-size: 0.85rem; margin-top: 0.3rem;">
+                    </div>
+                    <img id="cfg-logo-preview" src="" alt="Vista previa logo" style="max-height: 45px; max-width: 150px; display: none; object-fit: contain;">
+                    <button class="btn btn-secondary" id="clear-logo-btn" style="display: none; background-color: #ef4444; font-size: 0.8rem; padding: 0.3rem 0.6rem;">Quitar Logo</button>
+                </div>
+
+                <div style="margin-top: 0.8rem; text-align: right;">
+                    <button class="btn" id="save-clinic-cfg-btn" style="background-color: #0284c7;">💾 Guardar Datos del Centro</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANEL GESTOR DE PERFILES DE PACIENTES -->
         <div class="panel" style="padding: 0;">
             <div id="patient-modal-content" class="collapsible-content" style="padding: 1rem; background: #f8fafc; border-radius: 12px;">
                 <h3 style="margin-top: 0; color: var(--primary);">👤 Crear / Administrar Pacientes</h3>
@@ -567,7 +640,7 @@
                     <button class="btn" id="create-patient-btn" style="font-size: 0.9rem; padding: 0.5rem 1rem;">➕ Registrar Paciente</button>
                 </div>
                 
-                <textarea id="new-patient-notes" placeholder="Notas clínicas o diagnostico (ej. Nistagmo motor / Ambliopía OD)..." style="width: 100%; height: 60px; box-sizing: border-box; margin-bottom: 1rem;"></textarea>
+                <textarea id="new-patient-notes" placeholder="Notas clínicas o diagnóstico (ej. Nistagmo motor / Ambliopía OD)..." style="width: 100%; height: 60px; box-sizing: border-box; margin-bottom: 1rem;"></textarea>
 
                 <div id="patient-details-card" style="background: white; padding: 0.8rem; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 0.9rem;">
                     <strong>Ficha del Paciente Activo:</strong> <span id="patient-info-display">-</span>
@@ -816,6 +889,7 @@
         let chartXAxisType = 'index'; 
         let activePatientId = null;
         let currentSuggestedDistanceCm = 75;
+        let currentClinicLogoBase64 = '';
         
         let targetLetter = '';
         let targetRow = 0, targetCol = 0;
@@ -857,6 +931,23 @@
         const addRoutineTaskBtn = document.getElementById('add-task-to-routine-btn');
         const clearRoutineBtn = document.getElementById('clear-routine-btn');
 
+        // CONFIGURACIÓN DE CENTRO / CLINICA (NUEVO V3.08)
+        const cfgClinicName = document.getElementById('cfg-clinic-name');
+        const cfgSpecialistName = document.getElementById('cfg-specialist-name');
+        const cfgColNum = document.getElementById('cfg-col-num');
+        const cfgClinicContact = document.getElementById('cfg-clinic-contact');
+        const cfgLogoInput = document.getElementById('cfg-logo-input');
+        const cfgLogoPreview = document.getElementById('cfg-logo-preview');
+        const clearLogoBtn = document.getElementById('clear-logo-btn');
+        const saveClinicCfgBtn = document.getElementById('save-clinic-cfg-btn');
+
+        const printLogoImg = document.getElementById('print-logo-img');
+        const printClinicName = document.getElementById('print-clinic-name');
+        const printSpecialistName = document.getElementById('print-specialist-name');
+        const printColNum = document.getElementById('print-col-num');
+        const printClinicContact = document.getElementById('print-clinic-contact');
+        const printDateStamp = document.getElementById('print-date-stamp');
+
         const flashcardOverlay = document.getElementById('flashcard-overlay');
         const flashcardMain = document.getElementById('flashcard-main');
         const flashcardDistVal = document.getElementById('flashcard-dist-val');
@@ -866,6 +957,73 @@
         const resTime = document.getElementById('res-time');
         const resErrors = document.getElementById('res-errors');
         const resAccuracy = document.getElementById('res-accuracy');
+
+        // GESTIÓN DE CONFIGURACIÓN DE CLÍNICA
+        function loadClinicSettings() {
+            const saved = JSON.parse(localStorage.getItem('nystagmus_clinic_cfg') || '{}');
+            cfgClinicName.value = saved.clinicName || 'Centro de Terapia Visual';
+            cfgSpecialistName.value = saved.specialistName || 'Especialista en Terapia Visual';
+            cfgColNum.value = saved.colNum || '';
+            cfgClinicContact.value = saved.contact || '';
+            currentClinicLogoBase64 = saved.logoBase64 || '';
+
+            if (currentClinicLogoBase64) {
+                cfgLogoPreview.src = currentClinicLogoBase64;
+                cfgLogoPreview.style.display = 'block';
+                clearLogoBtn.style.display = 'inline-block';
+            } else {
+                cfgLogoPreview.style.display = 'none';
+                clearLogoBtn.style.display = 'none';
+            }
+        }
+
+        cfgLogoInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                currentClinicLogoBase64 = event.target.result;
+                cfgLogoPreview.src = currentClinicLogoBase64;
+                cfgLogoPreview.style.display = 'block';
+                clearLogoBtn.style.display = 'inline-block';
+            };
+            reader.readAsDataURL(file);
+        });
+
+        clearLogoBtn.addEventListener('click', () => {
+            currentClinicLogoBase64 = '';
+            cfgLogoInput.value = '';
+            cfgLogoPreview.style.display = 'none';
+            clearLogoBtn.style.display = 'none';
+        });
+
+        saveClinicCfgBtn.addEventListener('click', () => {
+            const cfg = {
+                clinicName: cfgClinicName.value.trim(),
+                specialistName: cfgSpecialistName.value.trim(),
+                colNum: cfgColNum.value.trim(),
+                contact: cfgClinicContact.value.trim(),
+                logoBase64: currentClinicLogoBase64
+            };
+            localStorage.setItem('nystagmus_clinic_cfg', JSON.stringify(cfg));
+            alert('¡Configuración de clínica guardada con éxito!');
+        });
+
+        function updatePrintHeaderData() {
+            const saved = JSON.parse(localStorage.getItem('nystagmus_clinic_cfg') || '{}');
+            printClinicName.textContent = saved.clinicName || 'Centro de Terapia Visual';
+            printSpecialistName.textContent = saved.specialistName ? `Especialista: ${saved.specialistName}` : 'Especialista en Terapia Visual';
+            printColNum.textContent = saved.colNum ? `Nº Col: ${saved.colNum}` : '';
+            printClinicContact.textContent = saved.contact || '';
+            printDateStamp.textContent = `Fecha Emisión: ${new Date().toLocaleDateString('es-ES')}`;
+
+            if (saved.logoBase64) {
+                printLogoImg.src = saved.logoBase64;
+                printLogoImg.style.display = 'block';
+            } else {
+                printLogoImg.style.display = 'none';
+            }
+        }
 
         // CALIBRACIÓN POR TARJETA
         const cardCalibModal = document.getElementById('card-calib-modal');
@@ -1424,13 +1582,13 @@
             renderHistory();
         });
 
-        // MANEJO DE BOTONES DE IMPRESIÓN Y REPORTE PDF DOCUMENTAL (v3.07 REFINADO)
+        // MANEJO DE IMPRESIÓN Y REPORTE CON MEMBRETE
         document.getElementById('print-report-btn').addEventListener('click', () => {
+            updatePrintHeaderData();
             document.body.classList.remove('print-grid-only');
             document.body.classList.add('print-report-only');
             document.getElementById('stats-content').classList.add('active');
             
-            // Renderizar la historia y recalcular gráfica para el PDF
             renderHistory();
             
             setTimeout(() => {
@@ -1450,9 +1608,11 @@
             const patients = getPatients();
             const history = JSON.parse(localStorage.getItem('nystagmus_history') || '[]');
             const routines = getRoutines();
+            const clinicCfg = JSON.parse(localStorage.getItem('nystagmus_clinic_cfg') || '{}');
             
             const bundle = {
-                version: "3.07",
+                version: "3.08",
+                clinic: clinicCfg,
                 patients: patients,
                 routines: routines,
                 history: history,
@@ -1463,7 +1623,7 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `respaldo_terapia_v3.07_${new Date().toISOString().slice(0, 10)}.json`;
+            a.download = `respaldo_terapia_v3.08_${new Date().toISOString().slice(0, 10)}.json`;
             a.click();
             URL.revokeObjectURL(url);
         });
@@ -1484,9 +1644,13 @@
                         if (importedData.routines) {
                             localStorage.setItem('nystagmus_routines', JSON.stringify(importedData.routines));
                         }
+                        if (importedData.clinic) {
+                            localStorage.setItem('nystagmus_clinic_cfg', JSON.stringify(importedData.clinic));
+                            loadClinicSettings();
+                        }
                         initPatientSystem();
                         renderHistory();
-                        alert('¡Base de datos completa (Pacientes + Pautas + Historial) importada con éxito!');
+                        alert('¡Base de datos completa de la clínica importada con éxito!');
                     } else if (Array.isArray(importedData)) {
                         localStorage.setItem('nystagmus_history', JSON.stringify(importedData));
                         renderHistory();
@@ -1895,6 +2059,7 @@
         });
         
         // INICIALIZACIÓN
+        loadClinicSettings();
         initPatientSystem();
         initMonitorSize();
         generateGrid();
