@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Terapia Visual Suite - v4.01</title>
+    <title>Suite Terapia Visual - v4.02</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,15 +11,9 @@
 
     <style>
         :root {
-            --bg-color: #f0f4f8;
-            --text-color: #1e293b;
-            --grid-border: #94a3b8;
-            --target-bg: #bbf7d0;
-            --target-text: #166534;
-            --wrong-bg: #fecdd3;
-            --primary: #3b82f6;
-            --primary-hover: #2563eb;
-            --font-clinical: 'Atkinson Hyperlegible', 'Verdana', 'Tahoma', sans-serif;
+            --bg-color: #f0f4f8; --text-color: #1e293b; --grid-border: #94a3b8;
+            --target-bg: #bbf7d0; --target-text: #166534; --wrong-bg: #fecdd3;
+            --primary: #3b82f6; --primary-hover: #2563eb; --font-clinical: 'Atkinson Hyperlegible', sans-serif;
             --panel-bg: #ffffff;
         }
 
@@ -29,1209 +23,687 @@
             --primary: #000000; --primary-hover: #333333; --panel-bg: #ffffff;
         }
 
-        body {
-            font-family: var(--font-clinical); background-color: var(--bg-color);
-            color: var(--text-color); display: flex; flex-direction: column;
-            align-items: center; margin: 0; padding: 0.8rem;
-            min-height: 100vh; touch-action: manipulation;
-        }
-
-        h1 { margin: 0 0 0.4rem 0; color: var(--text-color); font-size: 1.4rem; text-align: center; font-weight: 700; }
-
+        body { font-family: var(--font-clinical); background: var(--bg-color); color: var(--text-color); margin: 0; padding: 0.8rem; min-height: 100vh; display: flex; flex-direction: column; align-items: center; touch-action: manipulation; }
+        h1 { margin: 0 0 0.4rem 0; font-size: 1.4rem; text-align: center; font-weight: 700; color: var(--text-color); }
         .container { width: 100%; max-width: 920px; display: flex; flex-direction: column; gap: 0.6rem; }
+        .panel { background: var(--panel-bg); padding: 0.8rem 1rem; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border: 1px solid #cbd5e1; width: 100%; box-sizing: border-box; }
+        body.high-contrast .panel { border: 2px solid #000; }
 
-        .panel {
-            background: var(--panel-bg); padding: 0.8rem 1rem; border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); width: 100%; box-sizing: border-box;
-            border: 1px solid #cbd5e1;
-        }
-        body.high-contrast .panel { border: 2px solid #000000; }
-
-        /* SISTEMA DE VISTAS (SPA) */
+        /* SPA VIEWS */
         .app-view { display: none; flex-direction: column; gap: 0.6rem; width: 100%; animation: fadeIn 0.3s ease; }
         .app-view.active { display: flex; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
 
-        /* SECCIÓN DE PACIENTE ACTIVO */
-        .patient-row {
-            display: flex; justify-content: space-between; align-items: center;
-            background: #eff6ff; border-left: 4px solid var(--primary); padding: 0.6rem 1rem;
-            border-radius: 8px; flex-wrap: wrap; gap: 0.6rem;
-        }
-        body.high-contrast .patient-row { background: #f1f5f9; border-left: 4px solid #000; }
-        .patient-select-group { display: flex; align-items: center; gap: 0.5rem; flex-grow: 1; }
+        /* HEADER PACIENTE Y CLINICA */
+        .patient-row { display: flex; justify-content: space-between; align-items: center; background: #eff6ff; border-left: 4px solid var(--primary); padding: 0.6rem 1rem; border-radius: 8px; flex-wrap: wrap; gap: 0.6rem; }
+        body.high-contrast .patient-row { background: #f1f5f9; border-color: #000; }
+        .btn { font-family: var(--font-clinical); background: var(--primary); color: white; border: none; padding: 0.6rem 1.2rem; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 1rem; transition: 0.2s; }
+        .btn:hover { background: var(--primary-hover); }
+        .btn-secondary { background: #64748b; font-size: 0.85rem; padding: 0.5rem 0.9rem; }
+        .btn-secondary:hover { background: #475569; }
 
-        /* DASHBOARD: TARJETAS DE EJERCICIO */
+        /* DASHBOARD GRID */
         .exercises-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin-top: 0.5rem; }
-        .exercise-card {
-            background: white; border: 2px solid #cbd5e1; border-radius: 12px; padding: 1.2rem;
-            cursor: pointer; transition: all 0.2s; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center;
-        }
-        body.high-contrast .exercise-card { border: 3px solid #000; background: #fff; }
-        .exercise-card:hover { border-color: var(--primary); transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.2); }
-        .exercise-card-icon { font-size: 3rem; margin-bottom: 0.5rem; }
+        .exercise-card { background: white; border: 2px solid #cbd5e1; border-radius: 12px; padding: 1.2rem; cursor: pointer; text-align: center; transition: 0.2s; }
+        body.high-contrast .exercise-card { border-color: #000; }
+        .exercise-card:hover { border-color: var(--primary); transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(59,130,246,0.2); }
+        .exercise-card-icon { font-size: 2.8rem; margin-bottom: 0.5rem; }
         .exercise-card-title { font-size: 1.15rem; font-weight: 900; margin-bottom: 0.3rem; color: #0f172a; }
-        .exercise-card-desc { font-size: 0.85rem; color: #475569; line-height: 1.3; }
 
-        /* PAUTA TERAPÉUTICA */
-        .routine-card { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 0.8rem 1rem; }
-        body.high-contrast .routine-card { background: #ffffff; border: 2px solid #000000; }
-        .task-item {
-            display: flex; justify-content: space-between; align-items: center; padding: 0.4rem 0.6rem; 
-            background: white; border: 1px solid #e2e8f0; border-radius: 6px; margin-top: 0.4rem; font-size: 0.88rem;
-        }
-        body.high-contrast .task-item { border: 1px solid #000; }
-        .task-item.completed { background: #dcfce7; text-decoration: line-through; color: #166534; }
-        body.high-contrast .task-item.completed { background: #e2e8f0; color: #000; }
-
-        /* BARRA SUPERIOR DE ESTADO Y OBJETIVO */
+        /* GLOBAL GAME HEADER */
         .controls-row { display: flex; justify-content: space-between; align-items: center; font-size: 1.1rem; font-weight: 700; flex-wrap: wrap; gap: 0.8rem; }
-        .target-badge {
-            font-size: clamp(2rem, 4.5vh, 3.2rem); font-weight: 900; color: var(--primary);
-            background: #eff6ff; padding: 0.1rem 0.8rem; border-radius: 10px; border: 3px solid var(--primary);
-            display: inline-block; vertical-align: middle; margin-left: 0.3rem; line-height: 1.1;
-        }
-        body.high-contrast .target-badge { background: #000000 !important; color: #ffffff !important; border-color: #000000 !important; }
-        .progress-badge { font-size: clamp(1.8rem, 4vh, 2.8rem); font-weight: 900; color: #16a34a; }
-        body.high-contrast .progress-badge { color: #000000; }
+        .target-badge { font-size: clamp(2rem, 4vh, 3rem); font-weight: 900; color: var(--primary); background: #eff6ff; padding: 0.1rem 0.8rem; border-radius: 10px; border: 3px solid var(--primary); }
+        body.high-contrast .target-badge { background: #000; color: #fff; border-color: #000; }
+        .progress-badge { font-size: clamp(1.8rem, 3.5vh, 2.5rem); font-weight: 900; color: #16a34a; }
+        body.high-contrast .progress-badge { color: #000; }
 
-        /* CUADRÍCULA */
+        /* GAME 1: GRID */
         .grid-wrapper { display: flex; justify-content: center; width: 100%; }
-        #grid-container {
-            display: grid; grid-template-columns: 32px repeat(10, 1fr); gap: 4px; background-color: var(--grid-border); 
-            border: 4px solid var(--grid-border); border-radius: 10px; box-sizing: border-box; transition: background-color 0.2s ease;
-        }
-        .cell, .label-cell { background-color: white; display: flex; justify-content: center; align-items: center; user-select: none; }
-        .cell { font-family: var(--font-clinical); font-weight: 700; letter-spacing: 1px; transition: background-color 0.1s ease; box-sizing: border-box; overflow: hidden; color: #000; }
-        .label-cell { background-color: #e2e8f0; color: #475569; font-weight: 700; }
-        body.high-contrast .label-cell { background-color: #cccccc; color: #000000; border: 1px solid #000; }
+        #grid-container { display: grid; grid-template-columns: 32px repeat(10, 1fr); gap: 4px; background: var(--grid-border); border: 4px solid var(--grid-border); border-radius: 10px; box-sizing: border-box; }
+        .cell, .label-cell { background: white; display: flex; justify-content: center; align-items: center; user-select: none; font-weight: 700; box-sizing: border-box; }
+        .label-cell { background: #e2e8f0; color: #475569; }
+        body.high-contrast .label-cell { background: #ccc; color: #000; border: 1px solid #000; }
         .mode-search .cell { cursor: pointer; }
-        .mode-search .cell:active { background-color: #f1f5f9; }
-        .cell.found { background-color: var(--target-bg); color: var(--target-text); }
-        .cell.wrong { background-color: var(--wrong-bg); animation: shake 0.4s; }
-        body.high-contrast .cell.found { background-color: #000000 !important; color: #ffffff !important; font-weight: 900; }
-        body.high-contrast .cell.wrong { background-color: #666666 !important; color: #ffffff !important; text-decoration: line-through; }
-        .cell.pursuit-active { background-color: var(--primary); color: white; transform: scale(1.05); border-radius: 4px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); z-index: 10; }
-        #grid-container.hide-lines { gap: 0; background-color: #ffffff; border: 4px solid #cbd5e1; }
-        body.high-contrast #grid-container.hide-lines { border: 4px solid #000000; }
+        .cell.found { background: var(--target-bg); color: var(--target-text); }
+        body.high-contrast .cell.found { background: #000!important; color: #fff!important; }
+        .cell.wrong { background: var(--wrong-bg); animation: shake 0.4s; }
+        .cell.pursuit-active { background: var(--primary); color: white; transform: scale(1.05); border-radius: 4px; z-index: 10; }
+        #grid-container.hide-lines { gap: 0; background: #fff; border-color: #cbd5e1; }
         #grid-container.hide-lines .cell { border: 1px solid #f8fafc; }
-        body.high-contrast #grid-container.hide-lines .cell { border: 1px solid #e2e8f0; }
 
-        @keyframes shake { 0%, 100% { transform: translateX(0); } 25%, 75% { transform: translateX(-5px); } 50% { transform: translateX(5px); } }
-
-        /* MÓDULO: ANTI-CROWDING */
-        .ac-wrapper {
-            display: flex; justify-content: center; align-items: center; width: 100%;
-            height: min(58vh, 500px); background: #ffffff; border: 4px solid #cbd5e1; border-radius: 12px;
-            box-sizing: border-box; overflow: hidden;
-        }
-        body.high-contrast .ac-wrapper { border-color: #000; }
-        #ac-display {
-            font-family: var(--font-clinical); font-weight: 900; color: #0f172a; white-space: nowrap;
-            transition: all 0.3s ease; user-select: none;
-        }
-        body.high-contrast #ac-display { color: #000; }
-        .ac-flanker { color: #64748b; font-weight: 700; opacity: 0.8; }
-        body.high-contrast .ac-flanker { color: #444; }
-        .ac-target { color: var(--primary); font-weight: 900; }
+        /* GAME 2: ANTI-CROWDING */
+        .game-area { display: flex; justify-content: center; align-items: center; width: 100%; height: min(55vh, 500px); background: #fff; border: 4px solid #cbd5e1; border-radius: 12px; position: relative; overflow: hidden; }
+        body.high-contrast .game-area { border-color: #000; }
+        #ac-display { font-weight: 900; white-space: nowrap; user-select: none; }
+        .ac-flanker { color: #64748b; opacity: 0.8; }
+        .ac-target { color: var(--primary); }
         body.high-contrast .ac-target { color: #000; }
-        .ac-wrapper.success { background-color: var(--target-bg); }
-        .ac-wrapper.error { background-color: var(--wrong-bg); animation: shake 0.4s; }
+        .game-area.success { background: var(--target-bg); }
+        .game-area.error { background: var(--wrong-bg); animation: shake 0.4s; }
 
-        /* TECLADO VIRTUAL */
-        #virtual-keypad { display: none; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 0.2rem; width: 100%; }
-        .keypad-btn {
-            font-family: var(--font-clinical); background-color: white; border: 3px solid var(--grid-border); border-radius: 12px;
-            font-size: 2.2rem; font-weight: 700; color: var(--text-color); padding: 0.8rem 0; cursor: pointer; box-shadow: 0 4px 0 var(--grid-border); transition: all 0.1s; touch-action: manipulation;
-        }
-        .keypad-btn:active { transform: translateY(4px); box-shadow: 0 0 0 var(--grid-border); background-color: var(--bg-color); }
-        .keypad-btn.focused { border-color: #2563eb; background-color: #eff6ff; box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.4), 0 4px 0 #2563eb; transform: translateY(-2px); }
-        body.high-contrast .keypad-btn.focused { border-color: #000000; background-color: #000000; color: #ffffff; }
+        /* GAME 3: SACÁDICOS */
+        #saccadic-target { position: absolute; width: 60px; height: 60px; background: #ef4444; border-radius: 50%; border: 4px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.3); cursor: pointer; display: none; transition: transform 0.1s; }
+        #saccadic-target:active { transform: scale(0.8); }
+        body.high-contrast #saccadic-target { background: #000; }
 
-        /* CONFIGURACIÓN Y FORMULARIO */
+        /* GAME 4: MARSDEN BALL */
+        #marsden-pendulum { position: absolute; top: 0; transform-origin: top center; display: flex; flex-direction: column; align-items: center; }
+        .marsden-string { width: 4px; height: 150px; background: #94a3b8; }
+        #marsden-ball { width: 80px; height: 80px; background: var(--primary); border-radius: 50%; display: flex; justify-content: center; align-items: center; color: white; font-size: 2.5rem; font-weight: 900; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+        body.high-contrast #marsden-ball { background: #000; }
+        @keyframes swing { 0% { transform: rotate(30deg); } 100% { transform: rotate(-30deg); } }
+
+        /* GAME 5: VISUAL TRACING (LABERINTO) */
+        #tracing-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+        .tracing-label { position: absolute; font-weight: 900; font-size: 1.5rem; background: white; padding: 0.2rem 0.8rem; border-radius: 8px; border: 2px solid #cbd5e1; z-index: 10; }
+        #tracing-controls { position: absolute; bottom: 10px; display: flex; gap: 1rem; z-index: 20; display: none; }
+
+        /* GAME 6: TACHISTOSCOPE */
+        #tach-display { font-size: 5rem; font-weight: 900; letter-spacing: 10px; display: none; }
+        #tach-fixation { font-size: 4rem; color: #94a3b8; }
+        #tach-input-area { position: absolute; bottom: 20px; display: none; gap: 0.5rem; }
+
+        @keyframes shake { 0%,100%{transform:translateX(0);} 25%,75%{transform:translateX(-5px);} 50%{transform:translateX(5px);} }
+
+        /* COMMON UI ELEMENTS */
         .config-row { display: flex; gap: 0.8rem; flex-wrap: wrap; align-items: center; justify-content: space-between; }
-        .config-item { display: flex; flex-direction: column; gap: 0.2rem; font-weight: 700; font-size: 0.85rem; }
-        select, input[type="number"], input[type="text"], input[type="date"], textarea {
-            font-family: var(--font-clinical); padding: 0.5rem; border: 2px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem; font-weight: 700; background: #f8fafc; color: #000;
-        }
-        .toggle-option {
-            display: flex; align-items: center; gap: 0.4rem; font-weight: 700; font-size: 0.95rem;
-            background: #e2e8f0; padding: 0.5rem 0.8rem; border-radius: 8px; cursor: pointer; user-select: none;
-        }
-        body.high-contrast .toggle-option { background: #000000; color: #ffffff; }
-        .toggle-option input { width: 18px; height: 18px; cursor: pointer; }
-        .btn {
-            font-family: var(--font-clinical); background-color: var(--primary); color: white; border: none; padding: 0.7rem 1.4rem; border-radius: 8px; font-size: 1.05rem; font-weight: 700; cursor: pointer; transition: background-color 0.2s;
-        }
-        .btn:hover { background-color: var(--primary-hover); }
-        .btn-secondary { background-color: #64748b; font-size: 0.85rem; padding: 0.5rem 0.9rem; }
-        .btn-secondary:hover { background-color: #475569; }
+        select, input[type="text"], input[type="number"], input[type="date"], textarea { font-family: var(--font-clinical); padding: 0.5rem; border: 2px solid #cbd5e1; border-radius: 8px; font-weight: 700; }
+        .toggle-option { display: flex; align-items: center; gap: 0.4rem; font-weight: 700; background: #e2e8f0; padding: 0.5rem 0.8rem; border-radius: 8px; cursor: pointer; }
+        body.high-contrast .toggle-option { background: #000; color: #fff; }
+        .collapsible-toggle { background: #e2e8f0; border: none; padding: 0.7rem 1rem; border-radius: 8px; font-weight: 700; width: 100%; text-align: left; display: flex; justify-content: space-between; }
+        .collapsible-content { display: none; padding: 1rem 0 0 0; } .collapsible-content.active { display: block; }
+        
+        /* VIRTUAL KEYPAD */
+        #virtual-keypad { display: none; grid-template-columns: repeat(4, 1fr); gap: 10px; width: 100%; margin-top: 0.2rem; }
+        .keypad-btn { font-family: var(--font-clinical); background: white; border: 3px solid var(--grid-border); border-radius: 12px; font-size: 2.2rem; font-weight: 700; padding: 0.8rem 0; cursor: pointer; box-shadow: 0 4px 0 var(--grid-border); }
+        .keypad-btn:active { transform: translateY(4px); box-shadow: none; }
+        body.high-contrast .keypad-btn.focused { background: #000; color: #fff; }
 
-        /* DESPLEGABLES */
-        .collapsible-toggle {
-            background: #e2e8f0; color: #334155; border: none; padding: 0.7rem 1rem; border-radius: 8px; cursor: pointer; font-weight: 700; width: 100%; text-align: left; display: flex; justify-content: space-between; align-items: center; font-family: var(--font-clinical); font-size: 0.95rem;
-        }
-        body.high-contrast .collapsible-toggle { background: #000000; color: #ffffff; }
-        .collapsible-toggle:hover { background: #cbd5e1; }
-        .collapsible-content { display: none; padding: 1rem 0 0 0; font-size: 0.9rem; line-height: 1.5; }
-        .collapsible-content.active { display: block; }
+        /* OVERLAYS */
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.98); z-index: 9999; display: none; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+        .overlay.active { display: flex; }
+        body.high-contrast .overlay { background: #fff; color: #000; }
+        .flashcard-distance-badge { font-size: clamp(1.4rem, 3.5vw, 2.2rem); font-weight: 900; background: #fef08a; color: #854d0e; padding: 0.8rem 1.8rem; border-radius: 50px; margin-bottom: 1.8rem; border: 3px solid #eab308; }
+        body.high-contrast .flashcard-distance-badge { background: #000; color: #fff; border-color: #000; }
 
-        .info-badge { background-color: #f0fdf4; border-left: 4px solid #22c55e; padding: 0.8rem 1rem; border-radius: 8px; font-size: 1rem; margin-bottom: 0.8rem; }
-        .tab-buttons { display: flex; gap: 0.4rem; border-bottom: 2px solid #cbd5e1; padding-bottom: 0.4rem; margin-bottom: 1rem; flex-wrap: wrap;}
-        .tab-btn { background: #f1f5f9; border: none; padding: 0.5rem 1rem; border-radius: 6px 6px 0 0; font-family: var(--font-clinical); font-weight: 700; color: #64748b; cursor: pointer; }
-        .tab-btn.active { background: var(--primary); color: white; }
-        .filter-bar { display: flex; gap: 1rem; flex-wrap: wrap; background: #f8fafc; padding: 0.6rem 0.8rem; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 1rem; align-items: center; }
-        .history-table { width: 100%; border-collapse: collapse; margin-top: 0.5rem; font-size: 0.85rem; }
-        .history-table th, .history-table td { border: 1px solid #cbd5e1; padding: 0.4rem 0.6rem; text-align: center; }
-        .history-table th { background-color: #f1f5f9; font-weight: 700; color: #475569; }
-        .metric-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.6rem 0.8rem; text-align: center; flex: 1; min-width: 130px; }
-        .metric-card .val { font-size: 1.2rem; font-weight: 700; color: var(--primary); }
-        .metric-card .lbl { font-size: 0.72rem; color: #64748b; font-weight: 700; }
-        .chart-container { background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; }
-        .chart-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; flex-wrap: wrap; gap: 0.5rem; }
-
-        /* OVERLAYS Y PANTALLAS FLOTANTES */
-        #flashcard-overlay, #result-overlay, #card-calib-modal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(255, 255, 255, 0.98); z-index: 9999;
-            display: none; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 2rem; box-sizing: border-box; touch-action: manipulation; cursor: pointer;
-        }
-        body.high-contrast #flashcard-overlay, body.high-contrast #result-overlay, body.high-contrast #card-calib-modal { background-color: #ffffff; color: #000000; }
-        #flashcard-overlay.active, #result-overlay.active { display: flex; }
-        #flashcard-main { font-size: clamp(3rem, 10vw, 7rem); font-weight: 700; color: #0f172a; margin-bottom: 1.5rem; line-height: 1.2; }
-        body.high-contrast #flashcard-main { color: #000000; }
-
-        .flashcard-distance-badge {
-            font-size: clamp(1.4rem, 3.5vw, 2.2rem); font-weight: 900; background: #fef08a; color: #854d0e; padding: 0.8rem 1.8rem; border-radius: 50px; margin-bottom: 1.8rem; border: 3px solid #eab308; box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-        }
-        body.high-contrast .flashcard-distance-badge { background: #000000; color: #ffffff; border-color: #000000; }
-        .result-title { font-size: clamp(2.2rem, 5vw, 3.8rem); font-weight: 900; color: #16a34a; margin-bottom: 1.5rem; }
-        body.high-contrast .result-title { color: #000000; }
-        .result-stats-grid { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-bottom: 2.5rem; width: 100%; max-width: 700px; }
-        .result-stat-card { background: #f8fafc; border: 3px solid #cbd5e1; border-radius: 16px; padding: 1.2rem 1.8rem; flex: 1; min-width: 160px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-        body.high-contrast .result-stat-card { background: #ffffff; border: 3px solid #000000; }
-        .result-stat-val { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 900; color: var(--primary); }
-        body.high-contrast .result-stat-val { color: #000000; }
-        .result-stat-lbl { font-size: 0.9rem; font-weight: 700; color: #64748b; margin-top: 0.2rem; }
-        body.high-contrast .result-stat-lbl { color: #000000; }
-        .overlay-sub-banner { font-size: 1.3rem; color: #3b82f6; font-weight: 700; background: #eff6ff; padding: 1rem 2rem; border-radius: 50px; border: 2px solid #bfdbfe; }
-        body.high-contrast .overlay-sub-banner { background: #000000; color: #ffffff; border-color: #000000; }
-
-        .print-clinic-header { display: none; }
-
-        /* REGLAS DE IMPRESIÓN */
+        /* PRINT STYLES */
         @media print {
-            @page { size: A4 portrait; margin: 8mm 10mm; }
-            body { background: white !important; color: #000000 !important; font-size: 9pt !important; line-height: 1.15 !important; padding: 0 !important; margin: 0 !important; }
-            .btn, button, input, select, textarea, #virtual-keypad, #flashcard-overlay, #result-overlay, #card-calib-modal, .collapsible-toggle, .filter-bar, .tab-buttons, #detection-badge, .routine-designer-box, #patient-modal-content h3, #patient-modal-content > div:first-child, .patient-row, .controls-row, .grid-wrapper, .ac-wrapper, .config-row, #inst-content, .chart-controls, #clinic-config-content, .exercises-grid, .top-nav-btn { display: none !important; }
-            .container { max-width: 100% !important; gap: 0.3rem !important; }
-            .panel { box-shadow: none !important; border: 1px solid #94a3b8 !important; border-radius: 4px !important; padding: 0.4rem 0.6rem !important; background: #ffffff !important; }
-
-            /* REPORTE CLINICO */
-            body.print-report-only .app-view { display: none !important; }
-            body.print-report-only #view-dashboard { display: flex !important; }
-            body.print-report-only .print-clinic-header { display: flex !important; justify-content: space-between !important; align-items: center !important; border-bottom: 2px solid #000000 !important; padding-bottom: 6px !important; margin-bottom: 8px !important; }
-            .print-clinic-logo { max-height: 50px !important; max-width: 180px !important; object-fit: contain !important; }
-            .print-clinic-info { text-align: right !important; font-size: 8pt !important; line-height: 1.2 !important; }
-            body.print-report-only h1 { display: block !important; text-align: left !important; font-size: 13pt !important; font-weight: 900 !important; margin: 0 0 4px 0 !important; color: #000000 !important; }
-            body.print-report-only #patient-modal-content { display: block !important; padding: 0 !important; background: transparent !important; border: none !important; }
-            body.print-report-only #patient-details-card { display: block !important; border: 1px solid #94a3b8 !important; background: #f8fafc !important; padding: 5px 8px !important; border-radius: 4px !important; font-size: 8.5pt !important; margin-bottom: 4px !important; }
-            body.print-report-only #routine-panel { display: block !important; border: 1px solid #94a3b8 !important; background: #ffffff !important; padding: 5px 8px !important; border-radius: 4px !important; margin-bottom: 4px !important; }
-            body.print-report-only .task-item { border: 1px solid #cbd5e1 !important; padding: 2px 5px !important; margin-top: 2px !important; font-size: 8pt !important; background: #ffffff !important; }
-            body.print-report-only #stats-content { display: block !important; padding: 0 !important; border: none !important; }
-            body.print-report-only .metric-card { border: 1px solid #cbd5e1 !important; padding: 3px 5px !important; border-radius: 4px !important; background: #ffffff !important; }
-            body.print-report-only .metric-card .val { font-size: 10pt !important; font-weight: 900 !important; }
-            body.print-report-only .metric-card .lbl { font-size: 6.5pt !important; font-weight: 700 !important; }
-            body.print-report-only .chart-container { border: 1px solid #94a3b8 !important; padding: 4px !important; border-radius: 4px !important; margin-bottom: 4px !important; page-break-inside: avoid; height: 130px !important; }
-            body.print-report-only #evolution-chart { height: 110px !important; }
-            body.print-report-only .history-table { width: 100% !important; border-collapse: collapse !important; font-size: 8pt !important; margin-top: 4px !important; }
-            body.print-report-only .history-table th { background-color: #f1f5f9 !important; border: 1px solid #94a3b8 !important; padding: 2px 4px !important; font-weight: 700 !important; }
-            body.print-report-only .history-table td { border: 1px solid #cbd5e1 !important; padding: 2px 4px !important; }
-
-            /* HOJA CUADRICULA */
+            @page { size: A4 portrait; margin: 10mm; }
+            body { background: white !important; padding: 0 !important; margin: 0 !important; color: #000 !important; font-size: 9pt !important; }
+            .btn, button, input, select, textarea, .overlay, .collapsible-toggle, .patient-row, .exercises-grid, .app-view { display: none !important; }
+            .container { max-width: 100% !important; }
+            body.print-report-only #view-dashboard { display: block !important; }
+            body.print-report-only #stats-content { display: block !important; }
+            body.print-report-only .chart-container { page-break-inside: avoid; border: 1px solid #000 !important; }
+            body.print-report-only .history-table { width: 100% !important; border-collapse: collapse !important; }
+            body.print-report-only .history-table th, body.print-report-only .history-table td { border: 1px solid #000 !important; padding: 3px !important; }
             body.print-grid-only #view-grid { display: flex !important; }
-            body.print-grid-only #view-dashboard, body.print-grid-only #view-anticrowding { display: none !important; }
-            body.print-grid-only .controls-row { display: block !important; border: none !important; text-align: center !important; font-size: 1.4rem !important; margin-bottom: 1rem !important; }
-            body.print-grid-only .grid-wrapper { display: flex !important; }
-            body.print-grid-only #grid-container { width: 100% !important; height: auto !important; aspect-ratio: 1/1 !important; border: 3px solid #000 !important; page-break-inside: avoid; }
-            body.print-grid-only .cell { border: 1px solid #000 !important; }
+            body.print-grid-only #grid-container { width: 100% !important; height: auto !important; aspect-ratio: 1/1 !important; border: 2px solid #000 !important; page-break-inside: avoid; }
         }
-
     </style>
 </head>
 <body>
 
-    <!-- OVERLAYS (FLASHCARD, RESULTADO, CALIBRACIÓN) -->
-    <div id="flashcard-overlay">
-        <div class="flashcard-distance-badge" id="flashcard-distance-badge">
-            📏 DISTANCIA RECOMENDADA: <span id="flashcard-dist-val">--</span> cm
-        </div>
-        <div id="flashcard-main">Texto</div>
-        <div class="overlay-sub-banner">TOCA LA PANTALLA O PULSA CUALQUIER TECLA</div>
+    <!-- OVERLAYS GLOBALES -->
+    <div id="flashcard-overlay" class="overlay">
+        <div class="flashcard-distance-badge">📏 DISTANCIA RECOMENDADA: <span id="flashcard-dist-val">--</span> cm</div>
+        <div id="flashcard-main" style="font-size: 5rem; font-weight: 900; margin-bottom: 2rem;">Texto</div>
+        <div style="font-size: 1.3rem; background: #eff6ff; padding: 1rem 2rem; border-radius: 50px; font-weight: 700; color: #3b82f6;">TOCA LA PANTALLA O PULSA CUALQUIER TECLA</div>
     </div>
 
-    <div id="result-overlay">
-        <div class="result-title">🎉 ¡Sesión Completada!</div>
-        <div class="result-stats-grid">
-            <div class="result-stat-card"><div class="result-stat-val" id="res-time">00:00.0</div><div class="result-stat-lbl">TIEMPO TOTAL</div></div>
-            <div class="result-stat-card"><div class="result-stat-val" id="res-errors" style="color: #dc2626;">0</div><div class="result-stat-lbl">FALLOS</div></div>
-            <div class="result-stat-card"><div class="result-stat-val" id="res-accuracy" style="color: #16a34a;">100%</div><div class="result-stat-lbl">PRECISIÓN</div></div>
+    <div id="result-overlay" class="overlay">
+        <div style="font-size: 3rem; font-weight: 900; color: #16a34a; margin-bottom: 2rem;">🎉 ¡Sesión Completada!</div>
+        <div style="display: flex; gap: 1rem;">
+            <div style="background: #f8fafc; border: 3px solid #cbd5e1; padding: 1.5rem; border-radius: 16px;"><div id="res-time" style="font-size: 3rem; font-weight: 900; color: var(--primary);">00:00</div><div style="font-weight: 700;">TIEMPO</div></div>
+            <div style="background: #f8fafc; border: 3px solid #cbd5e1; padding: 1.5rem; border-radius: 16px;"><div id="res-errors" style="font-size: 3rem; font-weight: 900; color: #dc2626;">0</div><div style="font-weight: 700;">FALLOS</div></div>
+            <div style="background: #f8fafc; border: 3px solid #cbd5e1; padding: 1.5rem; border-radius: 16px;"><div id="res-accuracy" style="font-size: 3rem; font-weight: 900; color: #16a34a;">100%</div><div style="font-weight: 700;">PRECISIÓN</div></div>
         </div>
-        <div class="overlay-sub-banner">TOCA EN CUALQUIER PARTE O PULSA UNA TECLA PARA CONTINUAR</div>
     </div>
 
-    <div id="card-calib-modal">
-        <div style="background: white; color: #0f172a; padding: 1.5rem; border-radius: 16px; max-width: 520px; width: 90%; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.2); border: 3px solid #000; cursor: default;" onclick="event.stopPropagation();">
-            <h2 style="margin-top:0; color: var(--primary);">💳 Calibración Física</h2>
-            <p style="font-size: 0.95rem; line-height: 1.4; color: #475569; font-weight: bold;">Coloque una tarjeta de crédito sobre la pantalla y mueva el deslizador hasta que el recuadro coincida.</p>
-            <div style="display: flex; justify-content: center; align-items: center; margin: 1.5rem 0;">
-                <div id="calib-card-box" style="width: 320px; height: 200px; border: 4px dashed #2563eb; border-radius: 12px; background: #eff6ff; display: flex; align-items: center; justify-content: center; font-weight: 900; color: #1e40af;">💳 TARJETA AQUÍ</div>
+    <div id="card-calib-modal" class="overlay">
+        <div style="background: white; padding: 2rem; border-radius: 16px; border: 3px solid #000;" onclick="event.stopPropagation();">
+            <h2 style="margin-top:0;">💳 Calibración por Tarjeta</h2>
+            <p style="font-weight: bold;">Coloque una tarjeta de crédito sobre la pantalla y ajuste el ancho.</p>
+            <div style="display:flex; justify-content:center; margin: 1.5rem 0;">
+                <div id="calib-card-box" style="width: 320px; height: 200px; border: 4px dashed #2563eb; background:#eff6ff; display:flex; align-items:center; justify-content:center; font-weight:900;">TARJETA AQUÍ</div>
             </div>
-            <input type="range" id="calib-slider" min="160" max="600" value="320" style="width: 85%; height: 10px; cursor: pointer; margin-bottom: 1.5rem;">
-            <div style="display: flex; gap: 0.6rem; justify-content: center;">
-                <button class="btn" id="save-calib-btn" style="background-color: #16a34a;">💾 Guardar</button>
-                <button class="btn btn-secondary" id="close-calib-btn">Cancelar</button>
-            </div>
+            <input type="range" id="calib-slider" min="160" max="600" value="320" style="width: 100%; margin-bottom: 1.5rem;">
+            <button class="btn" id="save-calib-btn" style="background:#16a34a;">Guardar</button>
+            <button class="btn btn-secondary" onclick="document.getElementById('card-calib-modal').classList.remove('active')">Cancelar</button>
         </div>
     </div>
 
+    <!-- ESTRUCTURA PRINCIPAL -->
     <div class="container">
         <!-- MEMBRETE PDF -->
-        <div class="print-clinic-header">
-            <div>
-                <img id="print-logo-img" class="print-clinic-logo" src="" alt="Logo Centro" style="display:none;">
-                <strong id="print-clinic-name" style="font-size: 13pt; display: block; color: #000;">Centro Clínico</strong>
-            </div>
-            <div class="print-clinic-info">
-                <strong id="print-specialist-name" style="font-size: 10pt; color: #000;">Especialista</strong><br>
-                <span id="print-col-num">Nº Col: --</span><br>
-                <span id="print-clinic-contact">Contacto</span><br>
-                <span id="print-date-stamp" style="font-size: 7.5pt; color: #475569;">Fecha</span>
-            </div>
+        <div id="print-header" style="display:none; justify-content:space-between; align-items:center; border-bottom:2px solid #000; padding-bottom:10px; margin-bottom:10px;">
+            <div><img id="print-logo" src="" style="max-height:50px; display:none;"><strong id="print-clinic" style="font-size:14pt; display:block;">Centro</strong></div>
+            <div style="text-align:right; font-size:9pt;"><strong id="print-specialist">Especialista</strong><br><span id="print-col"></span><br><span id="print-date"></span></div>
         </div>
 
-        <h1>Suite de Terapia Visual (v4.01)</h1>
+        <h1>Suite de Terapia Visual (v4.02)</h1>
 
-        <!-- BARRA GLOBAL PACIENTE/CLINICA -->
+        <!-- HEADER GLOBAL (PACIENTE / CLINICA) -->
         <div class="patient-row">
             <div class="patient-select-group">
-                <label for="active-patient-select" style="font-weight: 700; font-size: 0.95rem;">👤 Paciente:</label>
-                <select id="active-patient-select" style="flex-grow: 1; max-width: 280px; font-weight: 700;"></select>
+                <label style="font-weight: 700;">👤 Paciente:</label>
+                <select id="global-patient-select" style="flex-grow: 1; max-width: 250px;"></select>
             </div>
-            <div style="display: flex; gap: 0.4rem; flex-wrap: wrap;">
-                <button class="btn btn-secondary top-nav-btn" onclick="document.getElementById('patient-modal-content').classList.toggle('active')">⚙️ Pacientes</button>
-                <button class="btn btn-secondary top-nav-btn" style="background-color: #0284c7; color: white;" onclick="document.getElementById('clinic-config-content').classList.toggle('active')">🏥 Configurar</button>
-            </div>
-        </div>
-
-        <!-- CONFIGURACIÓN CLÍNICA -->
-        <div class="panel" style="padding: 0;">
-            <div id="clinic-config-content" class="collapsible-content" style="padding: 1rem; background: #f0f9ff; border-radius: 12px;">
-                <h3 style="margin-top: 0; color: #0284c7;">🏥 Datos del Centro y Especialista</h3>
-                <div style="display: flex; gap: 0.8rem; flex-wrap: wrap; margin-bottom: 0.8rem;">
-                    <input type="text" id="cfg-clinic-name" placeholder="Nombre Clínica" style="flex: 2; min-width: 220px;">
-                    <input type="text" id="cfg-specialist-name" placeholder="Especialista" style="flex: 2; min-width: 220px;">
-                    <input type="text" id="cfg-col-num" placeholder="Nº Colegiado" style="flex: 1; min-width: 130px;">
-                </div>
-                <input type="text" id="cfg-clinic-contact" placeholder="Dirección / Teléfono" style="width: 100%; box-sizing: border-box; margin-bottom: 0.8rem;">
-                <div style="display: flex; gap: 1rem; align-items: center; background: white; padding: 0.8rem; border-radius: 8px; border: 1px solid #cbd5e1;">
-                    <div>
-                        <label style="font-weight: 700; font-size: 0.85rem;">Logo (PNG/JPG):</label>
-                        <input type="file" id="cfg-logo-input" accept="image/*" style="font-size: 0.85rem; margin-top: 0.3rem;">
-                    </div>
-                    <img id="cfg-logo-preview" src="" style="max-height: 45px; max-width: 150px; display: none;">
-                    <button class="btn btn-secondary" id="clear-logo-btn" style="display: none; background-color: #ef4444;">Quitar Logo</button>
-                </div>
-                <div style="margin-top: 0.8rem; text-align: right;"><button class="btn" id="save-clinic-cfg-btn" style="background-color: #0284c7;">💾 Guardar Datos</button></div>
+            <div style="display: flex; gap: 0.4rem;">
+                <button class="btn btn-secondary" onclick="document.getElementById('patient-modal').classList.toggle('active')">⚙️ Pacientes</button>
+                <button class="btn btn-secondary" style="background: #0284c7; color:white;" onclick="document.getElementById('clinic-modal').classList.toggle('active')">🏥 Clínica</button>
             </div>
         </div>
 
-        <!-- GESTOR PACIENTES -->
+        <!-- MODALES DE CONFIGURACIÓN -->
         <div class="panel" style="padding: 0;">
-            <div id="patient-modal-content" class="collapsible-content" style="padding: 1rem; background: #f8fafc; border-radius: 12px;">
-                <h3 style="margin-top: 0; color: var(--primary);">👤 Administrar Pacientes</h3>
-                <div style="display: flex; gap: 0.8rem; flex-wrap: wrap; margin-bottom: 1rem;">
-                    <input type="text" id="new-patient-name" placeholder="Nombre completo" style="flex-grow: 1; min-width: 200px;">
-                    <input type="date" id="new-patient-dob">
-                    <button class="btn" id="create-patient-btn">➕ Registrar</button>
-                </div>
-                <textarea id="new-patient-notes" placeholder="Notas clínicas..." style="width: 100%; height: 60px; box-sizing: border-box; margin-bottom: 1rem;"></textarea>
-                <div id="patient-details-card" style="background: white; padding: 0.8rem; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 0.9rem;">
-                    <strong>Ficha Paciente:</strong> <span id="patient-info-display">-</span>
-                </div>
+            <div id="clinic-modal" class="collapsible-content" style="padding: 1rem; background: #f0f9ff; border-radius: 12px;">
+                <h3 style="margin-top:0; color:#0284c7;">🏥 Configurar Membrete</h3>
+                <div style="display:flex; gap:0.5rem; margin-bottom:0.5rem;"><input type="text" id="cfg-clinic" placeholder="Clínica" style="flex:1;"><input type="text" id="cfg-specialist" placeholder="Especialista" style="flex:1;"><input type="text" id="cfg-col" placeholder="Nº Col" style="width:100px;"></div>
+                <button class="btn" id="save-clinic-btn">Guardar Clínica</button>
+            </div>
+        </div>
+        <div class="panel" style="padding: 0;">
+            <div id="patient-modal" class="collapsible-content" style="padding: 1rem; background: #f8fafc; border-radius: 12px;">
+                <h3 style="margin-top:0;">👤 Nuevo Paciente</h3>
+                <div style="display:flex; gap:0.5rem; margin-bottom:0.5rem;"><input type="text" id="new-pat-name" placeholder="Nombre" style="flex:1;"><button class="btn" id="create-pat-btn">Añadir</button></div>
             </div>
         </div>
 
         <!-- ==========================================
-             VISTA 1: DASHBOARD (MENÚ PRINCIPAL)
+             VISTA 0: DASHBOARD / MENÚ PRINCIPAL
              ========================================== -->
         <div id="view-dashboard" class="app-view active">
             
-            <!-- PAUTA TERAPÉUTICA -->
-            <div class="panel routine-card" id="routine-panel">
-                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+            <!-- PAUTAS -->
+            <div class="panel routine-card">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div><strong style="color: #15803d; font-size:1.1rem;">📋 Plan de Trabajo</strong><div id="routine-status" style="font-size:0.85rem; font-weight:700;">Sin pauta</div></div>
                     <div>
-                        <strong style="font-size: 1.05rem; color: #15803d;">📋 Plan de Trabajo del Día</strong>
-                        <div id="routine-summary-text" style="font-size: 0.85rem; color: #475569; font-weight: 700;">Sin pauta activa.</div>
-                    </div>
-                    <div style="display: flex; gap: 0.4rem; flex-wrap: wrap;">
-                        <button class="btn" id="launch-routine-btn" style="background-color: #16a34a; font-size: 0.9rem;">▶️ Iniciar Siguiente</button>
-                        <button class="btn btn-secondary" onclick="document.getElementById('routine-designer-content').classList.toggle('active')">🛠️ Diseñar</button>
+                        <button class="btn" id="btn-launch-routine" style="background:#16a34a;">▶️ Iniciar Pauta</button>
+                        <button class="btn btn-secondary" onclick="document.getElementById('routine-designer').classList.toggle('active')">🛠️ Diseñar</button>
                     </div>
                 </div>
-                <div id="routine-tasks-list" style="margin-top: 0.6rem;"></div>
-                
-                <!-- DISEÑADOR -->
-                <div id="routine-designer-content" class="collapsible-content routine-designer-box" style="margin-top: 0.8rem; background: white; padding: 0.8rem; border-radius: 8px; border: 1px solid #cbd5e1;">
-                    <strong style="font-size: 0.9rem; color: var(--primary);">➕ Añadir a Prescripción</strong>
-                    <div style="display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: center; margin-top: 0.5rem;">
-                        <select id="routine-add-mode" style="font-size: 0.85rem;">
-                            <optgroup label="Cuadrícula Clásica">
-                                <option value="search">Búsqueda 10x10</option>
-                                <option value="coord">Coordenadas 10x10</option>
-                                <option value="pursuit">Seguimiento 10x10</option>
-                            </optgroup>
-                            <optgroup label="Módulos Específicos">
-                                <option value="anticrowding">Anti-Crowding</option>
-                            </optgroup>
-                        </select>
-                        <select id="routine-add-eye" style="font-size: 0.85rem;">
-                            <option value="BIN">Binocular</option><option value="OD">Ojo Derecho</option><option value="OI">Ojo Izquierdo</option>
-                        </select>
-                        <select id="routine-add-lines" style="font-size: 0.85rem;">
-                            <option value="Sí">Con Líneas (Grid)</option><option value="No">Sin Líneas</option>
-                        </select>
-                        <input type="number" id="routine-add-count" value="2" min="1" max="10" style="width: 50px; font-size: 0.85rem;" title="Repeticiones">
-                        <button class="btn" id="add-task-to-routine-btn" style="font-size: 0.85rem; padding: 0.4rem 0.8rem;">➕ Añadir</button>
-                        <button class="btn btn-secondary" id="clear-routine-btn" style="background-color: #ef4444; font-size: 0.85rem;">Vaciar Pauta</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- TARJETAS DE EJERCICIOS (NUEVO V4.01) -->
-            <div style="margin-top: 0.5rem;">
-                <h2 style="font-size: 1.1rem; color: #334155; margin-bottom: 0;">📚 Biblioteca de Ejercicios</h2>
-                <div class="exercises-grid">
-                    <!-- Tarjeta 1: Cuadrícula -->
-                    <div class="exercise-card" onclick="switchView('view-grid')">
-                        <div class="exercise-card-icon">🔠</div>
-                        <div class="exercise-card-title">Cuadrícula Espacial</div>
-                        <div class="exercise-card-desc">Búsqueda, Coordenadas y Seguimiento Foveal en matriz 10x10.</div>
-                    </div>
-                    <!-- Tarjeta 2: Anti-Crowding -->
-                    <div class="exercise-card" onclick="switchView('view-anticrowding')">
-                        <div class="exercise-card-icon">🎯</div>
-                        <div class="exercise-card-title">Anti-Crowding</div>
-                        <div class="exercise-card-desc">Discriminación de agudeza visual contra el amontonamiento.</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ANALÍTICA Y REPORTES -->
-            <div class="panel" style="padding: 0; margin-top: 0.5rem;">
-                <button class="collapsible-toggle" onclick="document.getElementById('stats-content').classList.toggle('active')">
-                    <span>📊 Estadísticas Clínicas y Reportes</span><span>▼</span>
-                </button>
-                <div id="stats-content" class="collapsible-content active" style="padding: 1rem;">
-                    
-                    <div class="tab-buttons">
-                        <button class="tab-btn active" onclick="switchStatsTab('search')">Búsqueda (Grid)</button>
-                        <button class="tab-btn" onclick="switchStatsTab('coord')">Coord (Grid)</button>
-                        <button class="tab-btn" onclick="switchStatsTab('pursuit')">Seguimiento (Grid)</button>
-                        <button class="tab-btn" onclick="switchStatsTab('anticrowding')">Anti-Crowding</button>
-                    </div>
-
-                    <div class="filter-bar">
-                        <div style="font-weight: 700; font-size: 0.85rem; color: #475569;">⚙️ Filtros:</div>
-                        <select id="filter-eye" style="padding: 0.3rem; font-size: 0.85rem;" onchange="renderHistory()">
-                            <option value="ALL">Todos los Ojos</option><option value="BIN">Binocular</option><option value="OD">OD</option><option value="OI">OI</option>
-                        </select>
-                        <select id="filter-lines" style="padding: 0.3rem; font-size: 0.85rem;" onchange="renderHistory()">
-                            <option value="ALL">Cualquier Guía</option><option value="Sí">Con Líneas</option><option value="No">Sin Líneas</option>
-                        </select>
-                    </div>
-
-                    <div style="display: flex; gap: 0.6rem; flex-wrap: wrap; margin-bottom: 1rem;">
-                        <div class="metric-card"><div class="val" id="metric-total-sessions">0</div><div class="lbl">SESIONES</div></div>
-                        <div class="metric-card"><div class="val" id="metric-total-time">00:00:00</div><div class="lbl">TIEMPO</div></div>
-                        <div class="metric-card"><div class="val" id="metric-best-time">--:--</div><div class="lbl">MEJOR TIEMPO</div></div>
-                        <div class="metric-card"><div class="val" id="metric-avg-accuracy" style="color: #16a34a;">--%</div><div class="lbl">PRECISIÓN</div></div>
-                    </div>
-
-                    <div class="chart-container">
-                        <div class="chart-controls">
-                            <strong style="font-size: 0.95rem; color: #334155;">📈 Evolución de Tiempo</strong>
-                            <button class="btn btn-secondary" id="chart-axis-btn" style="padding: 0.3rem 0.6rem; font-size:0.8rem;">Eje X: Pruebas</button>
-                        </div>
-                        <div style="width: 100%; height: 200px; position: relative;">
-                            <svg id="evolution-chart" width="100%" height="100%" style="overflow: visible;"></svg>
-                        </div>
-                    </div>
-
-                    <div style="overflow-x: auto;">
-                        <table class="history-table">
-                            <thead><tr><th>#</th><th>Fecha</th><th>Ojo</th><th>Tiempo</th><th>Precisión</th><th>Líneas</th><th>Pantalla</th></tr></thead>
-                            <tbody id="history-tbody"><tr><td colspan="7">Sin datos.</td></tr></tbody>
-                        </table>
-                    </div>
-
-                    <div style="margin-top: 1rem; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;">
-                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                            <button class="btn btn-secondary" id="export-stats-btn">📥 Backup JSON</button>
-                            <button class="btn btn-secondary" id="import-stats-btn">📤 Restaurar</button>
-                            <button class="btn" id="print-report-btn" style="background-color: #0d9488;">🖨️ Reporte PDF Clínico</button>
-                            <input type="file" id="import-file-input" accept=".json" style="display: none;">
-                        </div>
-                        <button class="btn btn-secondary" id="clear-stats-btn" style="background-color: #ef4444;">Borrar Paciente</button>
-                    </div>
-                </div>
-            </div>
-
-        </div> <!-- /view-dashboard -->
-
-        <!-- ==========================================
-             VISTA 2: MÓDULO CUADRÍCULA 10x10
-             ========================================== -->
-        <div id="view-grid" class="app-view">
-            <button class="btn btn-secondary" style="align-self: flex-start; margin-bottom: 0.2rem;" onclick="switchView('view-dashboard')">⬅️ Volver al Menú Principal</button>
-            
-            <div class="panel controls-row" id="grid-controls-anchor">
-                <div id="grid-instruction-text">Objetivo: <span id="grid-target-display" class="target-badge">-</span></div>
-                <div id="grid-progress-container">Progreso: <span class="progress-badge"><span id="grid-score">0</span> / <span id="grid-total-targets">0</span></span></div>
-                <div style="font-size: 1.1rem; color: #dc2626;">Fallos: <strong id="grid-error-count">0</strong></div>
-                <div style="font-family: monospace; font-size: 1.4rem; font-weight: bold; color: #475569;" id="grid-timer">00:00.0</div>
-            </div>
-
-            <div class="grid-wrapper"><div id="grid-container" class="mode-search"></div></div>
-
-            <div class="panel config-row">
-                <div class="config-item">
-                    <label>Modo:</label>
-                    <select id="grid-mode-select">
-                        <option value="search">Búsqueda Táctil</option><option value="coord">Coordenadas</option><option value="pursuit">Seguimiento</option>
+                <div id="routine-list" style="margin-top:0.5rem;"></div>
+                <div id="routine-designer" class="collapsible-content" style="background:#fff; padding:1rem; border:1px solid #cbd5e1; border-radius:8px; margin-top:0.5rem;">
+                    <select id="rout-add-mode">
+                        <option value="search">Cuadrícula: Búsqueda</option><option value="coord">Cuadrícula: Coordenadas</option><option value="pursuit">Cuadrícula: Seguimiento</option>
+                        <option value="anticrowding">Anti-Crowding</option><option value="saccadic">Saltos Sacádicos</option><option value="marsden">Pelota de Marsden</option>
+                        <option value="tracing">Visual Tracing</option><option value="tachisto">Taquistoscopio</option>
                     </select>
-                </div>
-                <div class="config-item">
-                    <label>Ojo:</label>
-                    <select id="grid-eye-select" style="background-color: #f0fdf4;"><option value="BIN">Binocular</option><option value="OD">OD</option><option value="OI">OI</option></select>
-                </div>
-                <div class="config-item">
-                    <label>Pulgadas: <span id="grid-detection-badge" style="font-size:0.7rem;"></span></label>
-                    <div style="display: flex; gap: 0.3rem;"><input type="number" id="grid-monitor-size" min="5" max="120" style="width: 60px;"><button class="btn btn-secondary" id="grid-open-calib-btn" style="padding: 0.4rem;">💳</button></div>
-                </div>
-                <label class="toggle-option"><input type="checkbox" id="grid-lines-toggle" checked> 📐 Líneas</label>
-                <label class="toggle-option"><input type="checkbox" id="grid-contrast-toggle"> ☯️ e-Ink</label>
-                <label class="toggle-option"><input type="checkbox" id="grid-audio-toggle"> 🔊 Audio</label>
-                
-                <div style="display: flex; gap: 0.4rem;">
-                    <button class="btn" id="grid-start-btn">Iniciar Sesión</button>
-                    <button class="btn btn-secondary" id="print-grid-btn">📄 Papel</button>
+                    <select id="rout-add-eye"><option value="BIN">Bin</option><option value="OD">OD</option><option value="OI">OI</option></select>
+                    <input type="number" id="rout-add-req" value="2" min="1" style="width:50px;">
+                    <button class="btn" id="btn-add-routine">➕ Añadir</button> <button class="btn btn-secondary" id="btn-clear-routine">Vaciar</button>
                 </div>
             </div>
-            <div id="grid-distance-info" class="info-badge" style="background: white; border: 1px solid #cbd5e1;">Calculando...</div>
-        </div> <!-- /view-grid -->
+
+            <!-- TARJETAS DE EJERCICIOS (6 JUEGOS) -->
+            <h2 style="margin: 0.5rem 0 0 0;">📚 Biblioteca de Ejercicios</h2>
+            <div class="exercises-grid">
+                <div class="exercise-card" onclick="openGame('grid')"><div class="exercise-card-icon">🔠</div><div class="exercise-card-title">1. Cuadrícula Espacial</div><div class="exercise-card-desc">Búsqueda y coordenadas en matriz.</div></div>
+                <div class="exercise-card" onclick="openGame('anticrowding')"><div class="exercise-card-icon">🎯</div><div class="exercise-card-title">2. Anti-Crowding</div><div class="exercise-card-desc">Fijación central contra amontonamiento.</div></div>
+                <div class="exercise-card" onclick="openGame('saccadic')"><div class="exercise-card-icon">⚡</div><div class="exercise-card-title">3. Saltos Sacádicos</div><div class="exercise-card-desc">Reflejo y salto periférico rápido.</div></div>
+                <div class="exercise-card" onclick="openGame('marsden')"><div class="exercise-card-icon">🎾</div><div class="exercise-card-title">4. Pelota de Marsden</div><div class="exercise-card-desc">Seguimiento dinámico suave (Pursuit).</div></div>
+                <div class="exercise-card" onclick="openGame('tracing')"><div class="exercise-card-icon">🔀</div><div class="exercise-card-title">5. Visual Tracing</div><div class="exercise-card-desc">Rastreo de laberintos con la mirada.</div></div>
+                <div class="exercise-card" onclick="openGame('tachisto')"><div class="exercise-card-icon">📸</div><div class="exercise-card-title">6. Taquistoscopio</div><div class="exercise-card-desc">Memoria visual flash (250ms).</div></div>
+            </div>
+
+            <!-- ANALÍTICA -->
+            <div class="panel" style="padding: 0; margin-top: 0.5rem;">
+                <button class="collapsible-toggle" onclick="document.getElementById('stats-box').classList.toggle('active')"><span>📊 Estadísticas y Reportes</span><span>▼</span></button>
+                <div id="stats-box" class="collapsible-content active" style="padding: 1rem;">
+                    <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:1rem;">
+                        <button class="btn btn-secondary" id="btn-print-pdf" style="background:#0d9488;">🖨️ Reporte PDF</button>
+                        <button class="btn btn-secondary" id="btn-backup">📥 Backup JSON</button>
+                        <button class="btn btn-secondary" id="btn-delete-hist" style="background:#ef4444;">Borrar Historial</button>
+                    </div>
+                    <table class="history-table" style="width:100%;">
+                        <thead><tr><th>Fecha</th><th>Juego</th><th>Ojo</th><th>Tiempo</th><th>Aciertos</th></tr></thead>
+                        <tbody id="history-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
 
         <!-- ==========================================
-             VISTA 3: MÓDULO ANTI-CROWDING (NUEVO V4.01)
+             PLANTILLA COMÚN PARA VISTAS DE JUEGO
              ========================================== -->
-        <div id="view-anticrowding" class="app-view">
-            <button class="btn btn-secondary" style="align-self: flex-start; margin-bottom: 0.2rem;" onclick="switchView('view-dashboard')">⬅️ Volver al Menú Principal</button>
+        <!-- Las variables y contenedores específicos se inyectarán vía JS por limpieza -->
+        <div id="game-view-container" style="width:100%; display:none; flex-direction:column; gap:0.6rem;">
+            <button class="btn btn-secondary" style="align-self:flex-start;" onclick="closeGame()">⬅️ Volver al Menú</button>
             
-            <div class="panel controls-row" id="ac-controls-anchor">
-                <div style="font-size: 1.15rem;">Identifica la letra <strong style="color:var(--primary);">CENTRAL</strong></div>
-                <div id="ac-progress-container">Progreso: <span class="progress-badge"><span id="ac-score">0</span> / 10</span></div>
-                <div style="font-size: 1.1rem; color: #dc2626;">Fallos: <strong id="ac-error-count">0</strong></div>
-                <div style="font-family: monospace; font-size: 1.4rem; font-weight: bold; color: #475569;" id="ac-timer">00:00.0</div>
+            <div class="panel controls-row">
+                <div>Objetivo: <span id="game-target" class="target-badge">-</span></div>
+                <div>Progreso: <span class="progress-badge"><span id="game-score">0</span>/<span id="game-total">10</span></span></div>
+                <div style="color:#dc2626;">Fallos: <strong id="game-errors">0</strong></div>
+                <div style="font-family:monospace; font-size:1.4rem;" id="game-timer">00:00.0</div>
             </div>
 
-            <!-- CONTENEDOR ANTI-CROWDING -->
-            <div class="ac-wrapper" id="ac-wrapper">
-                <div id="ac-display" style="font-size: 100px; letter-spacing: 20px;">
-                    <span class="ac-flanker">A</span> <span class="ac-target">B</span> <span class="ac-flanker">C</span>
-                </div>
-            </div>
+            <!-- INYECCIÓN DEL JUEGO DINÁMICO -->
+            <div id="game-canvas-area" style="width:100%; display:flex; justify-content:center;"></div>
 
             <div class="panel config-row">
-                <div class="config-item">
-                    <label>Ojo:</label>
-                    <select id="ac-eye-select" style="background-color: #f0fdf4;"><option value="BIN">Binocular</option><option value="OD">OD</option><option value="OI">OI</option></select>
-                </div>
-                <label class="toggle-option"><input type="checkbox" id="ac-contrast-toggle"> ☯️ Alto Contraste</label>
-                <label class="toggle-option"><input type="checkbox" id="ac-audio-toggle" checked> 🔊 Audio</label>
-                <button class="btn" id="ac-start-btn" style="padding: 0.8rem 2rem;">Iniciar Sesión Anti-Crowding</button>
+                <div class="config-item"><label>Ojo:</label><select id="game-eye"><option value="BIN">Binocular</option><option value="OD">OD</option><option value="OI">OI</option></select></div>
+                <div class="config-item"><label>Pulgadas:</label><div style="display:flex; gap:0.2rem;"><input type="number" id="game-inches" style="width:60px;" value="34"><button class="btn btn-secondary" onclick="document.getElementById('card-calib-modal').classList.add('active')">💳</button></div></div>
+                <div class="config-item" id="grid-mode-box" style="display:none;"><label>Modo Grid:</label><select id="game-grid-mode"><option value="search">Búsqueda</option><option value="coord">Coordenadas</option><option value="pursuit">Seguimiento</option></select></div>
+                <label class="toggle-option"><input type="checkbox" id="game-contrast"> ☯️ e-Ink</label>
+                <button class="btn" id="btn-game-start" style="padding:0.8rem 2rem;">Iniciar Sesión</button>
             </div>
-            <div class="info-badge" style="background: white; border: 1px solid #cbd5e1;">
-                <strong>Instrucciones:</strong> Mire fijamente al centro. Utilice el teclado (físico o virtual) para teclear la letra que aparece en el centro exacto. Si acierta, las letras se harán más pequeñas y se amontonarán más para forzar la agudeza foveal.
-            </div>
-        </div> <!-- /view-anticrowding -->
+            <div id="game-distance-info" class="info-badge" style="background:#fff;">Calculando distancia...</div>
+        </div>
 
-        <!-- TECLADO VIRTUAL COMPARTIDO -->
         <div id="virtual-keypad"></div>
 
-    </div> <!-- /container -->
+    </div>
 
     <script>
+        // CORE VARIABLES
         const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        const confusionMatrix = {
-            'A': ['V','X','Y','R'], 'B': ['P','R','E','D'], 'C': ['O','G','Q','D'], 'D': ['O','B','C','Q'],
-            'E': ['F','B','P','L'], 'F': ['E','P','T','R'], 'G': ['C','O','Q','D'], 'H': ['N','M','K','R'],
-            'I': ['L','T','J','F'], 'J': ['I','L','T','U'], 'K': ['X','H','R','Y'], 'L': ['I','T','J','E'],
-            'M': ['N','W','H','A'], 'N': ['M','H','Z','W'], 'O': ['Q','C','G','D'], 'P': ['F','B','R','E'],
-            'Q': ['O','C','G','D'], 'R': ['B','P','K','F'], 'S': ['Z','C','G','J'], 'T': ['I','L','J','F'],
-            'U': ['V','W','J','O'], 'V': ['U','W','Y','A'], 'W': ['M','V','U','N'], 'X': ['K','Y','Z','A'],
-            'Y': ['V','X','T','U'], 'Z': ['S','X','N','E']
+        let patients = JSON.parse(localStorage.getItem('nystagmus_patients') || '[{"id":"p_default","name":"Paciente General"}]');
+        let routines = JSON.parse(localStorage.getItem('nystagmus_routines') || '{}');
+        let historyLog = JSON.parse(localStorage.getItem('nystagmus_history') || '[]');
+        let clinicCfg = JSON.parse(localStorage.getItem('nystagmus_clinic_cfg') || '{}');
+        let activePatientId = localStorage.getItem('nystagmus_active_patient_id') || patients[0].id;
+        
+        let currentGame = null; // 'grid', 'anticrowding', 'saccadic', 'marsden', 'tracing', 'tachisto'
+        let currentGridMode = 'search';
+        let isPlaying = false, isPaused = false;
+        let timeMs = 0, sessionErrors = 0, foundTargets = 0, reqTargets = 10;
+        let gameTimerInt, customInt1, customInt2;
+        let targetValue = ''; 
+
+        // DOM ELEMENTS
+        const viewDash = document.getElementById('view-dashboard');
+        const viewGame = document.getElementById('game-view-container');
+        const canvasArea = document.getElementById('game-canvas-area');
+        const virtualKeypad = document.getElementById('virtual-keypad');
+
+        // INIT SYSTEM
+        function initApp() {
+            // Populate Patients
+            const sel = document.getElementById('global-patient-select'); sel.innerHTML='';
+            patients.forEach(p => sel.appendChild(new Option(p.name, p.id)));
+            sel.value = activePatientId;
+            sel.addEventListener('change', e => { activePatientId=e.target.value; localStorage.setItem('nystagmus_active_patient_id', activePatientId); renderDashboard(); });
+            
+            // Clinic
+            document.getElementById('cfg-clinic').value = clinicCfg.clinicName || '';
+            document.getElementById('cfg-specialist').value = clinicCfg.specialistName || '';
+            document.getElementById('cfg-col').value = clinicCfg.colNum || '';
+
+            // Inches
+            const inches = localStorage.getItem('nystagmus_monitor_size') || 34;
+            document.getElementById('game-inches').value = inches;
+
+            renderDashboard();
+            updateDistance();
+        }
+
+        document.getElementById('game-inches').addEventListener('input', e => { localStorage.setItem('nystagmus_monitor_size', e.target.value); updateDistance(); });
+        document.getElementById('save-clinic-btn').addEventListener('click', () => {
+            clinicCfg = { clinicName: document.getElementById('cfg-clinic').value, specialistName: document.getElementById('cfg-specialist').value, colNum: document.getElementById('cfg-col').value };
+            localStorage.setItem('nystagmus_clinic_cfg', JSON.stringify(clinicCfg)); alert("Guardado");
+        });
+        document.getElementById('create-pat-btn').addEventListener('click', () => {
+            const n = document.getElementById('new-pat-name').value; if(!n) return;
+            const np = {id:'p_'+Date.now(), name:n}; patients.push(np); localStorage.setItem('nystagmus_patients', JSON.stringify(patients));
+            activePatientId = np.id; initApp(); document.getElementById('patient-modal').classList.remove('active');
+        });
+
+        // SPA ROUTER
+        function openGame(gameId) {
+            viewDash.classList.remove('active'); viewGame.style.display = 'flex';
+            currentGame = gameId; canvasArea.innerHTML = ''; virtualKeypad.style.display='none';
+            document.getElementById('grid-mode-box').style.display = (gameId==='grid') ? 'flex' : 'none';
+            document.getElementById('btn-game-start').textContent = "Iniciar Sesión";
+            
+            // Build Game DOM
+            if(gameId==='grid') {
+                canvasArea.innerHTML = `<div id="grid-container" class="mode-search"></div>`;
+                reqTargets = (currentGridMode==='search') ? 0 : (currentGridMode==='coord'?10:15);
+                drawGrid();
+            }
+            if(gameId==='anticrowding') {
+                canvasArea.innerHTML = `<div class="game-area" id="ac-wrapper"><div id="ac-display" style="font-size:120px; letter-spacing:30px;">A <span style="color:var(--primary)">B</span> C</div></div>`;
+                reqTargets = 10;
+            }
+            if(gameId==='saccadic') {
+                canvasArea.innerHTML = `<div class="game-area" id="sac-area"><div id="saccadic-target"></div></div>`;
+                reqTargets = 15;
+            }
+            if(gameId==='marsden') {
+                canvasArea.innerHTML = `<div class="game-area" id="mars-area" style="align-items:flex-start;"><div id="marsden-pendulum"><div class="marsden-string"></div><div id="marsden-ball">A</div></div></div>`;
+                reqTargets = 10;
+            }
+            if(gameId==='tracing') {
+                canvasArea.innerHTML = `<div class="game-area" style="position:relative;"><canvas id="tracing-canvas"></canvas><div id="tracing-controls"><button class="btn" onclick="checkTrace('A')">Letra A</button><button class="btn" onclick="checkTrace('B')">Letra B</button><button class="btn" onclick="checkTrace('C')">Letra C</button></div></div>`;
+                reqTargets = 5;
+            }
+            if(gameId==='tachisto') {
+                canvasArea.innerHTML = `<div class="game-area" style="position:relative;"><div id="tach-fixation">+</div><div id="tach-display">123</div><div id="tach-input-area"><input type="text" id="tach-input" style="font-size:2rem; width:150px; text-align:center;" maxlength="5"><button class="btn" id="tach-verify">Verificar</button></div></div>`;
+                reqTargets = 10;
+            }
+            resetScoreboard();
+        }
+
+        function closeGame() { stopGame(); viewGame.style.display='none'; viewDash.classList.add('active'); renderDashboard(); }
+
+        // GAME ENGINE COMMON
+        function resetScoreboard() {
+            timeMs=0; sessionErrors=0; foundTargets=0;
+            document.getElementById('game-timer').textContent="00:00.0";
+            document.getElementById('game-score').textContent="0";
+            document.getElementById('game-total').textContent=reqTargets;
+            document.getElementById('game-errors').textContent="0";
+            document.getElementById('game-target').textContent="-";
+        }
+
+        document.getElementById('btn-game-start').addEventListener('click', () => {
+            if(isPlaying) stopGame(); else startGame();
+        });
+
+        function startGame() {
+            isPlaying = true; resetScoreboard();
+            document.getElementById('btn-game-start').textContent = "Detener"; document.getElementById('btn-game-start').style.background = "#ef4444";
+            document.getElementById('game-target').scrollIntoView({behavior:'smooth', block:'center'});
+            gameTimerInt = setInterval(() => {
+                if(isPaused) return; timeMs+=100;
+                let m=Math.floor(timeMs/60000).toString().padStart(2,'0'), s=Math.floor((timeMs%60000)/1000).toString().padStart(2,'0'), d=Math.floor((timeMs%1000)/100);
+                document.getElementById('game-timer').textContent = `${m}:${s}.${d}`;
+            }, 100);
+
+            // Dispatch Game logic
+            if(currentGame==='grid') startGrid();
+            if(currentGame==='anticrowding') startAntiCrowding();
+            if(currentGame==='saccadic') startSaccadic();
+            if(currentGame==='marsden') startMarsden();
+            if(currentGame==='tracing') startTracing();
+            if(currentGame==='tachisto') startTachisto();
+        }
+
+        function stopGame() {
+            isPlaying = false; clearInterval(gameTimerInt); clearInterval(customInt1); clearInterval(customInt2);
+            document.getElementById('btn-game-start').textContent = "Iniciar Sesión"; document.getElementById('btn-game-start').style.background = "var(--primary)";
+            virtualKeypad.style.display='none';
+            if(currentGame==='marsden') document.getElementById('marsden-pendulum').style.animation = 'none';
+        }
+
+        function endGame() {
+            stopGame();
+            const acc = (foundTargets+sessionErrors)>0 ? Math.round((foundTargets/(foundTargets+sessionErrors))*100) : 100;
+            const log = { id:Date.now(), patientId:activePatientId, date:new Date().toLocaleString('es-ES',{dateStyle:'short',timeStyle:'short'}), mode:currentGame, modeName:currentGame, eye:document.getElementById('game-eye').value, timeMs:timeMs, timeFormatted:document.getElementById('game-timer').textContent, accuracy:acc, errors:sessionErrors };
+            historyLog.push(log); localStorage.setItem('nystagmus_history', JSON.stringify(historyLog));
+            updateRoutineProgress();
+            
+            document.getElementById('res-time').textContent = log.timeFormatted; document.getElementById('res-errors').textContent = sessionErrors; document.getElementById('res-accuracy').textContent = acc+"%";
+            document.getElementById('result-overlay').classList.add('active');
+        }
+
+        function triggerError(el) {
+            sessionErrors++; document.getElementById('game-errors').textContent = sessionErrors;
+            if(el) { el.classList.remove('error','wrong'); void el.offsetWidth; el.classList.add(currentGame==='grid'?'wrong':'error'); }
+            if(navigator.vibrate) navigator.vibrate(200);
+        }
+
+        function registerHit() {
+            foundTargets++; document.getElementById('game-score').textContent = foundTargets;
+            if(foundTargets >= reqTargets) endGame();
+        }
+
+        function showFlash(txt, callback) {
+            isPaused = true;
+            document.getElementById('flashcard-main').innerHTML = txt; document.getElementById('flashcard-dist-val').textContent = currentSuggestedDistanceCm;
+            document.getElementById('flashcard-overlay').classList.add('active');
+            overlayCallback = callback;
+            setTimeout(() => { if(document.getElementById('flashcard-overlay').classList.contains('active')) hideFlash(); }, 2500);
+        }
+        function hideFlash() { document.getElementById('flashcard-overlay').classList.remove('active'); isPaused=false; if(overlayCallback){let c=overlayCallback; overlayCallback=null; c();} }
+        document.getElementById('flashcard-overlay').addEventListener('click', hideFlash);
+
+        // --- GAME 1: GRID LOGIC ---
+        document.getElementById('game-grid-mode').addEventListener('change', e=>{ currentGridMode=e.target.value; if(!isPlaying) openGame('grid'); });
+        
+        function drawGrid() {
+            const cont = document.getElementById('grid-container'); if(!cont) return;
+            cont.innerHTML=''; cont.className=`mode-${currentGridMode}`;
+            cont.appendChild(document.createElement('div'));
+            for(let i=1;i<=10;i++){ let d=document.createElement('div'); d.className='label-cell'; d.textContent=i; cont.appendChild(d); }
+            for(let r=1;r<=10;r++){
+                let h=document.createElement('div'); h.className='label-cell'; h.textContent=r; cont.appendChild(h);
+                for(let c=1;c<=10;c++){
+                    let d=document.createElement('div'); d.className='cell'; d.dataset.r=r; d.dataset.c=c;
+                    d.textContent = alphabet[Math.floor(Math.random()*26)];
+                    if(currentGridMode==='search') d.addEventListener('click', ()=>gridCheckHit(d));
+                    cont.appendChild(d);
+                }
+            }
+            setTimeout(()=>{
+                const w = Math.min(window.innerWidth*0.9, 600); cont.style.width=w+'px'; cont.style.height=w+'px';
+                const cell = document.querySelector('.cell'); if(cell) document.querySelectorAll('.cell').forEach(c=>c.style.fontSize=Math.round(cell.clientHeight*0.65)+'px');
+            }, 50);
+        }
+
+        function startGrid() {
+            if(currentGridMode==='search') {
+                reqTargets=0; targetValue=alphabet[Math.floor(Math.random()*26)];
+                document.querySelectorAll('.cell').forEach(c=>{ if(Math.random()<0.15){c.textContent=targetValue; reqTargets++;} else {while(c.textContent===targetValue) c.textContent=alphabet[Math.floor(Math.random()*26)];} });
+                document.getElementById('game-total').textContent=reqTargets;
+                showFlash(`Busca: <span style="color:#e11d48">${targetValue}</span>`, ()=>{ document.getElementById('game-target').textContent=targetValue; });
+            } else if (currentGridMode==='coord') {
+                gridNextCoord();
+            } else if (currentGridMode==='pursuit') {
+                showFlash(`Sigue la celda <span style="color:#3b82f6">AZUL</span>`, ()=>{ document.getElementById('game-target').textContent="AZUL"; gridNextPursuit(); customInt1=setInterval(gridNextPursuit, 3000); });
+            }
+        }
+
+        let gridTR=0, gridTC=0;
+        function gridNextCoord() {
+            gridTR=Math.floor(Math.random()*10)+1; gridTC=Math.floor(Math.random()*10)+1;
+            showFlash(`Fila ${gridTR}<br>Columna ${gridTC}`, ()=>{
+                document.getElementById('game-target').textContent = `F${gridTR}, C${gridTC}`;
+                targetValue = document.querySelector(`.cell[data-r="${gridTR}"][data-c="${gridTC}"]`).textContent;
+                renderKeypad(targetValue);
+            });
+        }
+        function gridNextPursuit() {
+            if(isPaused) return;
+            let old = document.querySelector('.pursuit-active'); if(old) old.classList.remove('pursuit-active');
+            if(gridTR===0) { gridTR=5; gridTC=5; } else { gridTR+=(Math.floor(Math.random()*3)-1); gridTC+=(Math.floor(Math.random()*3)-1); }
+            if(gridTR<1) gridTR=2; if(gridTR>10) gridTR=9; if(gridTC<1) gridTC=2; if(gridTC>10) gridTC=9;
+            let n = document.querySelector(`.cell[data-r="${gridTR}"][data-c="${gridTC}"]`);
+            if(n) { n.classList.add('pursuit-active'); targetValue=n.textContent; renderKeypad(targetValue); }
+        }
+        function gridCheckHit(cell) {
+            if(isPaused||!isPlaying) return;
+            if(cell.textContent===targetValue) { if(!cell.classList.contains('found')){ cell.classList.add('found'); registerHit(); } } else { triggerError(cell); }
+        }
+
+        // --- GAME 2: ANTI CROWDING ---
+        let acLevel = { font:120, space:30, fl:1 };
+        function startAntiCrowding() {
+            acLevel = { font:120, space:30, fl:1 };
+            showFlash(`Identifica la central`, ()=>{ nextACRound(); });
+        }
+        function nextACRound() {
+            targetValue = alphabet[Math.floor(Math.random()*26)];
+            let html=''; for(let i=0;i<acLevel.fl;i++){ html = `<span class="ac-flanker">${alphabet[Math.floor(Math.random()*26)]}</span> `+html+` <span class="ac-flanker">${alphabet[Math.floor(Math.random()*26)]}</span>`; }
+            let p=html.split(' '); p.splice(Math.floor(p.length/2),0,`<span class="ac-target">${targetValue}</span>`);
+            const d = document.getElementById('ac-display');
+            d.style.fontSize = acLevel.font+'px'; d.style.letterSpacing = acLevel.space+'px'; d.innerHTML = p.join('');
+            renderKeypad(targetValue);
+        }
+        function checkAC(char) {
+            if(char===targetValue) {
+                document.getElementById('ac-wrapper').classList.add('success'); setTimeout(()=>document.getElementById('ac-wrapper').classList.remove('success'), 200);
+                acLevel.font = Math.max(30, acLevel.font*0.85); acLevel.space = Math.max(0, acLevel.space-4); if(foundTargets===4) acLevel.fl=2;
+                registerHit(); if(foundTargets<reqTargets) nextACRound();
+            } else { triggerError(document.getElementById('ac-wrapper')); }
+        }
+
+        // --- GAME 3: SACCADIC ---
+        function startSaccadic() {
+            document.getElementById('game-target').textContent = "Atrapar Diana";
+            showFlash(`Pulsa la diana roja rápidamente`, ()=>{ nextSaccadic(); });
+        }
+        function nextSaccadic() {
+            const t = document.getElementById('saccadic-target');
+            t.style.display = 'block';
+            t.style.top = Math.floor(Math.random()*80+10)+'%'; t.style.left = Math.floor(Math.random()*80+10)+'%';
+            t.onclick = () => { t.style.display='none'; registerHit(); if(foundTargets<reqTargets) setTimeout(nextSaccadic, Math.random()*1000+200); };
+        }
+
+        // --- GAME 4: MARSDEN ---
+        function startMarsden() {
+            targetValue = 'A'; document.getElementById('game-target').textContent = `Pulsar la letra ${targetValue}`;
+            document.getElementById('marsden-pendulum').style.animation = 'swing 2s infinite ease-in-out alternate';
+            showFlash(`Pulsa el teclado/pantalla SÓLO al ver la letra <span style="color:#e11d48">A</span>`, ()=>{
+                customInt1 = setInterval(()=>{
+                    let char = Math.random()<0.3 ? 'A' : alphabet[Math.floor(Math.random()*26)];
+                    document.getElementById('marsden-ball').textContent = char;
+                }, 1500);
+            });
+            document.getElementById('mars-area').onclick = () => checkMarsden();
+        }
+        function checkMarsden() {
+            if(isPaused) return;
+            if(document.getElementById('marsden-ball').textContent === 'A') {
+                document.getElementById('mars-area').style.background = '#dcfce7'; setTimeout(()=>document.getElementById('mars-area').style.background = 'transparent', 200);
+                registerHit(); document.getElementById('marsden-ball').textContent = '-'; // Hide to prevent double click
+            } else { triggerError(document.getElementById('mars-area')); }
+        }
+
+        // --- GAME 5: TRACING ---
+        function startTracing() {
+            document.getElementById('game-target').textContent = "Sigue la línea Azul";
+            showFlash(`Sigue la línea <span style="color:#3b82f6">AZUL</span> con los ojos`, ()=>{ nextTracing(); });
+        }
+        function nextTracing() {
+            const cvs = document.getElementById('tracing-canvas'); const ctx = cvs.getContext('2d');
+            const w = cvs.parentElement.clientWidth; const h = cvs.parentElement.clientHeight;
+            cvs.width=w; cvs.height=h; ctx.clearRect(0,0,w,h);
+            
+            document.querySelectorAll('.tracing-label').forEach(e=>e.remove());
+            const startX = [w*0.2, w*0.5, w*0.8]; const endX = [...startX].sort(()=>Math.random()-0.5);
+            const cols = ['#3b82f6', '#ef4444', '#10b981']; targetValue = ['A','B','C'][endX.indexOf(endX[0])]; // Azul es index 0
+
+            for(let i=0; i<3; i++) {
+                ctx.beginPath(); ctx.moveTo(startX[i], 30); ctx.bezierCurveTo(startX[i], h/2, endX[i], h/2, endX[i], h-30);
+                ctx.strokeStyle=cols[i]; ctx.lineWidth=6; ctx.stroke();
+                
+                let ls = document.createElement('div'); ls.className='tracing-label'; ls.style.left=(startX[i]-15)+'px'; ls.style.top='10px'; ls.textContent=i+1;
+                let le = document.createElement('div'); le.className='tracing-label'; le.style.left=(endX[i]-15)+'px'; le.style.top=(h-40)+'px'; le.textContent=['A','B','C'][i];
+                cvs.parentElement.appendChild(ls); cvs.parentElement.appendChild(le);
+            }
+            document.getElementById('tracing-controls').style.display='flex';
+        }
+        function checkTrace(ans) { if(ans===targetValue) { registerHit(); if(foundTargets<reqTargets) nextTracing(); } else { triggerError(null); } }
+
+        // --- GAME 6: TACHISTO ---
+        let tachVal = "";
+        function startTachisto() { document.getElementById('game-target').textContent="Memorizar"; showFlash("Fija el centro", ()=>{ setTimeout(nextTachisto, 1000); }); }
+        function nextTachisto() {
+            document.getElementById('tach-input-area').style.display='none'; document.getElementById('tach-input').value='';
+            document.getElementById('tach-fixation').style.display='block';
+            setTimeout(()=>{
+                tachVal = Math.floor(100 + Math.random()*900).toString(); // 3 digits
+                document.getElementById('tach-fixation').style.display='none';
+                document.getElementById('tach-display').textContent = tachVal;
+                document.getElementById('tach-display').style.display='block';
+                setTimeout(()=>{
+                    document.getElementById('tach-display').style.display='none';
+                    document.getElementById('tach-input-area').style.display='flex';
+                    document.getElementById('tach-input').focus();
+                }, 250); // Flash 250ms
+            }, 1000);
+        }
+        document.getElementById('tach-verify').onclick = () => {
+            if(document.getElementById('tach-input').value === tachVal) { registerHit(); if(foundTargets<reqTargets) nextTachisto(); } else { triggerError(null); document.getElementById('tach-input').value=''; }
         };
 
-        // ESTADO GLOBAL
-        let activePatientId = null;
-        let currentClinicLogoBase64 = '';
-        let currentSuggestedDistanceCm = 75;
-        let activeView = 'view-dashboard'; // SPA State
-        let currentExercise = null; // 'search', 'coord', 'pursuit', 'anticrowding'
-        let isPlaying = false;
-        let isPausedByOverlay = false;
-        let selectedKeypadIndex = 0;
-        let timeElapsedMs = 0;
-        let sessionErrors = 0;
-        let totalTargets = 0, foundTargets = 0;
-        let globalTimerInterval, globalPursuitInterval, flashcardTimeout;
-
-        // ELEMENTOS DOM COMPARTIDOS
-        const virtualKeypad = document.getElementById('virtual-keypad');
-        const flashcardOverlay = document.getElementById('flashcard-overlay');
-        const flashcardMain = document.getElementById('flashcard-main');
-        const flashcardDistVal = document.getElementById('flashcard-dist-val');
-        const resultOverlay = document.getElementById('result-overlay');
-        const resTime = document.getElementById('res-time');
-        const resErrors = document.getElementById('res-errors');
-        const resAccuracy = document.getElementById('res-accuracy');
-        let overlayCallback = null;
-
-        // DOM GRID
-        const gridContainer = document.getElementById('grid-container');
-        const gridTargetDisplay = document.getElementById('grid-target-display');
-        const gridScore = document.getElementById('grid-score');
-        const gridTotalTargets = document.getElementById('grid-total-targets');
-        const gridErrorCount = document.getElementById('grid-error-count');
-        const gridTimer = document.getElementById('grid-timer');
-        const gridStartBtn = document.getElementById('grid-start-btn');
-        const gridModeSelect = document.getElementById('grid-mode-select');
-        const gridEyeSelect = document.getElementById('grid-eye-select');
-        const gridLinesToggle = document.getElementById('grid-lines-toggle');
-        const gridContrastToggle = document.getElementById('grid-contrast-toggle');
-        const gridAudioToggle = document.getElementById('grid-audio-toggle');
-        const gridMonitorSize = document.getElementById('grid-monitor-size');
-        const gridDistanceInfo = document.getElementById('grid-distance-info');
-        let targetRow = 0, targetCol = 0, gridTargetLetter = '';
-
-        // DOM ANTI-CROWDING (V4.01)
-        const acWrapper = document.getElementById('ac-wrapper');
-        const acDisplay = document.getElementById('ac-display');
-        const acScore = document.getElementById('ac-score');
-        const acErrorCount = document.getElementById('ac-error-count');
-        const acTimer = document.getElementById('ac-timer');
-        const acStartBtn = document.getElementById('ac-start-btn');
-        const acEyeSelect = document.getElementById('ac-eye-select');
-        const acContrastToggle = document.getElementById('ac-contrast-toggle');
-        const acAudioToggle = document.getElementById('ac-audio-toggle');
-        let acTargetLetter = '';
-        let acLevelParams = { fontSize: 140, letterSpacing: 30, flankers: 1 }; // Inicial
-
-        // --- SISTEMA DE NAVEGACIÓN SPA ---
-        function switchView(viewId) {
-            if(isPlaying) stopAnyGame();
-            document.querySelectorAll('.app-view').forEach(v => v.classList.remove('active'));
-            document.getElementById(viewId).classList.add('active');
-            activeView = viewId;
-            virtualKeypad.style.display = 'none';
-
-            if(viewId === 'view-dashboard') renderHistory();
-            if(viewId === 'view-grid') updateGridLines();
-        }
-
-        // --- MANEJO DE ALTO CONTRASTE UNIFICADO ---
-        function updateHighContrast() {
-            const isContrast = gridContrastToggle.checked || acContrastToggle.checked;
-            if (isContrast) {
-                document.body.classList.add('high-contrast');
-                gridContrastToggle.checked = true; acContrastToggle.checked = true;
-            } else {
-                document.body.classList.remove('high-contrast');
-                gridContrastToggle.checked = false; acContrastToggle.checked = false;
-            }
-        }
-        gridContrastToggle.addEventListener('change', updateHighContrast);
-        acContrastToggle.addEventListener('change', updateHighContrast);
-
-        // --- OVERLAYS Y AUDIO ---
-        function speakText(text) {
-            const audioOn = (activeView==='view-grid') ? gridAudioToggle.checked : acAudioToggle.checked;
-            if (!audioOn) return;
-            try {
-                if (!window.speechSynthesis) return;
-                window.speechSynthesis.cancel();
-                const utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = 'es-ES'; utterance.rate = 0.9;
-                window.speechSynthesis.speak(utterance);
-            } catch(e) {}
-        }
-
-        function showFlashcard(visualText, spokenText, callback) {
-            isPausedByOverlay = true;
-            flashcardMain.innerHTML = visualText;
-            flashcardDistVal.textContent = currentSuggestedDistanceCm;
-            flashcardOverlay.classList.add('active');
-            overlayCallback = callback;
-            speakText(`Distancia: ${currentSuggestedDistanceCm} cm. ` + spokenText);
-            clearTimeout(flashcardTimeout);
-            flashcardTimeout = setTimeout(() => { if(flashcardOverlay.classList.contains('active')) dismissFlashcard(); }, 3500);
-        }
-
-        function dismissFlashcard() {
-            if (!flashcardOverlay.classList.contains('active')) return;
-            flashcardOverlay.classList.remove('active');
-            try { window.speechSynthesis.cancel(); } catch(e){}
-            isPausedByOverlay = false;
-            if (overlayCallback) { let temp = overlayCallback; overlayCallback = null; temp(); }
-        }
-        flashcardOverlay.addEventListener('click', dismissFlashcard);
-
-        function showResultOverlay(timeStr, errors, accuracyPct) {
-            isPausedByOverlay = true;
-            resTime.textContent = timeStr; resErrors.textContent = errors; resAccuracy.textContent = `${accuracyPct}%`;
-            resultOverlay.classList.add('active');
-        }
-        function dismissResultOverlay() {
-            if (!resultOverlay.classList.contains('active')) return;
-            resultOverlay.classList.remove('active');
-            isPausedByOverlay = false;
-        }
-        resultOverlay.addEventListener('click', dismissResultOverlay);
-
-        function scrollToAnchor(id) { setTimeout(() => { const el = document.getElementById(id); if(el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100); }
-
-        // --- TECLADO VIRTUAL GLOBAL ---
-        function updateVirtualKeypad(correctChar) {
-            virtualKeypad.innerHTML = '';
-            let options = confusionMatrix[correctChar] ? [...confusionMatrix[correctChar]] : [];
-            options = options.sort(() => 0.5 - Math.random()).slice(0, 3);
-            options.push(correctChar);
-            while(options.length < 4) {
-               let rand = alphabet[Math.floor(Math.random() * alphabet.length)];
-               if(!options.includes(rand)) options.push(rand);
-            }
-            options.sort(() => 0.5 - Math.random());
-            selectedKeypadIndex = 0;
-
-            options.forEach((char, idx) => {
-                const btn = document.createElement('button');
-                btn.className = 'keypad-btn' + (idx === selectedKeypadIndex ? ' focused' : '');
-                btn.textContent = char;
-                btn.addEventListener('click', (e) => {
-                    e.preventDefault(); selectedKeypadIndex = idx;
-                    updateKeypadFocusVisuals();
-                    handleGlobalKeyPress(char);
-                });
-                virtualKeypad.appendChild(btn);
+        // --- VIRTUAL KEYPAD GLOBAL ---
+        function renderKeypad(correct) {
+            virtualKeypad.innerHTML=''; let opts = confusionMatrix[correct]?[...confusionMatrix[correct]]:[];
+            opts.push(correct); while(opts.length<4) { let r=alphabet[Math.floor(Math.random()*26)]; if(!opts.includes(r)) opts.push(r); }
+            opts.sort(()=>Math.random()-0.5);
+            opts.forEach((c,i)=>{
+                let b=document.createElement('button'); b.className='keypad-btn'; b.textContent=c;
+                b.onclick = (e)=>{ e.preventDefault(); handleKey(c); }; virtualKeypad.appendChild(b);
             });
-            virtualKeypad.style.display = 'grid';
+            virtualKeypad.style.display='grid';
         }
-        function updateKeypadFocusVisuals() {
-            const buttons = virtualKeypad.querySelectorAll('.keypad-btn');
-            buttons.forEach((b, i) => { if (i === selectedKeypadIndex) b.classList.add('focused'); else b.classList.remove('focused'); });
+        function handleKey(char) {
+            if(currentGame==='grid' && currentGridMode!=='search') {
+                if(char===targetValue) {
+                    foundTargets++; document.getElementById('game-score').textContent = foundTargets;
+                    let c=document.querySelector('.pursuit-active'); if(c) {c.classList.remove('pursuit-active'); c.classList.add('found'); setTimeout(()=>c.classList.remove('found'),400);}
+                    if(foundTargets>=reqTargets) endGame(); else { if(currentGridMode==='coord') pickNewCoordinate(); else { clearInterval(globalPursuitInterval); gridNextPursuit(); globalPursuitInterval=setInterval(gridNextPursuit, 3000); } }
+                } else triggerError(document.querySelector('.pursuit-active'));
+            } else if (currentGame==='anticrowding') { checkAC(char); }
         }
-
-        document.addEventListener('keydown', (e) => {
-            if (flashcardOverlay.classList.contains('active')) { dismissFlashcard(); return; }
-            if (resultOverlay.classList.contains('active')) { dismissResultOverlay(); return; }
-            if (!isPlaying || isPausedByOverlay) return;
-
-            const buttons = virtualKeypad.querySelectorAll('.keypad-btn');
-            if (buttons.length === 4 && virtualKeypad.style.display !== 'none') {
-                if (e.key === 'ArrowLeft') { e.preventDefault(); selectedKeypadIndex = (selectedKeypadIndex - 1 + 4) % 4; updateKeypadFocusVisuals(); } 
-                else if (e.key === 'ArrowRight') { e.preventDefault(); selectedKeypadIndex = (selectedKeypadIndex + 1) % 4; updateKeypadFocusVisuals(); } 
-                else if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault(); handleGlobalKeyPress(buttons[selectedKeypadIndex].textContent);
-                } else if (/^[a-zA-ZñÑ]$/.test(e.key)) {
-                    handleGlobalKeyPress(e.key.toUpperCase());
-                }
-            } else if (/^[a-zA-ZñÑ]$/.test(e.key)) {
-                handleGlobalKeyPress(e.key.toUpperCase());
-            }
+        document.addEventListener('keydown', e=>{
+            if(e.key===' ') { if(currentGame==='marsden' && isPlaying) { e.preventDefault(); checkMarsden(); } return; }
+            if(/^[a-zA-ZñÑ]$/.test(e.key) && isPlaying && (currentGame==='grid'||currentGame==='anticrowding')) handleKey(e.key.toUpperCase());
         });
 
-        function handleGlobalKeyPress(pressedChar) {
-            if(activeView === 'view-grid') handleGridKeyPress(pressedChar);
-            if(activeView === 'view-anticrowding') handleACKeyPress(pressedChar);
-        }
-
-        // --- MOTOR COMÚN ---
-        function updateGlobalTimer() {
-            if (!isPlaying || isPausedByOverlay) return;
-            timeElapsedMs += 100;
-            const mins = Math.floor(timeElapsedMs / 60000).toString().padStart(2, '0');
-            const secs = Math.floor((timeElapsedMs % 60000) / 1000).toString().padStart(2, '0');
-            const decis = Math.floor((timeElapsedMs % 1000) / 100);
-            const str = `${mins}:${secs}.${decis}`;
-            if(activeView === 'view-grid') gridTimer.textContent = str;
-            if(activeView === 'view-anticrowding') acTimer.textContent = str;
-        }
-
-        function triggerErrorGlobal(element) {
-            sessionErrors++;
-            if(activeView === 'view-grid') {
-                gridErrorCount.textContent = sessionErrors;
-                element.classList.remove('wrong'); void element.offsetWidth; element.classList.add('wrong');
-            }
-            if(activeView === 'view-anticrowding') {
-                acErrorCount.textContent = sessionErrors;
-                acWrapper.classList.remove('error'); void acWrapper.offsetWidth; acWrapper.classList.add('error');
-            }
-            try { if (navigator.vibrate) navigator.vibrate(200); } catch(e){}
-        }
-
-        function stopAnyGame() {
-            isPlaying = false; clearInterval(globalTimerInterval); clearInterval(globalPursuitInterval);
-            virtualKeypad.style.display = 'none';
-            gridStartBtn.textContent = "Iniciar Sesión"; gridStartBtn.style.backgroundColor = "var(--primary)";
-            acStartBtn.textContent = "Iniciar Sesión Anti-Crowding"; acStartBtn.style.backgroundColor = "var(--primary)";
-        }
-
-        function endGlobalGame() {
-            isPlaying = false; clearInterval(globalTimerInterval); clearInterval(globalPursuitInterval);
-            speakText("¡Sesión completada!");
-            saveSessionData();
-            virtualKeypad.innerHTML = ''; virtualKeypad.style.display = 'none';
-
-            let finalTime = (activeView==='view-grid') ? gridTimer.textContent : acTimer.textContent;
-            gridStartBtn.textContent = "Nueva Sesión"; gridStartBtn.style.backgroundColor = "var(--primary)";
-            acStartBtn.textContent = "Nueva Sesión"; acStartBtn.style.backgroundColor = "var(--primary)";
-
-            const totalInputs = foundTargets + sessionErrors;
-            const accuracyPct = totalInputs > 0 ? Math.round((foundTargets / totalInputs) * 100) : 100;
-            showResultOverlay(finalTime, sessionErrors, accuracyPct);
-            if(activeView === 'view-grid') document.querySelectorAll('.pursuit-active').forEach(el => el.classList.remove('pursuit-active'));
-        }
-
-        // ==========================================
-        // MÓDULO 1: CUADRÍCULA
-        // ==========================================
-        function updateLayoutAndGridSize() {
-            if(activeView !== 'view-grid') return;
-            const wrapper = document.querySelector('.grid-wrapper');
-            if (!wrapper || !gridContainer) return;
-            const maxW = Math.min(window.innerWidth * 0.90, 600);
-            const maxH = Math.min(window.innerHeight * 0.58, 600);
-            const squareSize = Math.floor(Math.min(maxW, maxH));
-            gridContainer.style.width = squareSize + 'px'; gridContainer.style.height = squareSize + 'px';
-
-            setTimeout(() => {
-                const sc = document.querySelector('.cell');
-                if (sc && sc.clientHeight > 0) {
-                    const fontPx = Math.round(sc.clientHeight * 0.68);
-                    document.querySelectorAll('.cell').forEach(c => c.style.fontSize = fontPx + 'px');
-                }
-                const sl = document.querySelector('.label-cell');
-                if (sl && sl.clientHeight > 0) {
-                    const lFontPx = Math.round(sl.clientHeight * 0.45);
-                    document.querySelectorAll('.label-cell').forEach(l => l.style.fontSize = lFontPx + 'px');
-                }
-            }, 20);
-        }
-
-        function updateGridLines() {
-            if (gridLinesToggle.checked) gridContainer.classList.remove('hide-lines');
-            else gridContainer.classList.add('hide-lines');
-            updateLayoutAndGridSize();
-        }
-        gridLinesToggle.addEventListener('change', updateGridLines);
-
-        function handleGridSearchClick(cell, char) {
-            if (!isPlaying || currentExercise !== 'search' || isPausedByOverlay) return;
-            if (char === gridTargetLetter) {
-                if (!cell.classList.contains('found')) {
-                    cell.classList.add('found'); foundTargets++; gridScore.textContent = foundTargets;
-                    if (foundTargets === totalTargets) endGlobalGame();
-                }
-            } else { triggerErrorGlobal(cell); }
-        }
-
-        function generateGrid() {
-            gridContainer.innerHTML = '';
-            currentExercise = gridModeSelect.value;
-            gridContainer.className = `mode-${currentExercise}`;
-            updateGridLines(); updateDistanceCalibration();
-            
-            if(currentExercise === 'search') {
-                totalTargets = 0; gridTargetLetter = alphabet[Math.floor(Math.random() * alphabet.length)];
-            } else if (currentExercise === 'coord') {
-                totalTargets = 10; gridTotalTargets.textContent = "10";
-            } else if (currentExercise === 'pursuit') {
-                totalTargets = 15; gridTotalTargets.textContent = "15";
-            }
-            foundTargets = 0; sessionErrors = 0; gridScore.textContent = 0; gridErrorCount.textContent = 0;
-
-            gridContainer.appendChild(createLabelCell(''));
-            for (let c = 1; c <= 10; c++) gridContainer.appendChild(createLabelCell(c));
-            for (let r = 1; r <= 10; r++) {
-                gridContainer.appendChild(createLabelCell(r));
-                for (let c = 1; c <= 10; c++) {
-                    const cell = document.createElement('div'); cell.className = 'cell'; cell.dataset.row = r; cell.dataset.col = c;
-                    let char;
-                    if (currentExercise === 'search' && Math.random() < 0.15) { char = gridTargetLetter; totalTargets++; } 
-                    else { do { char = alphabet[Math.floor(Math.random() * alphabet.length)]; } while (currentExercise === 'search' && char === gridTargetLetter); }
-                    cell.textContent = char;
-                    if(currentExercise === 'search') cell.addEventListener('click', () => handleGridSearchClick(cell, char));
-                    gridContainer.appendChild(cell);
-                }
-            }
-            updateLayoutAndGridSize();
-
-            if (currentExercise === 'search') {
-                if (totalTargets === 0) return generateGrid(); 
-                gridTotalTargets.textContent = totalTargets;
-                if(isPlaying) {
-                    showFlashcard(`Busca la letra <span style="color:#e11d48">${gridTargetLetter}</span>`, `Busca todas las letras ${gridTargetLetter}`, () => { gridTargetDisplay.textContent = gridTargetLetter; });
-                } else { gridTargetDisplay.textContent = gridTargetLetter; }
-            } else if (currentExercise === 'coord' && isPlaying) {
-                pickNewCoordinate();
-            } else if (currentExercise === 'pursuit' && isPlaying) {
-                showFlashcard(`Sigue la celda <span style="color:#3b82f6">AZUL</span>`, "Sigue la celda azul y pulsa la letra", () => { gridTargetDisplay.textContent = "AZUL"; startPursuitTarget(); });
-            } else { gridTargetDisplay.textContent = "-"; }
-        }
-
-        function pickNewCoordinate() {
-            targetRow = Math.floor(Math.random() * 10) + 1; targetCol = Math.floor(Math.random() * 10) + 1;
-            showFlashcard(`Fila <span style="color:#e11d48">${targetRow}</span><br>Columna <span style="color:#e11d48">${targetCol}</span>`, `Fila ${targetRow}, Columna ${targetCol}`, () => {
-                gridTargetDisplay.innerHTML = `F${targetRow}, C${targetCol}`;
-                const correctChar = document.querySelector(`.cell[data-row="${targetRow}"][data-col="${targetCol}"]`).textContent;
-                updateVirtualKeypad(correctChar);
-            });
-        }
-
-        function startPursuitTarget() {
-            targetRow = Math.floor(Math.random() * 10) + 1; targetCol = Math.floor(Math.random() * 10) + 1;
-            updatePursuitVisuals();
-            clearInterval(globalPursuitInterval);
-            globalPursuitInterval = setInterval(movePursuitTarget, 3500); 
-        }
-
-        function movePursuitTarget() {
-            if(isPausedByOverlay || activeView !== 'view-grid') return;
-            const oldCell = document.querySelector(`.cell[data-row="${targetRow}"][data-col="${targetCol}"]`);
-            if(oldCell) oldCell.classList.remove('pursuit-active');
-            let rowOffset = Math.floor(Math.random() * 3) - 1; let colOffset = Math.floor(Math.random() * 3) - 1;
-            if (rowOffset === 0 && colOffset === 0) rowOffset = 1;
-            targetRow += rowOffset; targetCol += colOffset;
-            if(targetRow < 1) targetRow = 2; if(targetRow > 10) targetRow = 9;
-            if(targetCol < 1) targetCol = 2; if(targetCol > 10) targetCol = 9;
-            updatePursuitVisuals();
-        }
-
-        function updatePursuitVisuals() {
-            const newCell = document.querySelector(`.cell[data-row="${targetRow}"][data-col="${targetCol}"]`);
-            if(newCell) { newCell.classList.add('pursuit-active'); updateVirtualKeypad(newCell.textContent); }
-        }
-
-        function handleGridKeyPress(pressedChar) {
-            if (currentExercise === 'search') return;
-            const targetCell = document.querySelector(`.cell[data-row="${targetRow}"][data-col="${targetCol}"]`);
-            if (!targetCell) return;
-            if (pressedChar === targetCell.textContent) {
-                foundTargets++; gridScore.textContent = foundTargets;
-                targetCell.classList.remove('pursuit-active'); targetCell.classList.add('found');
-                setTimeout(() => targetCell.classList.remove('found'), 400);
-                if (foundTargets >= totalTargets) endGlobalGame();
-                else {
-                    if (currentExercise === 'coord') pickNewCoordinate();
-                    else if (currentExercise === 'pursuit') { clearInterval(globalPursuitInterval); movePursuitTarget(); globalPursuitInterval = setInterval(movePursuitTarget, 3500); }
-                }
-            } else { triggerErrorGlobal(targetCell); }
-        }
-
-        gridStartBtn.addEventListener('click', () => {
-            if (isPlaying) { stopAnyGame(); generateGrid(); } 
+        // --- DASHBOARD ROUTINE & HISTORY ---
+        function renderDashboard() {
+            const rt = routines[activePatientId] || []; const rl = document.getElementById('routine-list'); rl.innerHTML='';
+            if(rt.length===0) { document.getElementById('routine-status').textContent="Sin pauta activa"; document.getElementById('btn-launch-routine').style.display='none'; }
             else {
-                isPlaying = true; timeElapsedMs = 0; sessionErrors = 0; gridTimer.textContent = "00:00.0";
-                gridStartBtn.textContent = "Detener Sesión"; gridStartBtn.style.backgroundColor = "#ef4444";
-                scrollToAnchor('grid-controls-anchor');
-                generateGrid();
-                clearInterval(globalTimerInterval); globalTimerInterval = setInterval(updateGlobalTimer, 100);
-            }
-        });
-        gridModeSelect.addEventListener('change', () => { if(isPlaying) stopAnyGame(); generateGrid(); switchStatsTab(gridModeSelect.value); });
-
-        // ==========================================
-        // MÓDULO 2: ANTI-CROWDING (NUEVO V4.01)
-        // ==========================================
-        function resetACLevel() {
-            acLevelParams = { fontSize: 130, letterSpacing: 30, flankers: 1 };
-        }
-
-        function renderACRound() {
-            acTargetLetter = alphabet[Math.floor(Math.random() * alphabet.length)];
-            let flankerHTML = '';
-            for(let i=0; i<acLevelParams.flankers; i++) {
-                let f1 = alphabet[Math.floor(Math.random() * alphabet.length)];
-                let f2 = alphabet[Math.floor(Math.random() * alphabet.length)];
-                flankerHTML = `<span class="ac-flanker">${f1}</span> ` + flankerHTML + ` <span class="ac-flanker">${f2}</span>`;
-            }
-            // Insert target in middle
-            const parts = flankerHTML.split(' ');
-            const midIndex = Math.floor(parts.length / 2);
-            parts.splice(midIndex, 0, `<span class="ac-target">${acTargetLetter}</span>`);
-            
-            acDisplay.style.fontSize = acLevelParams.fontSize + 'px';
-            acDisplay.style.letterSpacing = acLevelParams.letterSpacing + 'px';
-            acDisplay.innerHTML = parts.join('');
-
-            updateVirtualKeypad(acTargetLetter);
-        }
-
-        function handleACKeyPress(pressedChar) {
-            if (pressedChar === acTargetLetter) {
-                foundTargets++; acScore.textContent = foundTargets;
-                acWrapper.classList.add('success');
-                setTimeout(() => acWrapper.classList.remove('success'), 200);
-
-                if (foundTargets >= totalTargets) endGlobalGame();
-                else {
-                    // Progression: Shrink and squeeze
-                    acLevelParams.fontSize = Math.max(30, acLevelParams.fontSize * 0.90);
-                    acLevelParams.letterSpacing = Math.max(0, acLevelParams.letterSpacing - 3);
-                    if(foundTargets === 5) acLevelParams.flankers = 2; // Add more flankers midway
-                    renderACRound();
-                }
-            } else { triggerErrorGlobal(null); }
-        }
-
-        acStartBtn.addEventListener('click', () => {
-            if (isPlaying) { stopAnyGame(); acDisplay.innerHTML = 'A B C'; } 
-            else {
-                currentExercise = 'anticrowding';
-                isPlaying = true; timeElapsedMs = 0; sessionErrors = 0; foundTargets = 0; totalTargets = 10;
-                acTimer.textContent = "00:00.0"; acScore.textContent = "0"; acErrorCount.textContent = "0";
-                acStartBtn.textContent = "Detener Sesión"; acStartBtn.style.backgroundColor = "#ef4444";
-                scrollToAnchor('ac-controls-anchor');
-                
-                resetACLevel();
-                showFlashcard(`Busca la letra <strong style="color:var(--primary);">CENTRAL</strong>`, "Identifica la letra central rodeada de distractores", () => {
-                    renderACRound();
+                document.getElementById('btn-launch-routine').style.display='inline-block';
+                let tr=0, tc=0; const names = {search:'Búsqueda', coord:'Coordenadas', pursuit:'Seguimiento', anticrowding:'Anti-Crowding', saccadic:'Sacádicos', marsden:'Pelota Marsden', tracing:'Laberinto', tachisto:'Taquistoscopio'};
+                rt.forEach((t,i)=>{
+                    tr+=t.req; tc+=Math.min(t.done,t.req);
+                    rl.innerHTML += `<div class="task-item ${t.done>=t.req?'completed':''}"><div>#${i+1} ${names[t.mode]} (${t.eye})</div><div>${t.done}/${t.req}</div></div>`;
                 });
-
-                clearInterval(globalTimerInterval); globalTimerInterval = setInterval(updateGlobalTimer, 100);
+                document.getElementById('routine-status').textContent = `Completado ${tc}/${tr}`;
             }
-        });
-
-
-        // ==========================================
-        // GESTIÓN DE PACIENTES Y CLINICA
-        // ==========================================
-        const activePatientSelect = document.getElementById('active-patient-select');
-        const newPatientName = document.getElementById('new-patient-name');
-        const newPatientDob = document.getElementById('new-patient-dob');
-        const newPatientNotes = document.getElementById('new-patient-notes');
-        const patientInfoDisplay = document.getElementById('patient-info-display');
-
-        function loadClinicSettings() {
-            const saved = JSON.parse(localStorage.getItem('nystagmus_clinic_cfg') || '{}');
-            document.getElementById('cfg-clinic-name').value = saved.clinicName || '';
-            document.getElementById('cfg-specialist-name').value = saved.specialistName || '';
-            document.getElementById('cfg-col-num').value = saved.colNum || '';
-            document.getElementById('cfg-clinic-contact').value = saved.contact || '';
-            currentClinicLogoBase64 = saved.logoBase64 || '';
-            if (currentClinicLogoBase64) {
-                document.getElementById('cfg-logo-preview').src = currentClinicLogoBase64;
-                document.getElementById('cfg-logo-preview').style.display = 'block';
-                document.getElementById('clear-logo-btn').style.display = 'inline-block';
+            renderHistoryTable();
+        }
+        document.getElementById('btn-add-routine').onclick = ()=>{
+            let r=routines[activePatientId]||[]; r.push({mode:document.getElementById('rout-add-mode').value, eye:document.getElementById('rout-add-eye').value, req:parseInt(document.getElementById('rout-add-req').value), done:0});
+            routines[activePatientId]=r; localStorage.setItem('nystagmus_routines', JSON.stringify(routines)); renderDashboard();
+        };
+        document.getElementById('btn-clear-routine').onclick = ()=>{ routines[activePatientId]=[]; localStorage.setItem('nystagmus_routines', JSON.stringify(routines)); renderDashboard(); };
+        document.getElementById('btn-launch-routine').onclick = ()=>{
+            let r=routines[activePatientId]||[]; let next=r.find(t=>t.done<t.req);
+            if(!next) return alert("Pauta finalizada");
+            openGame(['search','coord','pursuit'].includes(next.mode)?'grid':next.mode);
+            if(['search','coord','pursuit'].includes(next.mode)) { document.getElementById('game-grid-mode').value=next.mode; currentGridMode=next.mode; }
+            document.getElementById('game-eye').value=next.eye; setTimeout(startGame, 500);
+        };
+        function updateRoutineProgress() {
+            let r=routines[activePatientId]||[]; let updated=false;
+            for(let t of r) {
+                if(t.done<t.req && (t.mode===currentGame || t.mode===currentGridMode) && t.eye===document.getElementById('game-eye').value) { t.done++; updated=true; break; }
             }
-        }
-        document.getElementById('cfg-logo-input').addEventListener('change', (e) => {
-            const file = e.target.files[0]; if (!file) return; const reader = new FileReader();
-            reader.onload = (ev) => { currentClinicLogoBase64 = ev.target.result; document.getElementById('cfg-logo-preview').src = currentClinicLogoBase64; document.getElementById('cfg-logo-preview').style.display = 'block'; document.getElementById('clear-logo-btn').style.display = 'inline-block'; };
-            reader.readAsDataURL(file);
-        });
-        document.getElementById('clear-logo-btn').addEventListener('click', () => { currentClinicLogoBase64 = ''; document.getElementById('cfg-logo-input').value = ''; document.getElementById('cfg-logo-preview').style.display = 'none'; document.getElementById('clear-logo-btn').style.display = 'none'; });
-        document.getElementById('save-clinic-cfg-btn').addEventListener('click', () => {
-            const cfg = { clinicName: document.getElementById('cfg-clinic-name').value.trim(), specialistName: document.getElementById('cfg-specialist-name').value.trim(), colNum: document.getElementById('cfg-col-num').value.trim(), contact: document.getElementById('cfg-clinic-contact').value.trim(), logoBase64: currentClinicLogoBase64 };
-            localStorage.setItem('nystagmus_clinic_cfg', JSON.stringify(cfg)); alert('¡Datos del centro guardados!');
-        });
-        function updatePrintHeaderData() {
-            const saved = JSON.parse(localStorage.getItem('nystagmus_clinic_cfg') || '{}');
-            document.getElementById('print-clinic-name').textContent = saved.clinicName || 'Centro Clínico';
-            document.getElementById('print-specialist-name').textContent = saved.specialistName ? `Especialista: ${saved.specialistName}` : 'Especialista';
-            document.getElementById('print-col-num').textContent = saved.colNum ? `Nº Col: ${saved.colNum}` : '';
-            document.getElementById('print-clinic-contact').textContent = saved.contact || '';
-            document.getElementById('print-date-stamp').textContent = `Fecha: ${new Date().toLocaleDateString('es-ES')}`;
-            if (saved.logoBase64) { document.getElementById('print-logo-img').src = saved.logoBase64; document.getElementById('print-logo-img').style.display = 'block'; }
-            else { document.getElementById('print-logo-img').style.display = 'none'; }
+            if(updated){ routines[activePatientId]=r; localStorage.setItem('nystagmus_routines', JSON.stringify(routines)); }
         }
 
-        function getPatients() {
-            let patients = JSON.parse(localStorage.getItem('nystagmus_patients') || '[]');
-            if (patients.length === 0) { patients.push({ id: 'p_default', name: 'Paciente General', dob: '', notes: 'Perfil por defecto.' }); localStorage.setItem('nystagmus_patients', JSON.stringify(patients)); }
-            return patients;
-        }
-        function initPatientSystem() {
-            const patients = getPatients(); activePatientSelect.innerHTML = '';
-            patients.forEach(p => { const opt = document.createElement('option'); opt.value = p.id; opt.textContent = p.name; activePatientSelect.appendChild(opt); });
-            const savedActiveId = localStorage.getItem('nystagmus_active_patient_id');
-            activePatientId = (savedActiveId && patients.some(p => p.id === savedActiveId)) ? savedActiveId : patients[0].id;
-            activePatientSelect.value = activePatientId; updatePatientCardDisplay(); renderRoutineUI();
-        }
-        function updatePatientCardDisplay() {
-            const activeP = getPatients().find(p => p.id === activePatientId) || getPatients()[0];
-            patientInfoDisplay.innerHTML = `<strong>${activeP.name}</strong> ${activeP.dob ? `(${activeP.dob})` : ''}<br><em>${activeP.notes || ''}</em>`;
-        }
-        activePatientSelect.addEventListener('change', () => {
-            activePatientId = activePatientSelect.value; localStorage.setItem('nystagmus_active_patient_id', activePatientId);
-            updatePatientCardDisplay(); renderRoutineUI(); renderHistory();
-        });
-        document.getElementById('create-patient-btn').addEventListener('click', () => {
-            const name = newPatientName.value.trim(); if (!name) return;
-            const patients = getPatients();
-            const newP = { id: 'p_' + Date.now(), name: name, dob: newPatientDob.value || '', notes: newPatientNotes.value.trim() };
-            patients.push(newP); localStorage.setItem('nystagmus_patients', JSON.stringify(patients));
-            newPatientName.value = ''; newPatientDob.value = ''; newPatientNotes.value = '';
-            initPatientSystem(); activePatientSelect.value = newP.id; activePatientSelect.dispatchEvent(new Event('change'));
-            alert(`Paciente añadido.`);
-        });
-
-        // ==========================================
-        // RUTINAS (PAUTAS) V4.01
-        // ==========================================
-        function getRoutines() { return JSON.parse(localStorage.getItem('nystagmus_routines') || '{}'); }
-        function saveActivePatientRoutine(tasks) { const r = getRoutines(); r[activePatientId] = tasks; localStorage.setItem('nystagmus_routines', JSON.stringify(r)); renderRoutineUI(); }
-        function renderRoutineUI() {
-            const tasks = getRoutines()[activePatientId] || [];
-            const list = document.getElementById('routine-tasks-list'); list.innerHTML = '';
-            if (tasks.length === 0) { document.getElementById('routine-summary-text').textContent = "Sin pauta activa."; document.getElementById('launch-routine-btn').style.display = 'none'; return; }
-            document.getElementById('launch-routine-btn').style.display = 'inline-block';
-            let tR=0, tC=0;
-            const ml = { 'search': 'Búsqueda Grid', 'coord': 'Coordenadas Grid', 'pursuit': 'Seguimiento Grid', 'anticrowding': 'Anti-Crowding' };
-            tasks.forEach((t, i) => {
-                tR+=t.required; tC+=Math.min(t.completed, t.required); const d = t.completed >= t.required;
-                list.innerHTML += `<div class="task-item ${d?'completed':''}"><div><strong>#${i+1} ${ml[t.mode]}</strong> (${t.eye})</div><div><strong>${t.completed}/${t.required}</strong> ${d?'✅':''}</div></div>`;
-            });
-            document.getElementById('routine-summary-text').textContent = `Completado: ${tC} de ${tR}`;
-        }
-        document.getElementById('add-task-to-routine-btn').addEventListener('click', () => {
-            const mode = document.getElementById('routine-add-mode').value;
-            const tasks = getRoutines()[activePatientId] || [];
-            tasks.push({ id: 't_'+Date.now(), mode: mode, eye: document.getElementById('routine-add-eye').value, lines: document.getElementById('routine-add-lines').value, required: parseInt(document.getElementById('routine-add-count').value)||1, completed: 0 });
-            saveActivePatientRoutine(tasks);
-        });
-        document.getElementById('clear-routine-btn').addEventListener('click', () => saveActivePatientRoutine([]));
-        
-        document.getElementById('launch-routine-btn').addEventListener('click', () => {
-            const tasks = getRoutines()[activePatientId] || []; const nextTask = tasks.find(t => t.completed < t.required);
-            if (!nextTask) { alert('Pauta diaria finalizada.'); return; }
-            
-            if(['search', 'coord', 'pursuit'].includes(nextTask.mode)) {
-                switchView('view-grid'); gridModeSelect.value = nextTask.mode; gridEyeSelect.value = nextTask.eye; gridLinesToggle.checked = (nextTask.lines === 'Sí');
-                updateGridLines(); generateGrid(); gridStartBtn.click();
-            } else if (nextTask.mode === 'anticrowding') {
-                switchView('view-anticrowding'); acEyeSelect.value = nextTask.eye;
-                acStartBtn.click();
-            }
-        });
-
-        // ==========================================
-        // ANALÍTICA, CALIBRACIÓN E IMPRESIÓN
-        // ==========================================
-        function saveSessionData() {
-            const modeNames = { 'search': 'Búsqueda Grid', 'coord': 'Coordenadas Grid', 'pursuit': 'Seguimiento Grid', 'anticrowding': 'Anti-Crowding' };
-            const totalInputs = foundTargets + sessionErrors; const accuracyPct = totalInputs > 0 ? Math.round((foundTargets / totalInputs) * 100) : 100;
-            const eye = activeView==='view-grid' ? gridEyeSelect.value : acEyeSelect.value;
-            const lines = activeView==='view-grid' ? (gridLinesToggle.checked ? 'Sí' : 'No') : 'N/A';
-            
-            const session = {
-                id: Date.now(), patientId: activePatientId, timestamp: Date.now(), date: new Date().toLocaleString('es-ES', { dateStyle: 'short', timeStyle: 'short' }),
-                mode: currentExercise, modeName: modeNames[currentExercise], eye: eye, timeMs: timeElapsedMs, timeFormatted: (activeView==='view-grid'?gridTimer:acTimer).textContent,
-                targets: totalTargets, errors: sessionErrors, accuracy: accuracyPct, lines: lines, screenInches: parseFloat(gridMonitorSize.value) || 34, device: detectDeviceType(), resolution: `${window.screen.width}x${window.screen.height}`
-            };
-
-            let history = JSON.parse(localStorage.getItem('nystagmus_history') || '[]'); history.push(session); localStorage.setItem('nystagmus_history', JSON.stringify(history));
-            
-            const tasks = getRoutines()[activePatientId] || []; let updated=false;
-            for(let t of tasks) { if(t.completed<t.required && t.mode===session.mode && t.eye===session.eye) { t.completed++; updated=true; break; } }
-            if(updated) saveActivePatientRoutine(tasks);
-            renderHistory();
+        function renderHistoryTable() {
+            const h = historyLog.filter(x=>x.patientId===activePatientId);
+            document.getElementById('history-tbody').innerHTML = h.length>0 ? [...h].reverse().map(s=>`<tr><td>${s.date}</td><td>${s.modeName}</td><td>${s.eye}</td><td>${s.timeFormatted}</td><td>${s.accuracy}%</td></tr>`).join('') : '<tr><td colspan="5">Vacio</td></tr>';
         }
 
-        function formatDuration(ms) { const s = Math.floor(ms/1000); return `${Math.floor(s/3600).toString().padStart(2,'0')}:${Math.floor((s%3600)/60).toString().padStart(2,'0')}:${(s%60).toString().padStart(2,'0')}`; }
-        function switchStatsTab(mode) {
-            activeStatsTab = mode;
-            document.querySelectorAll('.tab-btn').forEach((btn, idx) => { const modes = ['search', 'coord', 'pursuit', 'anticrowding']; if (modes[idx] === mode) btn.classList.add('active'); else btn.classList.remove('active'); });
-            renderHistory();
+        // --- UTILS ---
+        document.getElementById('btn-print-pdf').onclick = ()=>{
+            document.getElementById('print-clinic').textContent = clinicCfg.clinicName||'Clínica';
+            document.getElementById('print-specialist').textContent = clinicCfg.specialistName||'Especialista';
+            document.getElementById('print-col').textContent = clinicCfg.colNum ? "Nº Col: "+clinicCfg.colNum : '';
+            document.getElementById('print-date').textContent = new Date().toLocaleDateString('es-ES');
+            if(clinicCfg.logoBase64) { document.getElementById('print-logo').src=clinicCfg.logoBase64; document.getElementById('print-logo').style.display='block'; }
+            document.getElementById('print-header').style.display='flex';
+            document.body.classList.add('print-report-only'); window.print();
+            document.body.classList.remove('print-report-only'); document.getElementById('print-header').style.display='none';
+        };
+        document.getElementById('btn-delete-hist').onclick = ()=>{ if(confirm("Borrar historial?")){ historyLog=historyLog.filter(x=>x.patientId!==activePatientId); localStorage.setItem('nystagmus_history', JSON.stringify(historyLog)); renderDashboard(); } };
+        function updateDistance() {
+            const ppi = Math.hypot(window.screen.width, window.screen.height) / (parseFloat(document.getElementById('game-inches').value)||34);
+            const fontMm = ((window.innerHeight*0.04)/ppi)*25.4; currentSuggestedDistanceCm = Math.max(40, Math.round(fontMm*8));
+            document.getElementById('game-distance-info').innerHTML = `📏 Distancia recomendada: <strong style="color:#2563eb; font-size:1.1rem;">~${currentSuggestedDistanceCm} cm</strong>`;
         }
 
-        function renderHistory() {
-            const history = JSON.parse(localStorage.getItem('nystagmus_history') || '[]');
-            const filterEye = document.getElementById('filter-eye').value; const filterLines = document.getElementById('filter-lines').value;
-            const filtered = history.filter(s => { return (s.patientId === activePatientId || (!s.patientId && activePatientId === 'p_default')) && s.mode === activeStatsTab && (filterEye === 'ALL' || s.eye === filterEye) && (filterLines === 'ALL' || s.lines === filterLines || s.lines === 'N/A'); });
-            
-            document.getElementById('metric-total-sessions').textContent = filtered.length;
-            document.getElementById('metric-total-time').textContent = formatDuration(filtered.reduce((acc, curr) => acc + (curr.timeMs || 0), 0));
-            const avgAcc = filtered.length>0 ? Math.round(filtered.reduce((acc, curr) => acc + (curr.accuracy!==undefined?curr.accuracy:100), 0) / filtered.length) : '--';
-            document.getElementById('metric-avg-accuracy').textContent = `${avgAcc}%`;
-            document.getElementById('metric-best-time').textContent = filtered.length>0 ? filtered.find(s => s.timeMs === Math.min(...filtered.map(x=>x.timeMs))).timeFormatted : '--:--';
-
-            const tbody = document.getElementById('history-tbody');
-            if (filtered.length === 0) { tbody.innerHTML = '<tr><td colspan="7">Sin datos.</td></tr>'; renderChart([]); return; }
-
-            tbody.innerHTML = [...filtered].reverse().map((s, i) => `<tr><td><strong>#${filtered.length-i}</strong></td><td>${s.date}</td><td><strong>${s.eye}</strong></td><td><strong>${s.timeFormatted}</strong></td><td>${s.accuracy}% (${s.errors} err)</td><td>${s.lines}</td><td><small>${s.screenInches}"</small></td></tr>`).join('');
-            renderChart(filtered);
-        }
-
-        function renderChart(data) {
-            const svg = document.getElementById('evolution-chart'); svg.innerHTML = ''; if (data.length === 0) return;
-            const w = svg.clientWidth || 700, h = 200, p = 35;
-            const maxT = Math.max(...data.map(d => d.timeMs/1000)), minT = Math.min(...data.map(d => d.timeMs/1000));
-            const points = data.map((d, i) => { const x = data.length===1?w/2:p+(i/(data.length-1))*(w-2*p); const yS=d.timeMs/1000; const range=(maxT-minT)||1; const y=h-p-((yS-minT)/range)*(h-2*p); return {x, y, s:yS.toFixed(1), e:d.eye}; });
-            
-            for(let i=0; i<=3; i++) { const l = document.createElementNS("http://www.w3.org/2000/svg", "line"); l.setAttribute("x1",p); l.setAttribute("x2",w-p); l.setAttribute("y1",p+i*(h-2*p)/3); l.setAttribute("y2",p+i*(h-2*p)/3); l.setAttribute("stroke","#e2e8f0"); l.setAttribute("stroke-dasharray","4"); svg.appendChild(l); }
-            if(points.length>1) { const path = document.createElementNS("http://www.w3.org/2000/svg", "path"); path.setAttribute("d", points.reduce((acc, pt, i) => i===0?`M ${pt.x} ${pt.y}`:`${acc} L ${pt.x} ${pt.y}`, '')); path.setAttribute("fill","none"); path.setAttribute("stroke","#3b82f6"); path.setAttribute("stroke-width","3"); svg.appendChild(path); }
-            points.forEach(pt => { const c = document.createElementNS("http://www.w3.org/2000/svg", "circle"); c.setAttribute("cx",pt.x); c.setAttribute("cy",pt.y); c.setAttribute("r","5"); c.setAttribute("fill",pt.e==='OD'?'#ef4444':(pt.e==='OI'?'#3b82f6':'#10b981')); svg.appendChild(c); });
-        }
-
-        document.getElementById('chart-axis-btn').addEventListener('click', () => { chartXAxisType = chartXAxisType==='index'?'date':'index'; document.getElementById('chart-axis-btn').textContent = chartXAxisType==='index'?'Eje X: Pruebas':'Eje X: Fechas'; renderHistory(); });
-        document.getElementById('print-report-btn').addEventListener('click', () => { updatePrintHeaderData(); document.body.classList.remove('print-grid-only'); document.body.classList.add('print-report-only'); document.getElementById('stats-content').classList.add('active'); renderHistory(); setTimeout(() => { window.print(); document.body.classList.remove('print-report-only'); }, 150); });
-        document.getElementById('print-grid-btn').addEventListener('click', () => { document.body.classList.remove('print-report-only'); document.body.classList.add('print-grid-only'); window.print(); document.body.classList.remove('print-grid-only'); });
-        
-        // CALIBRACIÓN Y DISPOSITIVO
-        function updateDistanceCalibration() {
-            const ppi = Math.hypot(window.screen.width, window.screen.height) / (parseFloat(gridMonitorSize.value) || 34);
-            const fontMm = ((window.innerHeight * 0.04) / ppi) * 25.4; currentSuggestedDistanceCm = Math.max(40, Math.round(fontMm * 8));
-            gridDistanceInfo.innerHTML = `Letra: <strong>~${fontMm.toFixed(1)} mm</strong> | Distancia recomendada: <strong style="color: #2563eb;">~${currentSuggestedDistanceCm} cm</strong>`;
-        }
-        window.addEventListener('resize', () => { updateDistanceCalibration(); updateLayoutAndGridSize(); });
-        
-        function detectDeviceType() { const ua = navigator.userAgent; if(/iPad|iPhone/.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1)) return "iOS"; if(/Kindle|Silk/.test(ua)) return "Kindle"; if(/Android/.test(ua)) return "Android"; return "Web"; }
-        
-        function initMonitorSize() {
-            const saved = localStorage.getItem('nystagmus_monitor_size'); const ua = navigator.userAgent;
-            if(/Kindle|Silk/.test(ua)) { gridContrastToggle.checked=true; acContrastToggle.checked=true; updateHighContrast(); }
-            if(saved) { document.getElementById('grid-detection-badge').textContent = '💾'; return parseFloat(saved); }
-            const w=window.screen.width, h=window.screen.height, max=Math.max(w,h), min=Math.min(w,h);
-            if(/Kindle/.test(ua)) return 10.2; if(/iPad/.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1)) return max>=1366?12.9:10.9;
-            return max>=2500?34:24;
-        }
-        gridMonitorSize.addEventListener('input', () => { localStorage.setItem('nystagmus_monitor_size', gridMonitorSize.value); document.getElementById('grid-detection-badge').textContent = '💾'; updateDistanceCalibration(); });
-
-        // EXPORT / IMPORT
-        document.getElementById('export-stats-btn').addEventListener('click', () => {
-            const b = { version: "4.01", clinic: JSON.parse(localStorage.getItem('nystagmus_clinic_cfg')||'{}'), patients: getPatients(), routines: getRoutines(), history: JSON.parse(localStorage.getItem('nystagmus_history')||'[]') };
-            const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(b)], {type:'application/json'})); a.download = `terapia_v401_${new Date().getTime()}.json`; a.click();
-        });
-        document.getElementById('import-stats-btn').addEventListener('click', () => document.getElementById('import-file-input').click());
-        document.getElementById('import-file-input').addEventListener('change', (e) => {
-            if(!e.target.files[0]) return; const r = new FileReader();
-            r.onload = ev => { try { const d = JSON.parse(ev.target.result); if(d.patients) localStorage.setItem('nystagmus_patients', JSON.stringify(d.patients)); if(d.history) localStorage.setItem('nystagmus_history', JSON.stringify(d.history)); if(d.routines) localStorage.setItem('nystagmus_routines', JSON.stringify(d.routines)); if(d.clinic) localStorage.setItem('nystagmus_clinic_cfg', JSON.stringify(d.clinic)); location.reload(); } catch(err){} }; r.readAsText(e.target.files[0]);
-        });
-        document.getElementById('clear-stats-btn').addEventListener('click', () => { if(confirm('Borrar historial del paciente?')) { localStorage.setItem('nystagmus_history', JSON.stringify(JSON.parse(localStorage.getItem('nystagmus_history')||'[]').filter(s=>s.patientId!==activePatientId))); renderHistory(); } });
-
-        // BOOTSTRAP
-        loadClinicSettings(); initPatientSystem(); gridMonitorSize.value = initMonitorSize(); updateDistanceCalibration(); generateGrid(); renderHistory(); switchView('view-dashboard');
+        initApp();
     </script>
 </body>
 </html>
