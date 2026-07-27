@@ -3,42 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Suite Terapia Visual - v5.05</title>
+    <title>Suite Terapia Visual - v6.00 PWA</title>
+    
+    <!-- NUEVO: PWA Manifest -->
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#3b82f6">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👁️</text></svg>">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700;900&display=swap" rel="stylesheet">
-    
     <link rel="stylesheet" href="styles.css">
+
+    <!-- NUEVO: Registro del Service Worker para funcionamiento Offline -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW Fallo: ', err));
+            });
+        }
+    </script>
 </head>
 <body>
 
     <!-- OVERLAYS GLOBALES -->
     <div id="flashcard-overlay" class="overlay">
-        <div class="flashcard-distance-badge">
-            📏 DISTANCIA RECOMENDADA: <span id="flashcard-dist-val">--</span> cm
-        </div>
+        <div class="flashcard-distance-badge">📏 DISTANCIA RECOMENDADA: <span id="flashcard-dist-val">--</span> cm</div>
         <div id="flashcard-main">Texto</div>
-        <div style="font-size: 1.3rem; background-color: #eff6ff; padding: 1rem 2rem; border-radius: 50px; font-weight: 700; color: #3b82f6;">
-            TOCA LA PANTALLA O PULSA CUALQUIER TECLA
-        </div>
+        <div style="font-size: 1.3rem; background-color: #eff6ff; padding: 1rem 2rem; border-radius: 50px; font-weight: 700; color: #3b82f6;">TOCA LA PANTALLA O PULSA CUALQUIER TECLA</div>
     </div>
 
     <div id="result-overlay" class="overlay">
         <div style="font-size: 3rem; font-weight: 900; color: #16a34a; margin-bottom: 2rem;">🎉 ¡Sesión Completada!</div>
         <div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
-            <div style="background-color: #f8fafc; border: 3px solid #cbd5e1; padding: 1.5rem; border-radius: 16px;">
-                <div id="res-time" style="font-size: 3rem; font-weight: 900; color: var(--primary);">00:00.0</div>
-                <div style="font-weight: 700; color: #64748b;">TIEMPO ACTIVO</div>
-            </div>
-            <div style="background-color: #f8fafc; border: 3px solid #cbd5e1; padding: 1.5rem; border-radius: 16px;">
-                <div id="res-errors" style="font-size: 3rem; font-weight: 900; color: #dc2626;">0</div>
-                <div style="font-weight: 700; color: #64748b;">FALLOS</div>
-            </div>
-            <div style="background-color: #f8fafc; border: 3px solid #cbd5e1; padding: 1.5rem; border-radius: 16px;">
-                <div id="res-accuracy" style="font-size: 3rem; font-weight: 900; color: #16a34a;">100%</div>
-                <div style="font-weight: 700; color: #64748b;">PRECISIÓN</div>
-            </div>
+            <div style="background-color: #f8fafc; border: 3px solid #cbd5e1; padding: 1.5rem; border-radius: 16px;"><div id="res-time" style="font-size: 3rem; font-weight: 900; color: var(--primary);">00:00.0</div><div style="font-weight: 700; color: #64748b;">TIEMPO ACTIVO</div></div>
+            <div style="background-color: #f8fafc; border: 3px solid #cbd5e1; padding: 1.5rem; border-radius: 16px;"><div id="res-errors" style="font-size: 3rem; font-weight: 900; color: #dc2626;">0</div><div style="font-weight: 700; color: #64748b;">FALLOS</div></div>
+            <div style="background-color: #f8fafc; border: 3px solid #cbd5e1; padding: 1.5rem; border-radius: 16px;"><div id="res-accuracy" style="font-size: 3rem; font-weight: 900; color: #16a34a;">100%</div><div style="font-weight: 700; color: #64748b;">PRECISIÓN</div></div>
         </div>
     </div>
 
@@ -46,11 +46,7 @@
         <div style="background-color: white; padding: 2rem; border-radius: 16px; border: 3px solid #000000;" onclick="event.stopPropagation();">
             <h2 style="margin-top:0;">💳 Calibración Física</h2>
             <p style="font-weight: bold; color: #475569;">Coloque una tarjeta sobre la pantalla y ajuste el deslizador.</p>
-            <div style="display:flex; justify-content:center; margin: 1.5rem 0;">
-                <div id="calib-card-box" style="width: 320px; height: 200px; border: 4px dashed #2563eb; background-color: #eff6ff; display:flex; align-items:center; justify-content:center; font-weight:900;">
-                    TARJETA AQUÍ
-                </div>
-            </div>
+            <div style="display:flex; justify-content:center; margin: 1.5rem 0;"><div id="calib-card-box" style="width: 320px; height: 200px; border: 4px dashed #2563eb; background-color: #eff6ff; display:flex; align-items:center; justify-content:center; font-weight:900;">TARJETA AQUÍ</div></div>
             <input type="range" id="calib-slider" min="160" max="600" value="320" style="width: 100%; margin-bottom: 1.5rem;">
             <button class="btn" id="save-calib-btn" style="background-color: #16a34a;">Guardar Ajuste</button>
             <button class="btn btn-secondary" onclick="document.getElementById('card-calib-modal').classList.remove('active')">Cancelar</button>
@@ -58,50 +54,38 @@
     </div>
 
     <div class="container">
-        <!-- MEMBRETE PDF -->
         <div id="print-header" style="display:none; justify-content:space-between; align-items:center; border-bottom:2px solid #000000; padding-bottom:10px; margin-bottom:10px;">
-            <div>
-                <img id="print-logo" src="" style="max-height:50px; display:none;">
-                <strong id="print-clinic" style="font-size:14pt; display:block;">Centro</strong>
-            </div>
-            <div style="text-align:right; font-size:9pt;">
-                <strong id="print-specialist">Especialista</strong><br>
-                <span id="print-col"></span><br>
-                <span id="print-date"></span>
-            </div>
+            <div><img id="print-logo" src="" style="max-height:50px; display:none;"><strong id="print-clinic" style="font-size:14pt; display:block;">Centro</strong></div>
+            <div style="text-align:right; font-size:9pt;"><strong id="print-specialist">Especialista</strong><br><span id="print-col"></span><br><span id="print-date"></span></div>
         </div>
 
-        <!-- CONTENEDOR EXCLUSIVO PARA REPORTE PDF MULTIJUEGO -->
         <div id="print-report-container" style="display: none; width: 100%;"></div>
 
-        <h1>Suite de Terapia Visual (v5.05)</h1>
+        <h1>Suite de Terapia Visual (v6.00)</h1>
 
-        <!-- HEADER GLOBAL (PACIENTE / CLINICA) -->
+        <!-- HEADER GLOBAL CON RACHA AÑADIDA -->
         <div class="patient-row">
-            <div class="patient-select-group">
-                <label style="font-weight: 700;">👤 Paciente:</label>
-                <select id="global-patient-select" style="flex-grow: 1; max-width: 250px;"></select>
+            <div class="patient-select-group" style="display: flex; align-items: center; flex-wrap: wrap;">
+                <label style="font-weight: 700; margin-right: 0.5rem;">👤 Paciente:</label>
+                <select id="global-patient-select" style="max-width: 250px;"></select>
+                <div id="patient-streak" class="streak-badge">🔥 Racha: 0 días</div>
             </div>
-            <div style="display: flex; gap: 0.4rem;">
+            <div style="display: flex; gap: 0.4rem; margin-top: 0.4rem;">
                 <button class="btn btn-secondary" onclick="document.getElementById('patient-modal').classList.toggle('active')">⚙️ Pacientes</button>
                 <button class="btn btn-secondary" style="background-color: #0284c7; color:white;" onclick="document.getElementById('clinic-modal').classList.toggle('active')">🏥 Clínica</button>
             </div>
         </div>
 
-        <!-- MODALES DE CONFIGURACIÓN -->
         <div class="panel" style="padding: 0;">
             <div id="clinic-modal" class="collapsible-content" style="padding: 1rem; background-color: #f0f9ff; border-radius: 12px;">
-                <h3 style="margin-top:0; color:#0284c7;">🏥 Configurar Membrete Clínico</h3>
+                <h3 style="margin-top:0; color:#0284c7;">🏥 Configurar Membrete</h3>
                 <div style="display:flex; gap:0.5rem; margin-bottom:0.5rem; flex-wrap: wrap;">
                     <input type="text" id="cfg-clinic" placeholder="Nombre Clínica" style="flex:1; min-width: 200px;">
-                    <input type="text" id="cfg-specialist" placeholder="Nombre Especialista" style="flex:1; min-width: 200px;">
-                    <input type="text" id="cfg-col" placeholder="Nº Colegiado" style="width:100px;">
+                    <input type="text" id="cfg-specialist" placeholder="Especialista" style="flex:1; min-width: 200px;">
+                    <input type="text" id="cfg-col" placeholder="Nº Col" style="width:100px;">
                 </div>
                 <div style="display: flex; gap: 1rem; align-items: center; background-color: white; padding: 0.8rem; border-radius: 8px; border: 1px solid #cbd5e1; margin-bottom: 0.5rem;">
-                    <div>
-                        <label style="font-weight: 700; font-size: 0.85rem;">Logo (PNG/JPG):</label>
-                        <input type="file" id="cfg-logo-input" accept="image/*" style="font-size: 0.85rem; margin-top: 0.3rem;">
-                    </div>
+                    <div><label style="font-weight: 700; font-size: 0.85rem;">Logo:</label><input type="file" id="cfg-logo-input" accept="image/*" style="font-size: 0.85rem; margin-top: 0.3rem;"></div>
                     <img id="cfg-logo-preview" src="" style="max-height: 45px; max-width: 150px; display: none;">
                     <button class="btn btn-secondary" id="clear-logo-btn" style="display: none; background-color: #ef4444;">Quitar Logo</button>
                 </div>
@@ -111,31 +95,26 @@
 
         <div class="panel" style="padding: 0;">
             <div id="patient-modal" class="collapsible-content" style="padding: 1rem; background-color: #f8fafc; border-radius: 12px;">
-                <h3 style="margin-top:0; color: var(--primary);">👤 Registrar Nuevo Paciente</h3>
+                <h3 style="margin-top:0; color: var(--primary);">👤 Registro de Paciente</h3>
                 <div style="display:flex; gap:0.5rem; margin-bottom:0.5rem; flex-wrap: wrap;">
                     <input type="text" id="new-pat-name" placeholder="Nombre completo" style="flex:1; min-width: 200px;">
                     <input type="date" id="new-pat-dob" title="Fecha de nacimiento">
-                    <button class="btn" id="create-pat-btn">➕ Añadir Paciente</button>
+                    <button class="btn" id="create-pat-btn">➕ Añadir</button>
                 </div>
                 <textarea id="new-pat-notes" placeholder="Notas clínicas o diagnóstico..." style="width: 100%; height: 60px; box-sizing: border-box; margin-bottom: 1rem;"></textarea>
-                
                 <div id="patient-details-card" style="background-color: white; padding: 0.8rem; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 0.9rem; margin-top: 0.5rem;">
-                    <strong>Ficha del Paciente Activo:</strong> <span id="patient-info-display">-</span>
-                    <br>
+                    <strong>Ficha Activa:</strong> <span id="patient-info-display">-</span><br>
                     <button class="btn btn-secondary" style="background-color: #ef4444; margin-top: 0.8rem;" id="delete-pat-btn">🗑️ Eliminar Completamente este Paciente</button>
                 </div>
             </div>
         </div>
 
-        <!-- VISTA 0: DASHBOARD / MENÚ PRINCIPAL -->
+        <!-- DASHBOARD Y PAUTAS (CON AUTO-GENERADOR) -->
         <div id="view-dashboard" class="app-view active">
             
             <div class="panel" style="background-color: #f0fdf4; border: 1px solid #bbf7d0;">
                 <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
-                    <div>
-                        <strong style="color: #15803d; font-size:1.1rem;">📋 Plan de Trabajo</strong>
-                        <div id="routine-status" style="font-size:0.85rem; font-weight:700; color: #475569;">Sin pauta</div>
-                    </div>
+                    <div><strong style="color: #15803d; font-size:1.1rem;">📋 Plan de Trabajo</strong><div id="routine-status" style="font-size:0.85rem; font-weight:700; color: #475569;">Sin pauta</div></div>
                     <div style="display: flex; gap: 0.4rem; margin-top: 0.4rem;">
                         <button class="btn" id="btn-launch-routine" style="background-color: #16a34a;">▶️ Iniciar Pauta</button>
                         <button class="btn btn-secondary" onclick="document.getElementById('routine-designer').classList.toggle('active')">🛠️ Diseñar</button>
@@ -145,187 +124,136 @@
                 <div id="routine-list" style="margin-top:0.8rem;"></div>
                 
                 <div id="routine-designer" class="collapsible-content" style="background-color: #ffffff; padding:1rem; border:1px solid #cbd5e1; border-radius:8px; margin-top:0.5rem;">
-                    <strong style="color: var(--primary); display: block; margin-bottom: 0.5rem;">➕ Añadir Ejercicio a la Prescripción</strong>
+                    
+                    <!-- NUEVO: GENERADOR AUTOMÁTICO -->
+                    <div style="background-color: #e0f2fe; padding: 1rem; border-radius: 8px; border: 1px solid #bae6fd; margin-bottom: 1rem;">
+                        <strong style="color: #0284c7; display: block; margin-bottom: 0.5rem;">🤖 Auto-Pauta por Tiempo Inteligente</strong>
+                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
+                            <input type="number" id="auto-time" value="15" min="5" style="width:70px;"> min.
+                            <select id="auto-focus" style="flex: 1; min-width: 120px;">
+                                <option value="BIN">Terapia General Binocular</option>
+                                <option value="OD">Foco Déficit OD (Ambliopía)</option>
+                                <option value="OI">Foco Déficit OI (Ambliopía)</option>
+                            </select>
+                            <button class="btn" id="btn-auto-gen" style="background-color: #0284c7;">Generar Pauta Mágica</button>
+                        </div>
+                    </div>
+
+                    <strong style="color: var(--primary); display: block; margin-bottom: 0.5rem;">➕ Adición Manual</strong>
                     <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
                         <select id="rout-add-mode">
-                            <option value="search">1. Búsqueda Táctil</option>
-                            <option value="coord">2. Coordenadas</option>
-                            <option value="pursuit">3. Seguimiento Cuadrícula</option>
-                            <option value="anticrowding">4. Anti-Crowding</option>
-                            <option value="saccadic">5. Saltos Sacádicos</option>
-                            <option value="marsden">6. Pelota de Marsden</option>
-                            <option value="tracing">7. Laberinto Visual</option>
-                            <option value="tachisto">8. Taquistoscopio</option>
+                            <option value="search">1. Búsqueda Táctil</option><option value="coord">2. Coordenadas</option>
+                            <option value="pursuit">3. Seguimiento</option><option value="anticrowding">4. Anti-Crowding</option>
+                            <option value="saccadic">5. Sacádicos</option><option value="marsden">6. Pelota de Marsden</option>
+                            <option value="tracing">7. Laberinto</option><option value="tachisto">8. Taquistoscopio</option>
+                            <option value="gabor">9. Parches de Gabor</option><option value="trombone">10. Acomodación Dinámica</option>
                         </select>
-                        <select id="rout-add-eye">
-                            <option value="BIN">Binocular</option>
-                            <option value="OD">Ojo Derecho</option>
-                            <option value="OI">Ojo Izquierdo</option>
-                        </select>
-                        <select id="rout-add-lines" style="font-size: 0.85rem;">
-                            <option value="Sí">Con Líneas (Grid)</option>
-                            <option value="No">Sin Líneas</option>
-                        </select>
+                        <select id="rout-add-eye"><option value="BIN">Binocular</option><option value="OD">OD</option><option value="OI">OI</option></select>
                         <input type="number" id="rout-add-req" value="2" min="1" style="width:60px;" title="Repeticiones">
                         <button class="btn" id="btn-add-routine">➕ Añadir</button>
-                        <button class="btn btn-secondary" id="btn-clear-routine" style="background-color: #ef4444;">Vaciar</button>
+                        <button class="btn btn-secondary" id="btn-clear-routine" style="background-color: #ef4444;">Vaciar Todo</button>
                     </div>
                 </div>
             </div>
 
-            <h2 style="margin: 0.5rem 0 0 0; color: #334155;">📚 Biblioteca de Ejercicios</h2>
+            <!-- 10 JUEGOS EN LA BIBLIOTECA -->
+            <h2 style="margin: 0.5rem 0 0 0; color: #334155;">📚 Biblioteca Clínica de Ejercicios</h2>
             <div class="exercises-grid">
-                <div class="exercise-card" onclick="openGame('search')">
-                    <div class="exercise-card-icon">🔠</div>
-                    <div class="exercise-card-title">1. Búsqueda Táctil</div>
-                    <div class="exercise-card-desc">Localización espacial en cuadrícula 10x10.</div>
-                </div>
-                <div class="exercise-card" onclick="openGame('coord')">
-                    <div class="exercise-card-icon">🗺️</div>
-                    <div class="exercise-card-title">2. Coordenadas</div>
-                    <div class="exercise-card-desc">Discriminación de cuadrante Fila/Columna.</div>
-                </div>
-                <div class="exercise-card" onclick="openGame('pursuit')">
-                    <div class="exercise-card-icon">🏃</div>
-                    <div class="exercise-card-title">3. Seguimiento</div>
-                    <div class="exercise-card-desc">Rastreo de un objetivo foveal en la matriz.</div>
-                </div>
-                <div class="exercise-card" onclick="openGame('anticrowding')">
-                    <div class="exercise-card-icon">🎯</div>
-                    <div class="exercise-card-title">4. Anti-Crowding</div>
-                    <div class="exercise-card-desc">Agudeza visual central contra amontonamiento.</div>
-                </div>
-                <div class="exercise-card" onclick="openGame('saccadic')">
-                    <div class="exercise-card-icon">⚡</div>
-                    <div class="exercise-card-title">5. Saltos Sacádicos</div>
-                    <div class="exercise-card-desc">Entrenamiento de salto periférico rápido.</div>
-                </div>
-                <div class="exercise-card" onclick="openGame('marsden')">
-                    <div class="exercise-card-icon">🎾</div>
-                    <div class="exercise-card-title">6. Pelota Marsden</div>
-                    <div class="exercise-card-desc">Simulador pendular para seguimiento dinámico.</div>
-                </div>
-                <div class="exercise-card" onclick="openGame('tracing')">
-                    <div class="exercise-card-icon">🔀</div>
-                    <div class="exercise-card-title">7. Visual Tracing</div>
-                    <div class="exercise-card-desc">Rastreo de laberintos entrelazados visuales.</div>
-                </div>
-                <div class="exercise-card" onclick="openGame('tachisto')">
-                    <div class="exercise-card-icon">📸</div>
-                    <div class="exercise-card-title">8. Taquistoscopio</div>
-                    <div class="exercise-card-desc">Entrenamiento de memoria visual flash (250ms).</div>
-                </div>
+                <div class="exercise-card" onclick="openGame('search')"><div class="exercise-card-icon">🔠</div><div class="exercise-card-title">1. Búsqueda Táctil</div><div class="exercise-card-desc">Fijación en cuadrícula 10x10.</div></div>
+                <div class="exercise-card" onclick="openGame('coord')"><div class="exercise-card-icon">🗺️</div><div class="exercise-card-title">2. Coordenadas</div><div class="exercise-card-desc">Discriminación de cuadrante.</div></div>
+                <div class="exercise-card" onclick="openGame('pursuit')"><div class="exercise-card-icon">🏃</div><div class="exercise-card-title">3. Seguimiento</div><div class="exercise-card-desc">Rastreo de objetivo foveal.</div></div>
+                <div class="exercise-card" onclick="openGame('anticrowding')"><div class="exercise-card-icon">🎯</div><div class="exercise-card-title">4. Anti-Crowding</div><div class="exercise-card-desc">Agudeza contra amontonamiento.</div></div>
+                <div class="exercise-card" onclick="openGame('saccadic')"><div class="exercise-card-icon">⚡</div><div class="exercise-card-title">5. Saltos Sacádicos</div><div class="exercise-card-desc">Reflejo periférico rápido.</div></div>
+                <div class="exercise-card" onclick="openGame('marsden')"><div class="exercise-card-icon">🎾</div><div class="exercise-card-title">6. Pelota Marsden</div><div class="exercise-card-desc">Seguimiento dinámico pendular.</div></div>
+                <div class="exercise-card" onclick="openGame('tracing')"><div class="exercise-card-icon">🔀</div><div class="exercise-card-title">7. Visual Tracing</div><div class="exercise-card-desc">Estabilidad en laberintos.</div></div>
+                <div class="exercise-card" onclick="openGame('tachisto')"><div class="exercise-card-icon">📸</div><div class="exercise-card-title">8. Taquistoscopio</div><div class="exercise-card-desc">Memoria visual flash.</div></div>
+                <div class="exercise-card" onclick="openGame('gabor')"><div class="exercise-card-icon">🦓</div><div class="exercise-card-title">9. Parches de Gabor</div><div class="exercise-card-desc">Sensibilidad al contraste direccional.</div></div>
+                <div class="exercise-card" onclick="openGame('trombone')"><div class="exercise-card-icon">🎺</div><div class="exercise-card-title">10. Acomodación Dinámica</div><div class="exercise-card-desc">Flexibilidad ciliar y enfoque en Z.</div></div>
             </div>
 
+            <!-- ANALÍTICA (10 TABS) -->
             <div class="panel" style="padding: 0; margin-top: 0.5rem;">
-                <button class="collapsible-toggle" onclick="document.getElementById('stats-box').classList.toggle('active')">
-                    <span>📊 Estadísticas y Reportes</span><span>▼</span>
-                </button>
+                <button class="collapsible-toggle" onclick="document.getElementById('stats-box').classList.toggle('active')"><span>📊 Estadísticas y Reportes</span><span>▼</span></button>
                 <div id="stats-box" class="collapsible-content active" style="padding: 1rem;">
                     
                     <div class="tab-buttons">
                         <button class="tab-btn active" onclick="switchStatsTab('search', event)">Búsqueda</button>
                         <button class="tab-btn" onclick="switchStatsTab('coord', event)">Coordenadas</button>
-                        <button class="tab-btn" onclick="switchStatsTab('pursuit', event)">Seguimiento</button>
-                        <button class="tab-btn" onclick="switchStatsTab('anticrowding', event)">Anti-Crowding</button>
+                        <button class="tab-btn" onclick="switchStatsTab('pursuit', event)">Seguim</button>
+                        <button class="tab-btn" onclick="switchStatsTab('anticrowding', event)">Crowding</button>
                         <button class="tab-btn" onclick="switchStatsTab('saccadic', event)">Sacádicos</button>
                         <button class="tab-btn" onclick="switchStatsTab('marsden', event)">Marsden</button>
-                        <button class="tab-btn" onclick="switchStatsTab('tracing', event)">Laberintos</button>
-                        <button class="tab-btn" onclick="switchStatsTab('tachisto', event)">Taquistoscopio</button>
+                        <button class="tab-btn" onclick="switchStatsTab('tracing', event)">Laberinto</button>
+                        <button class="tab-btn" onclick="switchStatsTab('tachisto', event)">Flash</button>
+                        <button class="tab-btn" onclick="switchStatsTab('gabor', event)">Gabor</button>
+                        <button class="tab-btn" onclick="switchStatsTab('trombone', event)">Acomodación</button>
                     </div>
 
                     <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:1rem;">
-                        <button class="btn btn-secondary" id="btn-print-pdf" style="background-color: #0d9488;">🖨️ Imprimir Reporte PDF</button>
-                        <button class="btn btn-secondary" id="btn-export-json">📥 Exportar JSON</button>
-                        <button class="btn btn-secondary" id="btn-import-json">📤 Importar Todo</button>
+                        <button class="btn btn-secondary" id="btn-print-pdf" style="background-color: #0d9488;">🖨️ Reporte PDF Total</button>
+                        <button class="btn btn-secondary" id="btn-export-json">📥 Export Base de Datos</button>
+                        <button class="btn btn-secondary" id="btn-import-json">📤 Import DB</button>
                         <input type="file" id="import-file-input" accept=".json" style="display: none;">
                         <button class="btn btn-secondary" id="btn-delete-hist" style="background-color: #ef4444;">Borrar Historial Paciente</button>
                     </div>
 
                     <div style="display: flex; gap: 0.6rem; flex-wrap: wrap; margin-bottom: 1rem;">
                         <div class="metric-card"><div class="val" id="metric-total-sessions">0</div><div class="lbl">SESIONES</div></div>
-                        <div class="metric-card"><div class="val" id="metric-total-time">00:00:00</div><div class="lbl">TIEMPO ACTIVO</div></div>
+                        <div class="metric-card"><div class="val" id="metric-total-time">00:00.0</div><div class="lbl">TIEMPO ACTIVO</div></div>
                         <div class="metric-card"><div class="val" id="metric-best-time">--:--</div><div class="lbl">MEJOR TIEMPO</div></div>
                         <div class="metric-card"><div class="val" id="metric-avg-accuracy" style="color: #16a34a;">--%</div><div class="lbl">PRECISIÓN MEDIA</div></div>
                     </div>
 
                     <div class="chart-container">
                         <div class="chart-controls">
-                            <strong style="font-size: 0.95rem; color: #334155;">📈 Evolución del Tiempo de Resolución</strong>
+                            <strong style="font-size: 0.95rem; color: #334155;">📈 Evolución de Tiempo Activo</strong>
                             <button class="btn btn-secondary" id="chart-axis-btn" style="padding: 0.3rem 0.6rem;">🔢 Eje X: Por Pruebas</button>
                         </div>
-                        <div style="width: 100%; height: 200px; position: relative;">
-                            <svg id="evolution-chart" width="100%" height="100%" style="overflow: visible;"></svg>
-                        </div>
+                        <div style="width: 100%; height: 200px; position: relative;"><svg id="evolution-chart" width="100%" height="100%" style="overflow: visible;"></svg></div>
                     </div>
 
                     <table class="history-table" style="width:100%;">
-                        <thead>
-                            <tr><th>Fecha</th><th>Juego</th><th>Ojo</th><th>Tiempo Activo</th><th>Precisión</th></tr>
-                        </thead>
+                        <thead><tr><th>Fecha</th><th>Juego</th><th>Ojo</th><th>Tiempo Activo</th><th>Precisión</th></tr></thead>
                         <tbody id="history-tbody"></tbody>
                     </table>
                 </div>
             </div>
         </div>
 
-        <!-- VISTA 1: CONTENEDOR MAESTRO DE JUEGOS -->
+        <!-- CONTENEDOR DE JUEGO -->
         <div id="game-view-container" class="app-view">
-            <button class="btn btn-secondary" style="align-self:flex-start;" onclick="closeGame()">⬅️ Volver al Menú Principal</button>
+            <button class="btn btn-secondary" style="align-self:flex-start;" onclick="closeGame()">⬅️ Volver a Clínica</button>
             
             <div class="panel controls-row">
                 <div>Objetivo: <span id="game-target" class="target-badge">-</span></div>
-                <div>Progreso: <span class="progress-badge"><span id="game-score">0</span>/<span id="game-total">10</span></span></div>
+                <div>Progre: <span class="progress-badge"><span id="game-score">0</span>/<span id="game-total">10</span></span></div>
                 <div style="color:#dc2626;">Fallos: <strong id="game-errors">0</strong></div>
                 <div style="font-family:monospace; font-size:1.4rem;" id="game-timer">00:00.0</div>
             </div>
 
             <div id="virtual-keypad"></div>
-
             <div id="game-canvas-area" style="width:100%; display:flex; justify-content:center;"></div>
 
             <div class="panel config-row">
-                <div class="config-item">
-                    <label>Ojo Entrenado:</label>
-                    <select id="game-eye" style="background-color: #f0fdf4;">
-                        <option value="BIN">Binocular</option>
-                        <option value="OD">Ojo Derecho (OD)</option>
-                        <option value="OI">Ojo Izquierdo (OI)</option>
-                    </select>
-                </div>
-                <div class="config-item">
-                    <label>Pulgadas Monitor:</label>
-                    <div style="display:flex; gap:0.2rem;">
-                        <input type="number" id="game-inches" style="width:60px;" value="34">
-                        <button class="btn btn-secondary" onclick="document.getElementById('card-calib-modal').classList.add('active')">💳</button>
-                    </div>
-                </div>
-                
-                <label class="toggle-option" id="grid-lines-box" style="display:none;">
-                    <input type="checkbox" id="game-lines-toggle" checked> 📐 Líneas
-                </label>
-
-                <label class="toggle-option">
-                    <input type="checkbox" id="game-contrast"> ☯️ Alto Contraste
-                </label>
-                
-                <label class="toggle-option">
-                    <input type="checkbox" id="game-audio" checked> 🔊 Audio
-                </label>
+                <div class="config-item"><label>Ojo:</label><select id="game-eye" style="background-color: #f0fdf4;"><option value="BIN">BIN</option><option value="OD">OD</option><option value="OI">OI</option></select></div>
+                <div class="config-item"><label>Pulgadas:</label><div style="display:flex; gap:0.2rem;"><input type="number" id="game-inches" style="width:60px;" value="34"><button class="btn btn-secondary" onclick="document.getElementById('card-calib-modal').classList.add('active')">💳</button></div></div>
+                <label class="toggle-option" id="grid-lines-box" style="display:none;"><input type="checkbox" id="game-lines-toggle" checked> 📐 Líneas</label>
+                <label class="toggle-option"><input type="checkbox" id="game-contrast"> ☯️ e-Ink</label>
+                <label class="toggle-option"><input type="checkbox" id="game-audio" checked> 🔊 Voz</label>
                 
                 <div style="display: flex; gap: 0.4rem;">
-                    <button class="btn" id="btn-game-start" style="padding:0.8rem 2rem;">Iniciar Ejercicio</button>
+                    <button class="btn" id="btn-game-start" style="padding:0.8rem 2rem;">Iniciar Sesión</button>
                     <button class="btn btn-secondary" id="btn-print-grid" style="display:none;">📄 Papel</button>
                 </div>
             </div>
             
-            <div id="game-distance-info" class="info-badge" style="background-color: #ffffff; border: 1px solid #cbd5e1;">
-                Calculando distancia recomendada...
-            </div>
+            <div id="game-distance-info" class="info-badge" style="background-color: #ffffff; border: 1px solid #cbd5e1;">Cálculo de distancia...</div>
         </div>
     </div>
 
+    <!-- Carga Asíncrona Robusta Base de Datos Nativa + Módulos -->
     <script src="app.js" defer></script>
     <script src="juegos.js" defer></script>
+
 </body>
 </html>
