@@ -1,5 +1,5 @@
-// sw.js - Service Worker v6.01
-const CACHE_NAME = 'terapia-visual-v6.01';
+// sw.js - Service Worker v7.00
+const CACHE_NAME = 'terapia-visual-v7.00';
 const urlsToCache = [
   './index.html',
   './styles.css',
@@ -9,7 +9,7 @@ const urlsToCache = [
 ];
 
 self.addEventListener('install', event => {
-  self.skipWaiting(); // Obliga al Service Worker a instalarse inmediatamente
+  self.skipWaiting(); // Obliga a instalar la nueva versión inmediatamente
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache))
   );
@@ -21,7 +21,7 @@ self.addEventListener('activate', event => {
       return Promise.all(
         cacheNames.map(cacheName => {
           if (cacheName !== CACHE_NAME) {
-            return caches.delete(cacheName); // Borra las cachés antiguas
+            return caches.delete(cacheName); // Destruye la caché antigua
           }
         })
       );

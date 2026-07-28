@@ -1,5 +1,5 @@
 // ============================================================================
-// app.js - SUITE TERAPIA VISUAL v7.00 (Motor Clínico, Roles, IndexedDB)
+// app.js - SUITE TERAPIA VISUAL v7.01 (Motor Clínico, Roles, IndexedDB)
 // ============================================================================
 
 // 1. GESTOR DE BASE DE DATOS NATIVA (IndexedDB)
@@ -41,7 +41,7 @@ window.chartXAxisType = 'index';
 window.activeStatsTab = 'search'; 
 
 // DICCIONARIO CLÍNICO DE JUEGOS
-const gameDictionary = {
+window.gameDictionary = {
     'search': { icon: '🔠', title: 'Búsqueda Táctil', desc: 'Mejora la fijación excéntrica y foveación.', info: 'En pacientes con nistagmo, obliga al sistema visual a localizar un objetivo estático entre distractores, ayudando a estabilizar y aumentar el tiempo de foveación prolongada.' },
     'coord': { icon: '🗺️', title: 'Coordenadas', desc: 'Discriminación de cuadrantes espacial.', info: 'Desarrolla la integración visomotora y la localización espacial periférica, una habilidad frecuentemente alterada en ambliopías estrábicas.' },
     'pursuit': { icon: '🏃', title: 'Seguimiento', desc: 'Rastreo de objetivo en cuadrícula.', info: 'Trabaja los movimientos oculares de seguimiento suave (smooth pursuits). En nistagmo, entrenar el seguimiento ayuda a reducir la amplitud y latencia de la sacada de refijación.' },
@@ -94,8 +94,11 @@ window.switchRole = function(role) {
     document.getElementById('patient-area').style.display = role === 'patient' ? 'flex' : 'none';
     document.getElementById('admin-area').style.display = role === 'admin' ? 'flex' : 'none';
     
-    if (role === 'patient') renderPatientArea();
-    else renderAdminDashboard();
+    if (role === 'patient') {
+        if(typeof window.renderPatientArea === 'function') window.renderPatientArea();
+    } else {
+        if(typeof window.renderAdminDashboard === 'function') window.renderAdminDashboard();
+    }
 }
 
 function renderUI() {
@@ -114,13 +117,12 @@ function renderUI() {
         window.activePatientId = e.target.value; 
         await IDB.set('activePatientId', window.activePatientId); 
         updatePatientCardDisplay();
-        if(window.currentRole === 'patient') renderPatientArea();
-        else renderAdminDashboard();
+        if(window.currentRole === 'patient') window.renderPatientArea();
+        else window.renderAdminDashboard();
     });
     
     updatePatientCardDisplay();
 
-    // Configuración Clínica
     document.getElementById('cfg-clinic').value = window.clinicCfg.clinicName || '';
     document.getElementById('cfg-specialist').value = window.clinicCfg.specialistName || '';
     document.getElementById('cfg-col').value = window.clinicCfg.colNum || '';
@@ -135,7 +137,7 @@ function renderUI() {
         updateDistanceCalibration();
     }
     
-    switchRole(window.currentRole);
+    window.switchRole(window.currentRole);
 }
 
 function calculateStreak() {
@@ -171,7 +173,6 @@ function updatePatientCardDisplay() {
     document.getElementById('patient-info-display').innerHTML = `<strong>${activeP.name}</strong>${dobText}<br><em style="color:#64748b;">${activeP.notes || 'Sin notas adicionales.'}</em>`;
     document.getElementById('patient-welcome-name').textContent = activeP.name.split(' ')[0];
     
-    // Gamificación: Actualizar Racha en ambos badges
     const streak = calculateStreak();
     document.querySelectorAll('.streak-badge').forEach(badge => {
         badge.textContent = `🔥 Racha: ${streak} día${streak !== 1 ? 's' : ''}`;
@@ -182,7 +183,8 @@ function updatePatientCardDisplay() {
 
 // ==================== INFO MODAL ====================
 window.showGameInfo = function(gameId) {
-    const info = gameDictionary[gameId];
+    const info = window.gameDictionary[gameId];
+    if(!info) return;
     document.getElementById('info-modal-icon').textContent = info.icon;
     document.getElementById('info-modal-title').textContent = info.title;
     document.getElementById('info-modal-body').innerHTML = `<strong>Propósito:</strong> ${info.desc}<br><br><strong>Relevancia Clínica:</strong> ${info.info}`;
@@ -192,12 +194,12 @@ window.showGameInfo = function(gameId) {
 // ==================== ÁREA DEL PACIENTE ====================
 window.renderPatientArea = function() {
     const container = document.getElementById('horizontal-games-list');
+    if(!container) return;
     container.innerHTML = '';
     
     const patHistory = window.historyLog.filter(x => x.patientId === window.activePatientId);
-
-    // Estado de la Rutina Superior
     const rt = window.routines[window.activePatientId] || []; 
+    
     if(rt.length === 0) { 
         document.getElementById('routine-status-patient').textContent = "Hoy tienes entrenamiento libre."; 
         document.getElementById('btn-launch-routine').style.display = 'none'; 
@@ -208,9 +210,8 @@ window.renderPatientArea = function() {
         document.getElementById('routine-status-patient').innerHTML = `Has completado <strong style="color:var(--primary);">${tc} de ${tr}</strong> ejercicios asignados.`;
     }
 
-    // Inyección de Tarjetas Horizontales
-    Object.keys(gameDictionary).forEach(gameId => {
-        const game = gameDictionary[gameId];
+    Object.keys(window.gameDictionary).forEach(gameId => {
+        const game = window.gameDictionary[gameId];
         const h = patHistory.filter(x => x.mode === gameId);
         const bestMs = h.length > 0 ? Math.min(...h.map(s => s.timeMs)) : null;
         const bestStr = bestMs ? h.find(s => s.timeMs === bestMs).timeFormatted : '--:--';
@@ -251,9 +252,10 @@ window.renderAdminDashboard = function() {
         let tr = 0, tc = 0; 
         rt.forEach((t, i) => {
             tr += t.req; tc += Math.min(t.done, t.req);
+            let gInfo = window.gameDictionary[t.mode] || {title: t.mode};
             rl.innerHTML += `
                 <div class="task-item ${t.done >= t.req ? 'completed' : ''}" style="background:white; border:1px solid #cbd5e1; padding:0.5rem; border-radius:6px; margin-bottom:0.4rem; display:flex; justify-content:space-between; font-size:0.9rem;">
-                    <div><strong>#${i+1} ${gameDictionary[t.mode].title}</strong> (${t.eye})</div>
+                    <div><strong>#${i+1} ${gInfo.title}</strong> (${t.eye})</div>
                     <div><strong>${t.done}/${t.req}</strong> series ${t.done >= t.req ? '✅' : ''}</div>
                 </div>`;
         });
@@ -441,7 +443,7 @@ document.getElementById('btn-print-pdf').addEventListener('click', () => {
     const patHistory = window.historyLog.filter(x => x.patientId === window.activePatientId);
     
     let hasData = false;
-    Object.keys(gameDictionary).forEach(modeId => {
+    Object.keys(window.gameDictionary).forEach(modeId => {
         const modeData = patHistory.filter(h => h.mode === modeId);
         if(modeData.length === 0) return;
         hasData = true;
@@ -453,7 +455,7 @@ document.getElementById('btn-print-pdf').addEventListener('click', () => {
 
         const section = document.createElement('div'); section.className = 'print-section';
         section.innerHTML = `
-            <h3 style="border-bottom: 2px solid #cbd5e1; padding-bottom: 4px; margin-bottom: 10px;">${gameDictionary[modeId].title}</h3>
+            <h3 style="border-bottom: 2px solid #cbd5e1; padding-bottom: 4px; margin-bottom: 10px;">${window.gameDictionary[modeId].title}</h3>
             <div style="display:flex; gap: 10px; margin-bottom: 10px; font-size: 10pt;">
                 <div class="metric-card" style="flex:1;"><strong>Sesiones:</strong> ${modeData.length}</div>
                 <div class="metric-card" style="flex:1;"><strong>Tiempo Total:</strong> ${formatDuration(totalMs)}</div>
