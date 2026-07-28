@@ -1,5 +1,5 @@
 // ============================================================================
-// juegos.js - SUITE TERAPIA VISUAL v6.01 (Motor Gráfico y 10 Juegos Clínicos)
+// juegos.js - SUITE TERAPIA VISUAL v7.00 (Motor Gráfico, 10 Juegos y Audio TTS)
 // ============================================================================
 
 const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -19,9 +19,6 @@ let currentSuggestedDistanceCm = 75;
 
 let gameTimerInt = null, customInt1 = null, flashcardTimeout = null;
 
-const viewDash = document.getElementById('view-dashboard');
-const viewGame = document.getElementById('game-view-container');
-const canvasArea = document.getElementById('game-canvas-area');
 const virtualKeypad = document.getElementById('virtual-keypad');
 let selectedKeypadIndex = 0;
 
@@ -69,7 +66,16 @@ document.getElementById('calib-slider').addEventListener('input', (e) => {
 
 // ROUTER CENTRAL
 window.openGame = function(gameId) {
-    viewDash.classList.remove('active'); viewGame.style.display = 'flex';
+    // Ocultar Interfaz Principal
+    document.querySelector('.role-switcher').style.display = 'none';
+    document.getElementById('patient-area').style.display = 'none';
+    document.getElementById('admin-area').style.display = 'none';
+    
+    // Mostrar Contenedor de Juego
+    const viewGame = document.getElementById('game-view-container');
+    const canvasArea = document.getElementById('game-canvas-area');
+    viewGame.style.display = 'flex';
+    
     window.currentGame = gameId; canvasArea.innerHTML = ''; virtualKeypad.style.display = 'none';
     document.getElementById('btn-game-start').textContent = "Iniciar Ejercicio";
     
@@ -95,7 +101,19 @@ window.openGame = function(gameId) {
     resetScoreboard();
 }
 
-window.closeGame = function() { stopGame(); viewGame.style.display = 'none'; viewDash.classList.add('active'); window.renderDashboard(); }
+window.closeGame = function() { 
+    stopGame(); 
+    document.getElementById('game-view-container').style.display = 'none'; 
+    document.querySelector('.role-switcher').style.display = 'flex';
+    
+    if (window.currentRole === 'patient') {
+        document.getElementById('patient-area').style.display = 'flex';
+        window.renderPatientArea();
+    } else {
+        document.getElementById('admin-area').style.display = 'flex';
+        window.renderAdminDashboard();
+    }
+}
 
 // SÍNTESIS DE VOZ Y MOTOR DE TIEMPO
 function speakText(text) {
@@ -152,30 +170,20 @@ async function endGame() {
     stopGame(); speakText("¡Sesión completada!"); 
     const acc = (foundTargets + sessionErrors) > 0 ? Math.round((foundTargets / (foundTargets + sessionErrors)) * 100) : 100;
     
-    const logNames = {
-        'search': 'Búsqueda Táctil', 'coord': 'Coordenadas', 'pursuit': 'Seguimiento', 'anticrowding': 'Anti-Crowding',
-        'saccadic': 'Sacádicos', 'marsden': 'Pelota Marsden', 'tracing': 'Laberintos', 'tachisto': 'Taquistoscopio',
-        'gabor': 'Parches de Gabor', 'trombone': 'Acomodación Dinámica'
-    };
-    
     let linesInfo = "N/A";
     if (['search', 'coord', 'pursuit'].includes(window.currentGame)) linesInfo = document.getElementById('game-lines-toggle').checked ? 'Sí' : 'No';
 
     const log = { 
         id: Date.now(), patientId: window.activePatientId, date: new Date().toLocaleString('es-ES',{dateStyle:'short',timeStyle:'short'}), 
-        mode: window.currentGame, modeName: logNames[window.currentGame] || window.currentGame, eye: document.getElementById('game-eye').value, 
+        mode: window.currentGame, eye: document.getElementById('game-eye').value, 
         timeMs: timeMs, timeFormatted: document.getElementById('game-timer').textContent, accuracy: acc, errors: sessionErrors, lines: linesInfo, screenInches: parseFloat(document.getElementById('game-inches').value) || 34
     };
     
     window.historyLog.push(log); 
     
-    // GUARDADO ASÍNCRONO EN INDEXEDDB
     if(typeof window.saveAllToIDB === 'function') {
         await window.updateRoutineProgress();
         await window.saveAllToIDB();
-    } else {
-        localStorage.setItem('nystagmus_history', JSON.stringify(window.historyLog));
-        if(typeof window.updateRoutineProgress === 'function') window.updateRoutineProgress();
     }
     
     document.getElementById('res-time').textContent = log.timeFormatted; document.getElementById('res-errors').textContent = sessionErrors; 

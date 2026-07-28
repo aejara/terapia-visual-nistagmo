@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Suite Terapia Visual - v6.00 PWA</title>
+    <title>Suite Terapia Visual - v7.00 (Rediseño Clínico)</title>
     
-    <!-- NUEVO: PWA Manifest -->
     <link rel="manifest" href="./manifest.json">
-    <meta name="theme-color" content="#3b82f6">
+    <meta name="theme-color" content="#808080">
     <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👁️</text></svg>">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,7 +14,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 
-    <!-- NUEVO: Registro del Service Worker para funcionamiento Offline -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
@@ -26,7 +24,7 @@
 </head>
 <body>
 
-    <!-- OVERLAYS GLOBALES -->
+    <!-- OVERLAYS GLOBALES (Juego y Calibración) -->
     <div id="flashcard-overlay" class="overlay">
         <div class="flashcard-distance-badge">📏 DISTANCIA RECOMENDADA: <span id="flashcard-dist-val">--</span> cm</div>
         <div id="flashcard-main">Texto</div>
@@ -53,176 +51,199 @@
         </div>
     </div>
 
+    <!-- NUEVO OVERLAY: INFORMACIÓN CLÍNICA / INSTRUCCIONES -->
+    <div id="game-info-modal" class="overlay">
+        <div style="background: white; width: 100%; max-width: 600px; padding: 2rem; border-radius: 12px; border: 3px solid #cbd5e1; text-align: left; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);" onclick="event.stopPropagation();">
+            <div style="display: flex; align-items: center; gap: 1rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 1rem; margin-bottom: 1rem;">
+                <span id="info-modal-icon" style="font-size: 3rem;">ℹ️</span>
+                <h2 id="info-modal-title" style="margin: 0; color: #0f172a; font-size: 1.8rem;">Título</h2>
+            </div>
+            <div id="info-modal-body" style="color: #475569; font-size: 1.1rem; line-height: 1.6; min-height: 150px;">
+                Cargando información...
+            </div>
+            <button class="btn" style="margin-top: 1.5rem; width: 100%; font-size: 1.1rem;" onclick="document.getElementById('game-info-modal').classList.remove('active')">Cerrar y Volver</button>
+        </div>
+    </div>
+
     <div class="container">
+        <!-- IMPRESIÓN HEADER -->
         <div id="print-header" style="display:none; justify-content:space-between; align-items:center; border-bottom:2px solid #000000; padding-bottom:10px; margin-bottom:10px;">
             <div><img id="print-logo" src="" style="max-height:50px; display:none;"><strong id="print-clinic" style="font-size:14pt; display:block;">Centro</strong></div>
             <div style="text-align:right; font-size:9pt;"><strong id="print-specialist">Especialista</strong><br><span id="print-col"></span><br><span id="print-date"></span></div>
         </div>
-
         <div id="print-report-container" style="display: none; width: 100%;"></div>
 
-        <h1>Suite de Terapia Visual (v6.00)</h1>
-
-        <!-- HEADER GLOBAL CON RACHA AÑADIDA -->
-        <div class="patient-row">
-            <div class="patient-select-group" style="display: flex; align-items: center; flex-wrap: wrap;">
-                <label style="font-weight: 700; margin-right: 0.5rem;">👤 Paciente:</label>
-                <select id="global-patient-select" style="max-width: 250px;"></select>
-                <div id="patient-streak" class="streak-badge">🔥 Racha: 0 días</div>
-            </div>
-            <div style="display: flex; gap: 0.4rem; margin-top: 0.4rem;">
-                <button class="btn btn-secondary" onclick="document.getElementById('patient-modal').classList.toggle('active')">⚙️ Pacientes</button>
-                <button class="btn btn-secondary" style="background-color: #0284c7; color:white;" onclick="document.getElementById('clinic-modal').classList.toggle('active')">🏥 Clínica</button>
-            </div>
+        <!-- TÍTULO Y SELECTOR DE ROLES -->
+        <h1 style="color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">Suite de Terapia Visual</h1>
+        
+        <div class="role-switcher">
+            <button id="tab-role-patient" class="role-btn active" onclick="switchRole('patient')">🎮 Área del Paciente</button>
+            <button id="tab-role-admin" class="role-btn" onclick="switchRole('admin')">🔐 Área Clínica (Optometrista)</button>
         </div>
 
-        <div class="panel" style="padding: 0;">
-            <div id="clinic-modal" class="collapsible-content" style="padding: 1rem; background-color: #f0f9ff; border-radius: 12px;">
-                <h3 style="margin-top:0; color:#0284c7;">🏥 Configurar Membrete</h3>
-                <div style="display:flex; gap:0.5rem; margin-bottom:0.5rem; flex-wrap: wrap;">
-                    <input type="text" id="cfg-clinic" placeholder="Nombre Clínica" style="flex:1; min-width: 200px;">
-                    <input type="text" id="cfg-specialist" placeholder="Especialista" style="flex:1; min-width: 200px;">
-                    <input type="text" id="cfg-col" placeholder="Nº Col" style="width:100px;">
-                </div>
-                <div style="display: flex; gap: 1rem; align-items: center; background-color: white; padding: 0.8rem; border-radius: 8px; border: 1px solid #cbd5e1; margin-bottom: 0.5rem;">
-                    <div><label style="font-weight: 700; font-size: 0.85rem;">Logo:</label><input type="file" id="cfg-logo-input" accept="image/*" style="font-size: 0.85rem; margin-top: 0.3rem;"></div>
-                    <img id="cfg-logo-preview" src="" style="max-height: 45px; max-width: 150px; display: none;">
-                    <button class="btn btn-secondary" id="clear-logo-btn" style="display: none; background-color: #ef4444;">Quitar Logo</button>
-                </div>
-                <button class="btn" id="save-clinic-btn">💾 Guardar Clínica</button>
-            </div>
-        </div>
-
-        <div class="panel" style="padding: 0;">
-            <div id="patient-modal" class="collapsible-content" style="padding: 1rem; background-color: #f8fafc; border-radius: 12px;">
-                <h3 style="margin-top:0; color: var(--primary);">👤 Registro de Paciente</h3>
-                <div style="display:flex; gap:0.5rem; margin-bottom:0.5rem; flex-wrap: wrap;">
-                    <input type="text" id="new-pat-name" placeholder="Nombre completo" style="flex:1; min-width: 200px;">
-                    <input type="date" id="new-pat-dob" title="Fecha de nacimiento">
-                    <button class="btn" id="create-pat-btn">➕ Añadir</button>
-                </div>
-                <textarea id="new-pat-notes" placeholder="Notas clínicas o diagnóstico..." style="width: 100%; height: 60px; box-sizing: border-box; margin-bottom: 1rem;"></textarea>
-                <div id="patient-details-card" style="background-color: white; padding: 0.8rem; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 0.9rem; margin-top: 0.5rem;">
-                    <strong>Ficha Activa:</strong> <span id="patient-info-display">-</span><br>
-                    <button class="btn btn-secondary" style="background-color: #ef4444; margin-top: 0.8rem;" id="delete-pat-btn">🗑️ Eliminar Completamente este Paciente</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- DASHBOARD Y PAUTAS (CON AUTO-GENERADOR) -->
-        <div id="view-dashboard" class="app-view active">
+        <!-- =================================================================
+             ÁREA DE ADMINISTRACIÓN (CLÍNICA)
+             ================================================================= -->
+        <div id="admin-area" style="display: none; flex-direction: column; gap: 0.6rem;">
             
+            <div class="patient-row">
+                <div class="patient-select-group" style="display: flex; align-items: center; flex-wrap: wrap;">
+                    <label style="font-weight: 700; margin-right: 0.5rem;">👤 Paciente Activo:</label>
+                    <select id="global-patient-select" style="max-width: 250px;"></select>
+                </div>
+                <div style="display: flex; gap: 0.4rem; margin-top: 0.4rem;">
+                    <button class="btn btn-secondary" onclick="document.getElementById('patient-modal').classList.toggle('active')">⚙️ Base Pacientes</button>
+                    <button class="btn btn-secondary" style="background-color: #0284c7; color:white;" onclick="document.getElementById('clinic-modal').classList.toggle('active')">🏥 Configuración Clínica</button>
+                </div>
+            </div>
+
+            <!-- Modales Config -->
+            <div class="panel" style="padding: 0;">
+                <div id="clinic-modal" class="collapsible-content" style="padding: 1rem; background-color: #f0f9ff; border-radius: 12px;">
+                    <h3 style="margin-top:0; color:#0284c7;">🏥 Configurar Membrete</h3>
+                    <div style="display:flex; gap:0.5rem; margin-bottom:0.5rem; flex-wrap: wrap;">
+                        <input type="text" id="cfg-clinic" placeholder="Nombre Clínica" style="flex:1; min-width: 200px;">
+                        <input type="text" id="cfg-specialist" placeholder="Especialista" style="flex:1; min-width: 200px;">
+                        <input type="text" id="cfg-col" placeholder="Nº Col" style="width:100px;">
+                    </div>
+                    <div style="display: flex; gap: 1rem; align-items: center; background-color: white; padding: 0.8rem; border-radius: 8px; border: 1px solid #cbd5e1; margin-bottom: 0.5rem;">
+                        <div><label style="font-weight: 700; font-size: 0.85rem;">Logo:</label><input type="file" id="cfg-logo-input" accept="image/*" style="font-size: 0.85rem; margin-top: 0.3rem;"></div>
+                        <img id="cfg-logo-preview" src="" style="max-height: 45px; max-width: 150px; display: none;">
+                        <button class="btn btn-secondary" id="clear-logo-btn" style="display: none; background-color: #ef4444;">Quitar Logo</button>
+                    </div>
+                    <button class="btn" id="save-clinic-btn">💾 Guardar Clínica</button>
+                </div>
+            </div>
+
+            <div class="panel" style="padding: 0;">
+                <div id="patient-modal" class="collapsible-content" style="padding: 1rem; background-color: #f8fafc; border-radius: 12px;">
+                    <h3 style="margin-top:0; color: var(--primary);">👤 Registro de Paciente</h3>
+                    <div style="display:flex; gap:0.5rem; margin-bottom:0.5rem; flex-wrap: wrap;">
+                        <input type="text" id="new-pat-name" placeholder="Nombre completo" style="flex:1; min-width: 200px;">
+                        <input type="date" id="new-pat-dob" title="Fecha de nacimiento">
+                        <button class="btn" id="create-pat-btn">➕ Añadir</button>
+                    </div>
+                    <textarea id="new-pat-notes" placeholder="Notas clínicas o diagnóstico..." style="width: 100%; height: 60px; box-sizing: border-box; margin-bottom: 1rem;"></textarea>
+                    <div id="patient-details-card" style="background-color: white; padding: 0.8rem; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 0.9rem; margin-top: 0.5rem;">
+                        <strong>Ficha Activa:</strong> <span id="patient-info-display">-</span><br>
+                        <button class="btn btn-secondary" style="background-color: #ef4444; margin-top: 0.8rem;" id="delete-pat-btn">🗑️ Eliminar Completamente este Paciente</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Diseñador de Pautas -->
             <div class="panel" style="background-color: #f0fdf4; border: 1px solid #bbf7d0;">
-                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
-                    <div><strong style="color: #15803d; font-size:1.1rem;">📋 Plan de Trabajo</strong><div id="routine-status" style="font-size:0.85rem; font-weight:700; color: #475569;">Sin pauta</div></div>
-                    <div style="display: flex; gap: 0.4rem; margin-top: 0.4rem;">
-                        <button class="btn" id="btn-launch-routine" style="background-color: #16a34a;">▶️ Iniciar Pauta</button>
-                        <button class="btn btn-secondary" onclick="document.getElementById('routine-designer').classList.toggle('active')">🛠️ Diseñar</button>
-                    </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 1rem;">
+                    <div><strong style="color: #15803d; font-size:1.1rem;">🛠️ Diseñador de Pauta Terapéutica</strong></div>
                 </div>
                 
-                <div id="routine-list" style="margin-top:0.8rem;"></div>
-                
-                <div id="routine-designer" class="collapsible-content" style="background-color: #ffffff; padding:1rem; border:1px solid #cbd5e1; border-radius:8px; margin-top:0.5rem;">
-                    
-                    <!-- NUEVO: GENERADOR AUTOMÁTICO -->
-                    <div style="background-color: #e0f2fe; padding: 1rem; border-radius: 8px; border: 1px solid #bae6fd; margin-bottom: 1rem;">
-                        <strong style="color: #0284c7; display: block; margin-bottom: 0.5rem;">🤖 Auto-Pauta por Tiempo Inteligente</strong>
-                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
-                            <input type="number" id="auto-time" value="15" min="5" style="width:70px;"> min.
-                            <select id="auto-focus" style="flex: 1; min-width: 120px;">
-                                <option value="BIN">Terapia General Binocular</option>
-                                <option value="OD">Foco Déficit OD (Ambliopía)</option>
-                                <option value="OI">Foco Déficit OI (Ambliopía)</option>
-                            </select>
-                            <button class="btn" id="btn-auto-gen" style="background-color: #0284c7;">Generar Pauta Mágica</button>
-                        </div>
-                    </div>
-
-                    <strong style="color: var(--primary); display: block; margin-bottom: 0.5rem;">➕ Adición Manual</strong>
-                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                        <select id="rout-add-mode">
-                            <option value="search">1. Búsqueda Táctil</option><option value="coord">2. Coordenadas</option>
-                            <option value="pursuit">3. Seguimiento</option><option value="anticrowding">4. Anti-Crowding</option>
-                            <option value="saccadic">5. Sacádicos</option><option value="marsden">6. Pelota de Marsden</option>
-                            <option value="tracing">7. Laberinto</option><option value="tachisto">8. Taquistoscopio</option>
-                            <option value="gabor">9. Parches de Gabor</option><option value="trombone">10. Acomodación Dinámica</option>
+                <div style="background-color: #e0f2fe; padding: 1rem; border-radius: 8px; border: 1px solid #bae6fd; margin-bottom: 1rem;">
+                    <strong style="color: #0284c7; display: block; margin-bottom: 0.5rem;">🤖 Auto-Pauta Inteligente por Tiempo</strong>
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
+                        <input type="number" id="auto-time" value="15" min="5" style="width:70px;"> min.
+                        <select id="auto-focus" style="flex: 1; min-width: 120px;">
+                            <option value="BIN">Terapia General Binocular</option>
+                            <option value="OD">Foco Déficit OD (Ambliopía)</option>
+                            <option value="OI">Foco Déficit OI (Ambliopía)</option>
                         </select>
-                        <select id="rout-add-eye"><option value="BIN">Binocular</option><option value="OD">OD</option><option value="OI">OI</option></select>
-                        <input type="number" id="rout-add-req" value="2" min="1" style="width:60px;" title="Repeticiones">
-                        <button class="btn" id="btn-add-routine">➕ Añadir</button>
-                        <button class="btn btn-secondary" id="btn-clear-routine" style="background-color: #ef4444;">Vaciar Todo</button>
+                        <button class="btn" id="btn-auto-gen" style="background-color: #0284c7;">Generar Pauta Mágica</button>
                     </div>
                 </div>
-            </div>
 
-            <!-- 10 JUEGOS EN LA BIBLIOTECA -->
-            <h2 style="margin: 0.5rem 0 0 0; color: #334155;">📚 Biblioteca Clínica de Ejercicios</h2>
-            <div class="exercises-grid">
-                <div class="exercise-card" onclick="openGame('search')"><div class="exercise-card-icon">🔠</div><div class="exercise-card-title">1. Búsqueda Táctil</div><div class="exercise-card-desc">Fijación en cuadrícula 10x10.</div></div>
-                <div class="exercise-card" onclick="openGame('coord')"><div class="exercise-card-icon">🗺️</div><div class="exercise-card-title">2. Coordenadas</div><div class="exercise-card-desc">Discriminación de cuadrante.</div></div>
-                <div class="exercise-card" onclick="openGame('pursuit')"><div class="exercise-card-icon">🏃</div><div class="exercise-card-title">3. Seguimiento</div><div class="exercise-card-desc">Rastreo de objetivo foveal.</div></div>
-                <div class="exercise-card" onclick="openGame('anticrowding')"><div class="exercise-card-icon">🎯</div><div class="exercise-card-title">4. Anti-Crowding</div><div class="exercise-card-desc">Agudeza contra amontonamiento.</div></div>
-                <div class="exercise-card" onclick="openGame('saccadic')"><div class="exercise-card-icon">⚡</div><div class="exercise-card-title">5. Saltos Sacádicos</div><div class="exercise-card-desc">Reflejo periférico rápido.</div></div>
-                <div class="exercise-card" onclick="openGame('marsden')"><div class="exercise-card-icon">🎾</div><div class="exercise-card-title">6. Pelota Marsden</div><div class="exercise-card-desc">Seguimiento dinámico pendular.</div></div>
-                <div class="exercise-card" onclick="openGame('tracing')"><div class="exercise-card-icon">🔀</div><div class="exercise-card-title">7. Visual Tracing</div><div class="exercise-card-desc">Estabilidad en laberintos.</div></div>
-                <div class="exercise-card" onclick="openGame('tachisto')"><div class="exercise-card-icon">📸</div><div class="exercise-card-title">8. Taquistoscopio</div><div class="exercise-card-desc">Memoria visual flash.</div></div>
-                <div class="exercise-card" onclick="openGame('gabor')"><div class="exercise-card-icon">🦓</div><div class="exercise-card-title">9. Parches de Gabor</div><div class="exercise-card-desc">Sensibilidad al contraste direccional.</div></div>
-                <div class="exercise-card" onclick="openGame('trombone')"><div class="exercise-card-icon">🎺</div><div class="exercise-card-title">10. Acomodación Dinámica</div><div class="exercise-card-desc">Flexibilidad ciliar y enfoque en Z.</div></div>
-            </div>
-
-            <!-- ANALÍTICA (10 TABS) -->
-            <div class="panel" style="padding: 0; margin-top: 0.5rem;">
-                <button class="collapsible-toggle" onclick="document.getElementById('stats-box').classList.toggle('active')"><span>📊 Estadísticas y Reportes</span><span>▼</span></button>
-                <div id="stats-box" class="collapsible-content active" style="padding: 1rem;">
-                    
-                    <div class="tab-buttons">
-                        <button class="tab-btn active" onclick="switchStatsTab('search', event)">Búsqueda</button>
-                        <button class="tab-btn" onclick="switchStatsTab('coord', event)">Coordenadas</button>
-                        <button class="tab-btn" onclick="switchStatsTab('pursuit', event)">Seguim</button>
-                        <button class="tab-btn" onclick="switchStatsTab('anticrowding', event)">Crowding</button>
-                        <button class="tab-btn" onclick="switchStatsTab('saccadic', event)">Sacádicos</button>
-                        <button class="tab-btn" onclick="switchStatsTab('marsden', event)">Marsden</button>
-                        <button class="tab-btn" onclick="switchStatsTab('tracing', event)">Laberinto</button>
-                        <button class="tab-btn" onclick="switchStatsTab('tachisto', event)">Flash</button>
-                        <button class="tab-btn" onclick="switchStatsTab('gabor', event)">Gabor</button>
-                        <button class="tab-btn" onclick="switchStatsTab('trombone', event)">Acomodación</button>
-                    </div>
-
-                    <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:1rem;">
-                        <button class="btn btn-secondary" id="btn-print-pdf" style="background-color: #0d9488;">🖨️ Reporte PDF Total</button>
-                        <button class="btn btn-secondary" id="btn-export-json">📥 Export Base de Datos</button>
-                        <button class="btn btn-secondary" id="btn-import-json">📤 Import DB</button>
-                        <input type="file" id="import-file-input" accept=".json" style="display: none;">
-                        <button class="btn btn-secondary" id="btn-delete-hist" style="background-color: #ef4444;">Borrar Historial Paciente</button>
-                    </div>
-
-                    <div style="display: flex; gap: 0.6rem; flex-wrap: wrap; margin-bottom: 1rem;">
-                        <div class="metric-card"><div class="val" id="metric-total-sessions">0</div><div class="lbl">SESIONES</div></div>
-                        <div class="metric-card"><div class="val" id="metric-total-time">00:00.0</div><div class="lbl">TIEMPO ACTIVO</div></div>
-                        <div class="metric-card"><div class="val" id="metric-best-time">--:--</div><div class="lbl">MEJOR TIEMPO</div></div>
-                        <div class="metric-card"><div class="val" id="metric-avg-accuracy" style="color: #16a34a;">--%</div><div class="lbl">PRECISIÓN MEDIA</div></div>
-                    </div>
-
-                    <div class="chart-container">
-                        <div class="chart-controls">
-                            <strong style="font-size: 0.95rem; color: #334155;">📈 Evolución de Tiempo Activo</strong>
-                            <button class="btn btn-secondary" id="chart-axis-btn" style="padding: 0.3rem 0.6rem;">🔢 Eje X: Por Pruebas</button>
-                        </div>
-                        <div style="width: 100%; height: 200px; position: relative;"><svg id="evolution-chart" width="100%" height="100%" style="overflow: visible;"></svg></div>
-                    </div>
-
-                    <table class="history-table" style="width:100%;">
-                        <thead><tr><th>Fecha</th><th>Juego</th><th>Ojo</th><th>Tiempo Activo</th><th>Precisión</th></tr></thead>
-                        <tbody id="history-tbody"></tbody>
-                    </table>
+                <strong style="color: var(--primary); display: block; margin-bottom: 0.5rem;">➕ Adición Manual</strong>
+                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem;">
+                    <select id="rout-add-mode">
+                        <option value="search">1. Búsqueda Táctil</option><option value="coord">2. Coordenadas</option>
+                        <option value="pursuit">3. Seguimiento</option><option value="anticrowding">4. Anti-Crowding</option>
+                        <option value="saccadic">5. Sacádicos</option><option value="marsden">6. Pelota de Marsden</option>
+                        <option value="tracing">7. Laberinto</option><option value="tachisto">8. Taquistoscopio</option>
+                        <option value="gabor">9. Parches de Gabor</option><option value="trombone">10. Acomodación Dinámica</option>
+                    </select>
+                    <select id="rout-add-eye"><option value="BIN">Binocular</option><option value="OD">OD</option><option value="OI">OI</option></select>
+                    <select id="rout-add-lines" style="font-size: 0.85rem;"><option value="Sí">Con Líneas (Grid)</option><option value="No">Sin Líneas</option></select>
+                    <input type="number" id="rout-add-req" value="2" min="1" style="width:60px;" title="Repeticiones">
+                    <button class="btn" id="btn-add-routine">➕ Añadir</button>
                 </div>
+
+                <strong style="color: #475569; display: block; border-top: 1px solid #cbd5e1; padding-top: 1rem;">Pauta Actual Asignada:</strong>
+                <div id="routine-list-admin" style="margin-top:0.5rem;"></div>
+                <button class="btn btn-secondary" id="btn-clear-routine" style="background-color: #ef4444; margin-top: 1rem;">Vaciar Pauta</button>
+            </div>
+
+            <!-- Analítica -->
+            <div class="panel" style="padding: 1rem;">
+                <strong style="font-size: 1.2rem; color: #0f172a; margin-bottom: 1rem; display: block;">📊 Estadísticas y Reportes del Paciente</strong>
+                <div class="tab-buttons">
+                    <button class="tab-btn active" onclick="switchStatsTab('search', event)">Búsqueda</button>
+                    <button class="tab-btn" onclick="switchStatsTab('coord', event)">Coordenadas</button>
+                    <button class="tab-btn" onclick="switchStatsTab('pursuit', event)">Seguim</button>
+                    <button class="tab-btn" onclick="switchStatsTab('anticrowding', event)">Crowding</button>
+                    <button class="tab-btn" onclick="switchStatsTab('saccadic', event)">Sacádicos</button>
+                    <button class="tab-btn" onclick="switchStatsTab('marsden', event)">Marsden</button>
+                    <button class="tab-btn" onclick="switchStatsTab('tracing', event)">Laberinto</button>
+                    <button class="tab-btn" onclick="switchStatsTab('tachisto', event)">Flash</button>
+                    <button class="tab-btn" onclick="switchStatsTab('gabor', event)">Gabor</button>
+                    <button class="tab-btn" onclick="switchStatsTab('trombone', event)">Acomodación</button>
+                </div>
+
+                <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:1rem;">
+                    <button class="btn btn-secondary" id="btn-print-pdf" style="background-color: #0d9488;">🖨️ Reporte PDF Total</button>
+                    <button class="btn btn-secondary" id="btn-export-json">📥 Export Base de Datos</button>
+                    <button class="btn btn-secondary" id="btn-import-json">📤 Import DB</button>
+                    <input type="file" id="import-file-input" accept=".json" style="display: none;">
+                    <button class="btn btn-secondary" id="btn-delete-hist" style="background-color: #ef4444;">Borrar Historial de este Paciente</button>
+                </div>
+
+                <div style="display: flex; gap: 0.6rem; flex-wrap: wrap; margin-bottom: 1rem;">
+                    <div class="metric-card"><div class="val" id="metric-total-sessions">0</div><div class="lbl">SESIONES</div></div>
+                    <div class="metric-card"><div class="val" id="metric-total-time">00:00.0</div><div class="lbl">TIEMPO ACTIVO</div></div>
+                    <div class="metric-card"><div class="val" id="metric-best-time">--:--</div><div class="lbl">MEJOR TIEMPO</div></div>
+                    <div class="metric-card"><div class="val" id="metric-avg-accuracy" style="color: #16a34a;">--%</div><div class="lbl">PRECISIÓN MEDIA</div></div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-controls">
+                        <strong style="font-size: 0.95rem; color: #334155;">📈 Evolución de Tiempo Activo</strong>
+                        <button class="btn btn-secondary" id="chart-axis-btn" style="padding: 0.3rem 0.6rem;">🔢 Eje X: Por Pruebas</button>
+                    </div>
+                    <div style="width: 100%; height: 200px; position: relative;"><svg id="evolution-chart" width="100%" height="100%" style="overflow: visible;"></svg></div>
+                </div>
+
+                <table class="history-table" style="width:100%;">
+                    <thead><tr><th>Fecha</th><th>Ojo</th><th>Tiempo Activo</th><th>Precisión</th></tr></thead>
+                    <tbody id="history-tbody"></tbody>
+                </table>
             </div>
         </div>
 
-        <!-- CONTENEDOR DE JUEGO -->
+
+        <!-- =================================================================
+             ÁREA DEL PACIENTE (JUGADOR)
+             ================================================================= -->
+        <div id="patient-area" style="display: flex; flex-direction: column; gap: 0.6rem;">
+            
+            <div class="panel" style="background-color: white; border-left: 6px solid var(--primary);">
+                <h2 style="margin: 0; color: var(--primary);">¡Hola, <span id="patient-welcome-name">Jugador</span>! 👋</h2>
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-top: 0.5rem;">
+                    <div id="patient-streak" class="streak-badge" style="margin-left: 0;">🔥 Racha: 0 días</div>
+                    <div id="routine-status-patient" style="font-weight:700; color: #475569;">Sin pauta activa</div>
+                    <button class="btn" id="btn-launch-routine" style="background-color: #16a34a;">▶️ Iniciar Mi Pauta de Hoy</button>
+                </div>
+            </div>
+
+            <h2 style="margin: 0.5rem 0 0 0; color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">📚 Entrenamiento Libre</h2>
+            
+            <div id="horizontal-games-list" style="display: flex; flex-direction: column; gap: 0.8rem;">
+                <!-- Las tarjetas se inyectan vía app.js para poder mantener las estadísticas calculadas en tiempo real -->
+            </div>
+        </div>
+
+
+        <!-- =================================================================
+             CONTENEDOR MAESTRO DE JUEGO (Común para ambos)
+             ================================================================= -->
         <div id="game-view-container" class="app-view">
-            <button class="btn btn-secondary" style="align-self:flex-start;" onclick="closeGame()">⬅️ Volver a Clínica</button>
+            <button class="btn btn-secondary" style="align-self:flex-start;" onclick="closeGame()">⬅️ Salir del Juego</button>
             
             <div class="panel controls-row">
                 <div>Objetivo: <span id="game-target" class="target-badge">-</span></div>
@@ -249,9 +270,9 @@
             
             <div id="game-distance-info" class="info-badge" style="background-color: #ffffff; border: 1px solid #cbd5e1;">Cálculo de distancia...</div>
         </div>
+
     </div>
 
-    <!-- Carga Asíncrona Robusta Base de Datos Nativa + Módulos -->
     <script src="app.js" defer></script>
     <script src="juegos.js" defer></script>
 
