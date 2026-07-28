@@ -1,5 +1,5 @@
 // ============================================================================
-// juegos.js - SUITE TERAPIA VISUAL v6.00 (Motor Gráfico, 10 Juegos y Audio TTS)
+// juegos.js - SUITE TERAPIA VISUAL v6.01 (Motor Gráfico y 10 Juegos Clínicos)
 // ============================================================================
 
 const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -48,7 +48,7 @@ window.updateDistanceCalibration = function() {
 
 document.getElementById('game-inches').addEventListener('input', e => { 
     localStorage.setItem('nystagmus_monitor_size', e.target.value); 
-    updateDistanceCalibration(); 
+    window.updateDistanceCalibration(); 
 });
 
 document.getElementById('save-calib-btn').addEventListener('click', () => {
@@ -57,7 +57,7 @@ document.getElementById('save-calib-btn').addEventListener('click', () => {
     const calculatedInches = Math.round((Math.hypot(window.screen.width, window.screen.height) / ppi) * 10) / 10;
     document.getElementById('game-inches').value = calculatedInches;
     localStorage.setItem('nystagmus_monitor_size', calculatedInches);
-    updateDistanceCalibration();
+    window.updateDistanceCalibration();
     document.getElementById('card-calib-modal').classList.remove('active');
 });
 
@@ -175,7 +175,7 @@ async function endGame() {
         await window.saveAllToIDB();
     } else {
         localStorage.setItem('nystagmus_history', JSON.stringify(window.historyLog));
-        window.updateRoutineProgress();
+        if(typeof window.updateRoutineProgress === 'function') window.updateRoutineProgress();
     }
     
     document.getElementById('res-time').textContent = log.timeFormatted; document.getElementById('res-errors').textContent = sessionErrors; 
@@ -247,7 +247,7 @@ function handleKey(char) {
     else if (window.currentGame === 'gabor') {
         if (char === targetValue) {
             document.getElementById('gabor-canvas').parentElement.classList.add('success'); setTimeout(() => document.getElementById('gabor-canvas').parentElement.classList.remove('success'), 200);
-            gaborContrast = Math.max(5, gaborContrast - 8); // Reducir contraste progresivamente
+            gaborContrast = Math.max(5, gaborContrast - 8); 
             registerHit(); if (isPlaying) nextGabor();
         } else { triggerError(document.getElementById('gabor-canvas').parentElement); }
     }
@@ -288,7 +288,7 @@ function updateLayoutAndGridSize() {
         const label = document.querySelector('.label-cell'); if (label && label.clientHeight > 0) { const lFontPx = Math.round(label.clientHeight * 0.45); document.querySelectorAll('.label-cell').forEach(l => l.style.fontSize = lFontPx + 'px'); }
     }, 50);
 }
-window.addEventListener('resize', () => { updateDistanceCalibration(); if(['search', 'coord', 'pursuit'].includes(window.currentGame)) updateLayoutAndGridSize(); });
+window.addEventListener('resize', () => { window.updateDistanceCalibration(); if(['search', 'coord', 'pursuit'].includes(window.currentGame)) updateLayoutAndGridSize(); });
 function drawGrid() {
     const cont = document.getElementById('grid-container'); if(!cont) return;
     cont.innerHTML = ''; cont.className = `mode-${window.currentGame}`;
@@ -401,9 +401,9 @@ window.checkTach = function() { if(!isPlaying) return; isTimerActive = false; if
 window.handleTachInput = function(e) { if(e.key === 'Backspace' || e.key === 'Delete') return; if(/^[0-9]$/.test(e.key)) return; e.preventDefault(); window.checkTach(); }
 
 // ==========================================
-// 7. PARCHES DE GABOR (NUEVO JUEGO CLINICO)
+// 7. PARCHES DE GABOR
 // ==========================================
-let gaborContrast = 60; // Nivel de contraste inicial
+let gaborContrast = 60; 
 function startGabor() {
     isTimerActive = true; gaborContrast = 60;
     document.getElementById('game-target').textContent = "Orientación de Gabor";
@@ -415,14 +415,11 @@ function nextGabor() {
     const canvas = document.getElementById('gabor-canvas');
     if(!canvas) return;
     
-    // Generar gradiente dinámico de CSS simulando una onda senoidal
     const angle = tilt === 'DER' ? '45deg' : '-45deg';
-    // Colores basados en el nivel de contraste actual (128 es gris medio, +/- gaborContrast)
-    const cVal = Math.max(2, gaborContrast); // Evitar contraste 0 absoluto para que sea jugable
+    const cVal = Math.max(2, gaborContrast); 
     const c1 = `rgb(${128-cVal}, ${128-cVal}, ${128-cVal})`;
     const c2 = `rgb(${128+cVal}, ${128+cVal}, ${128+cVal})`;
     
-    // Aplicamos la rotación matemática y la difuminación gaussiana (mask)
     canvas.style.background = `repeating-linear-gradient(${angle}, ${c1}, ${c1} 10px, ${c2} 10px, ${c2} 20px)`;
     canvas.style.maskImage = `radial-gradient(circle, black 0%, transparent 60%)`;
     canvas.style.webkitMaskImage = `radial-gradient(circle, black 0%, transparent 60%)`;
@@ -431,7 +428,7 @@ function nextGabor() {
 }
 
 // ==========================================
-// 8. ACOMODACIÓN DINÁMICA (TROMBÓN / ZOOM)
+// 8. ACOMODACIÓN DINÁMICA (TROMBÓN)
 // ==========================================
 function startTrombone() {
     isTimerActive = true;
@@ -444,17 +441,13 @@ function nextTrombone() {
     if(!el) return;
     
     el.textContent = targetValue;
-    // Forzamos un reflow para reiniciar la animación CSS desde JavaScript
     el.style.animation = 'none';
     void el.offsetWidth;
-    
-    // El texto pasa de un scale muy bajo (lejos) a uno enorme (cerca), forzando el cristalino a actuar en Z
     el.style.animation = 'trombone-zoom 1.2s infinite alternate ease-in-out';
     
     renderKeypad(targetValue);
 }
 
-// Inyección de la regla de animación del Trombón dinámicamente si no está en CSS
 if (!document.getElementById('trombone-style')) {
     const style = document.createElement('style'); style.id = 'trombone-style';
     style.innerHTML = `@keyframes trombone-zoom { 0% { transform: scale(0.1); opacity: 0; } 20% { opacity: 1; } 100% { transform: scale(10); opacity: 0; } }`;
