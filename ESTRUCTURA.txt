@@ -1,0 +1,8 @@
+terapia-visual-suite/
+├── index.html        # Estructura DOM principal, templates, overlays y sistema de vistas SPA.
+├── styles.css        # Sistema de diseño, variables de color (gris fotográfico), e-Ink y reglas de impresión PDF.
+├── app.js            # Motor clínico: IndexedDB, router de roles, gestión de pacientes, auto-pautas y renderizado SVG.
+├── juegos.js         # Motor gráfico: Game loops de los 10 módulos, síntesis de voz (TTS) y eventos de teclado virtual.
+├── sw.js             # Service Worker: Interceptor de red y gestor de cachés para el modo 100% offline.
+├── manifest.json     # Web App Manifest: Configuración PWA (iconos, tema, display standalone).
+└── README.md         # Documentación del proyecto.
