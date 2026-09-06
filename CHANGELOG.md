@@ -2,6 +2,10 @@
 
 Todas las actualizaciones notables de la Suite de Terapia Visual se documentarán en este archivo.
 
+## [v7.03] - Iconos Nativos PWA y Soporte Dock macOS/Safari
+* **Fijado:** Sustitución de SVG data-URI por iconos rasterizados de alta resolución (`icon-192.png` y `icon-512.png`) para compatibilidad completa con Safari/macOS Sonoma/Sequoia ("Añadir al Dock") e iOS/Android.
+* **Añadido:** Inclusión de iconos PNG en la caché del *Service Worker* (`CACHE_NAME = 'terapia-visual-v7.03'`).
+
 ## [v7.02] - Plan de Pruebas QA y Homogeneización
 * **Añadido:** Matriz y plan formal de pruebas QA ([QA_Test_Plan.md](file:///Users/aejara/Documents/GitHub/terapia-visual-nistagmo/QA_Test_Plan.md)).
 * **Cambiado:** Homogeneización de la versión `v7.02` y actualización del nombre de caché del Service Worker (`CACHE_NAME = 'terapia-visual-v7.02'`) en toda la suite.

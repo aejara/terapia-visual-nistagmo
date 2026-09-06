@@ -1,11 +1,13 @@
-// sw.js - Service Worker v7.02
-const CACHE_NAME = 'terapia-visual-v7.02';
+// sw.js - Service Worker v7.03
+const CACHE_NAME = 'terapia-visual-v7.03';
 const urlsToCache = [
   './index.html',
   './styles.css',
   './app.js',
   './juegos.js',
-  './manifest.json'
+  './manifest.json',
+  './icon-192.png',
+  './icon-512.png'
 ];
 
 self.addEventListener('install', event => {

@@ -1,4 +1,4 @@
-# CONTEXTO DEL SISTEMA: Suite de Terapia Visual Clínica (v7.02)
+# CONTEXTO DEL SISTEMA: Suite de Terapia Visual Clínica (v7.03)
 
 ## 1. Propósito y Alcance del Sistema
 Software clínico web diseñado para el entrenamiento oculomotor, estabilización de la mirada y mejora de la agudeza visual. Dirigido a la rehabilitación optométrica de pacientes con nistagmo, ambliopía y déficits de fijación/seguimiento.

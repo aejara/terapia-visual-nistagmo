@@ -1,11 +1,11 @@
-# 🧪 Matriz de Pruebas QA - Suite Terapia Visual v7.02
+# 🧪 Matriz de Pruebas QA - Suite Terapia Visual v7.03
 
 | Fase / Categoría | Prueba a realizar | macOS | Windows | iOS | Android | Kindle | Observaciones / Enlace a Issue |
 | :--- | :--- | :---: | :---: | :---: | :---: | :---: | :--- |
-| **1. Entorno PWA** | Aparece opción de instalar PWA / Añadir a Inicio | [ ] | [ ] | [ ] | [ ] | [ ] |  |
-| | Icono y Nombre correctos en el sistema | [ ] | [ ] | [ ] | [ ] | [ ] |  |
-| | Carga inicial 100% Offline (Sin Wi-Fi) | [ ] | [ ] | [ ] | [ ] | [ ] |  |
-| | Persistencia al hacer Hard Refresh (`F5`) | [ ] | [ ] | [ ] | [ ] | [ ] |  |
+| **1. Entorno PWA** | Aparece opción de instalar PWA / Añadir a Inicio | [x] | [ ] | [ ] | [ ] | [ ] | Añadida al Dock correctamente |
+| | Icono y Nombre correctos en el sistema | [!] | [ ] | [ ] | [ ] | [ ] | Nombre OK (TerapiaVisual). Icono muestra letra 'S' por falta de PNG físico para Safari/macOS |
+| | Carga inicial 100% Offline (Sin Wi-Fi) | [x] | [ ] | [ ] | [ ] | [ ] | Funciona sin Wi-Fi |
+| | Persistencia al hacer Hard Refresh (`F5`) | [x] | [ ] | [ ] | [ ] | [ ] | Recarga correctamente |
 | **2. Base de Datos**| Crear Paciente (Nombre, Fecha, Notas) | [ ] | [ ] | [ ] | [ ] | [ ] |  |
 | | Cambio de Paciente actualiza el Dashboard | [ ] | [ ] | [ ] | [ ] | [ ] |  |
 | | Eliminar Paciente (Borrado y confirmación) | [ ] | [ ] | [ ] | [ ] | [ ] |  |

@@ -1,5 +1,5 @@
 // ============================================================================
-// juegos.js - SUITE TERAPIA VISUAL v7.02 (Motor Gráfico, 10 Juegos y Audio TTS)
+// juegos.js - SUITE TERAPIA VISUAL v7.03 (Motor Gráfico, 10 Juegos y Audio TTS)
 // ============================================================================
 
 const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";

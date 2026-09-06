@@ -1,5 +1,5 @@
 // ============================================================================
-// app.js - SUITE TERAPIA VISUAL v7.02 (Motor Clínico, Roles, IndexedDB)
+// app.js - SUITE TERAPIA VISUAL v7.03 (Motor Clínico, Roles, IndexedDB)
 // ============================================================================
 
 // 1. GESTOR DE BASE DE DATOS NATIVA (IndexedDB)
@@ -477,7 +477,7 @@ document.getElementById('btn-print-pdf').addEventListener('click', () => {
 });
 
 document.getElementById('btn-export-json').addEventListener('click', () => {
-    const bundle = { version: "7.02", clinic: window.clinicCfg, patients: window.patients, routines: window.routines, history: window.historyLog, exportDate: new Date().toISOString() };
+    const bundle = { version: "7.03", clinic: window.clinicCfg, patients: window.patients, routines: window.routines, history: window.historyLog, exportDate: new Date().toISOString() };
     const blob = new Blob([JSON.stringify(bundle, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = `backup_terapia_visual_${new Date().toISOString().slice(0, 10)}.json`; a.click(); URL.revokeObjectURL(url);
 });
