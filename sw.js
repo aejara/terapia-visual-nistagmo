@@ -1,5 +1,5 @@
-// sw.js - Service Worker v7.00
-const CACHE_NAME = 'terapia-visual-v7.00';
+// sw.js - Service Worker v7.02
+const CACHE_NAME = 'terapia-visual-v7.02';
 const urlsToCache = [
   './index.html',
   './styles.css',

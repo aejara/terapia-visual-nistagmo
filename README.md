@@ -1,4 +1,4 @@
-# 👁️ Suite de Terapia Visual Clínica (v7.01)
+# 👁️ Suite de Terapia Visual Clínica (v7.02)
 
 ## 1. Título y Descripción
 **Suite de Terapia Visual Clínica** es un software médico web integral estructurado como PWA (*Progressive Web App*). Está diseñado para la rehabilitación optométrica, focalizado en pacientes con nistagmo, ambliopía, déficits de fijación foveal, alteraciones de seguimiento y sacádicos. La plataforma permite a los especialistas recetar y evaluar rutinas visuales, y a los pacientes ejecutarlas de manera guiada en un entorno gamificado, calculando métricas de precisión y tiempo de forma 100% *offline*.

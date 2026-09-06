@@ -2,6 +2,10 @@
 
 Todas las actualizaciones notables de la Suite de Terapia Visual se documentarán en este archivo.
 
+## [v7.02] - Plan de Pruebas QA y Homogeneización
+* **Añadido:** Matriz y plan formal de pruebas QA ([QA_Test_Plan.md](file:///Users/aejara/Documents/GitHub/terapia-visual-nistagmo/QA_Test_Plan.md)).
+* **Cambiado:** Homogeneización de la versión `v7.02` y actualización del nombre de caché del Service Worker (`CACHE_NAME = 'terapia-visual-v7.02'`) en toda la suite.
+
 ## [v7.01] - Hotfix y Estabilización PWA
 * **Fijado:** Resolución del problema de caché agresiva del *Service Worker* (`sw.js`). Se ha implementado el borrado automático de cachés antiguas en la fase de activación (`self.clients.claim()`).
 * **Fijado:** Salvaguardas añadidas en `app.js` (`window.renderPatientArea`, `window.renderAdminDashboard`) para evitar que la transición de roles falle al recargar la aplicación offline.

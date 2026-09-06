@@ -1,4 +1,4 @@
-# 🧪 Matriz de Pruebas QA - Suite Terapia Visual v7.00
+# 🧪 Matriz de Pruebas QA - Suite Terapia Visual v7.02
 
 | Fase / Categoría | Prueba a realizar | macOS | Windows | iOS | Android | Kindle | Observaciones / Enlace a Issue |
 | :--- | :--- | :---: | :---: | :---: | :---: | :---: | :--- |
